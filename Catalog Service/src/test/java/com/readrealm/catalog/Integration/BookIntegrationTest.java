@@ -2,10 +2,10 @@ package com.readrealm.catalog.Integration;
 
 
 import com.readrealm.catalog.dto.book.BookRequest;
+import com.readrealm.catalog.dto.book.BookResponse;
 import com.readrealm.catalog.dto.book.BookSearchCriteria;
 import com.readrealm.catalog.exception.InvalidInputException;
 import com.readrealm.catalog.exception.NotFoundException;
-import com.readrealm.catalog.repository.projection.BookDetails;
 import com.readrealm.catalog.service.BookService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
@@ -32,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayName("Book Integration Test")
 @Testcontainers
+@ActiveProfiles("test")
 @Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class BookIntegrationTest {
 
 
@@ -62,11 +63,11 @@ class BookIntegrationTest {
                 .title("A Game of Thrones")
                 .build();
 
-        List<BookDetails> matchedBooks = bookService.searchBooks(criteria);
+        List<BookResponse> matchedBooks = bookService.searchBooks(criteria);
 
         assertThat(matchedBooks).hasSize(1);
 
-        assertThat(matchedBooks.get(0).getTitle()).isEqualTo("A Game of Thrones");
+        assertThat(matchedBooks.get(0).title()).isEqualTo("A Game of Thrones");
 
     }
 
@@ -77,7 +78,7 @@ class BookIntegrationTest {
                 .builder()
                 .build();
 
-        List<BookDetails> matchedBooks = bookService.searchBooks(criteria);
+        List<BookResponse> matchedBooks = bookService.searchBooks(criteria);
 
         assertThat(matchedBooks).hasSize(5);
     }
@@ -90,7 +91,7 @@ class BookIntegrationTest {
                 .pageSize(2)
                 .build();
 
-        List<BookDetails> matchedBooks = bookService.searchBooks(criteria);
+        List<BookResponse> matchedBooks = bookService.searchBooks(criteria);
 
         assertThat(matchedBooks).hasSize(2);
     }
@@ -111,10 +112,10 @@ class BookIntegrationTest {
     @Test
     void when_given_isbn_exists_then_should_returns_book() {
 
-        BookDetails matchedBook = bookService.getBookByIsbn("9780553103540");
+        BookResponse matchedBook = bookService.getBookByIsbn("9780553103540");
 
         assertThat(matchedBook).isNotNull();
-        assertThat(matchedBook.getIsbn()).isEqualTo("9780553103540");
+        assertThat(matchedBook.isbn()).isEqualTo("9780553103540");
     }
 
     @Test
@@ -141,15 +142,15 @@ class BookIntegrationTest {
 
         assertThat(message).isEqualTo("Book with isbn: 9780553103549 created successfully");
 
-        BookDetails addedBook = bookService.getBookByIsbn("9780553103549");
+        BookResponse addedBook = bookService.getBookByIsbn("9780553103549");
 
         assertThat(addedBook).isNotNull();
-        assertThat(addedBook.getIsbn()).isEqualTo("9780553103549");
-        assertThat(addedBook.getTitle()).isEqualTo("Effective Java");
-        assertThat(addedBook.getDescription()).isEqualTo("A comprehensive guide to best practices in Java programming.");
-        assertThat(addedBook.getPrice()).isEqualTo(new BigDecimal("45.99"));
-        assertThat(addedBook.getAuthors()).hasSize(2);
-        assertThat(addedBook.getCategories()).hasSize(2);
+        assertThat(addedBook.isbn()).isEqualTo("9780553103549");
+        assertThat(addedBook.title()).isEqualTo("Effective Java");
+        assertThat(addedBook.description()).isEqualTo("A comprehensive guide to best practices in Java programming.");
+        assertThat(addedBook.price()).isEqualTo(new BigDecimal("45.99"));
+        assertThat(addedBook.authors()).hasSize(2);
+        assertThat(addedBook.categories()).hasSize(2);
     }
 
     @Test
@@ -205,15 +206,15 @@ class BookIntegrationTest {
 
         assertThat(message).isEqualTo("Book with isbn: 9780553103540 updated successfully");
 
-        BookDetails updatedBook = bookService.getBookByIsbn("9780553103540");
+        BookResponse updatedBook = bookService.getBookByIsbn("9780553103540");
 
         assertThat(updatedBook).isNotNull();
-        assertThat(updatedBook.getIsbn()).isEqualTo("9780553103540");
-        assertThat(updatedBook.getTitle()).isEqualTo("A Game of Thrones");
-        assertThat(updatedBook.getDescription()).isEqualTo("The first book in A Song of Ice and Fire series");
-        assertThat(updatedBook.getPrice()).isEqualTo(new BigDecimal("45.99"));
-        assertThat(updatedBook.getAuthors()).hasSize(1);
-        assertThat(updatedBook.getCategories()).hasSize(3);
+        assertThat(updatedBook.isbn()).isEqualTo("9780553103540");
+        assertThat(updatedBook.title()).isEqualTo("A Game of Thrones");
+        assertThat(updatedBook.description()).isEqualTo("The first book in A Song of Ice and Fire series");
+        assertThat(updatedBook.price()).isEqualTo(new BigDecimal("45.99"));
+        assertThat(updatedBook.authors()).hasSize(1);
+        assertThat(updatedBook.categories()).hasSize(3);
     }
 
     @Test

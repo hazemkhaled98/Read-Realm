@@ -5,11 +5,7 @@ import com.readrealm.catalog.entity.Author;
 import com.readrealm.catalog.entity.Book;
 import com.readrealm.catalog.entity.Category;
 import com.readrealm.catalog.repository.projection.BookDetails;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;

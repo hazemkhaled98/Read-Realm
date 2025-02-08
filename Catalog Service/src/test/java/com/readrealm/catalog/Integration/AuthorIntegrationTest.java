@@ -2,9 +2,9 @@ package com.readrealm.catalog.Integration;
 
 
 import com.readrealm.catalog.dto.author.AuthorRequest;
+import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
 import com.readrealm.catalog.exception.NotFoundException;
-import com.readrealm.catalog.repository.projection.AuthorDetails;
 import com.readrealm.catalog.service.AuthorService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -29,8 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayName("Author Integration Test")
 @Testcontainers
+@ActiveProfiles("test")
 @Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class AuthorIntegrationTest {
 
 
@@ -54,7 +55,7 @@ class AuthorIntegrationTest {
     @Test
     void when_requesting_all_authors_should_return_all_authors_records() {
 
-        List<AuthorDetails> authors = authorService.findAllAuthors();
+        List<AuthorResponse> authors = authorService.findAllAuthors();
 
         assertThat(authors).hasSize(5);
 
@@ -63,12 +64,12 @@ class AuthorIntegrationTest {
     @Test
     void when_requesting_an_existing_author_then_should_return_all_author_record() {
 
-        AuthorDetails author = authorService.findAuthorById(1L);
+        AuthorResponse author = authorService.findAuthorById(1L);
 
         assertThat(author).isNotNull();
-        assertThat(author.getId()).isEqualTo(1L);
-        assertThat(author.getFirstName()).isEqualTo("George R.R.");
-        assertThat(author.getLastName()).isEqualTo("Martin");
+        assertThat(author.id()).isEqualTo(1L);
+        assertThat(author.firstName()).isEqualTo("George R.R.");
+        assertThat(author.lastName()).isEqualTo("Martin");
 
 
     }
@@ -90,10 +91,10 @@ class AuthorIntegrationTest {
 
         authorService.addAuthor(request);
 
-        AuthorDetails createdAuthor = authorService.findAuthorById(6L);
+        AuthorResponse createdAuthor = authorService.findAuthorById(6L);
 
-        assertThat(createdAuthor.getFirstName()).isEqualTo("Naguib" );
-        assertThat(createdAuthor.getLastName()).isEqualTo("Mahfouz" );
+        assertThat(createdAuthor.firstName()).isEqualTo("Naguib" );
+        assertThat(createdAuthor.lastName()).isEqualTo("Mahfouz" );
 
 
     }
@@ -115,10 +116,10 @@ class AuthorIntegrationTest {
 
         authorService.updateAuthor(request);
 
-        AuthorDetails updatedAuthor = authorService.findAuthorById(1L);
+        AuthorResponse updatedAuthor = authorService.findAuthorById(1L);
 
-        assertThat(updatedAuthor.getFirstName()).isEqualTo("Naguib" );
-        assertThat(updatedAuthor.getLastName()).isEqualTo("Mahfouz" );
+        assertThat(updatedAuthor.firstName()).isEqualTo("Naguib" );
+        assertThat(updatedAuthor.lastName()).isEqualTo("Mahfouz" );
 
     }
 
