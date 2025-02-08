@@ -1,11 +1,10 @@
-package com.readrealm.catalog.contoller;
+package com.readrealm.catalog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.readrealm.catalog.controller.CategoryController;
 import com.readrealm.catalog.dto.category.CategoryRequest;
+import com.readrealm.catalog.dto.category.CategoryResponse;
 import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
-import com.readrealm.catalog.repository.projection.CategoryDetails;
 import com.readrealm.catalog.service.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,10 +54,10 @@ class CategoryControllerTest {
     @Test
     void Requesting_all_categories_returns_200() throws Exception {
 
-        CategoryDetails categoryDetails = Mockito.mock(CategoryDetails.class);
+        CategoryResponse categoryResponse = Mockito.mock(CategoryResponse.class);
 
         when(categoryService.findAllCategories())
-                .thenReturn(Collections.singletonList(categoryDetails));
+                .thenReturn(Collections.singletonList(categoryResponse));
 
         mockMvc.perform(get("/v1/categories"))
                 .andExpect(status().isOk())
@@ -67,10 +66,10 @@ class CategoryControllerTest {
 
     @Test
     void Given_a_valid_Id_of_category_should_return_200() throws Exception {
-        CategoryDetails categoryDetails = Mockito.mock(CategoryDetails.class);
+        CategoryResponse categoryResponse = Mockito.mock(CategoryResponse.class);
 
         when(categoryService.findCategoryById(1L))
-                .thenReturn(categoryDetails);
+                .thenReturn(categoryResponse);
 
         mockMvc.perform(get("/v1/categories/1"))
                 .andExpect(status().isOk())
@@ -101,7 +100,9 @@ class CategoryControllerTest {
         String categoryUpdateRequest = """
                 {
                     "id": 1,
+                    "details":{
                     "name": "fantasy"
+                    }
                 }
                 """;
 

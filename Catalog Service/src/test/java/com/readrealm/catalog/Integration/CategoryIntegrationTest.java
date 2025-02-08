@@ -2,9 +2,9 @@ package com.readrealm.catalog.Integration;
 
 
 import com.readrealm.catalog.dto.category.CategoryRequest;
+import com.readrealm.catalog.dto.category.CategoryResponse;
 import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
 import com.readrealm.catalog.exception.NotFoundException;
-import com.readrealm.catalog.repository.projection.CategoryDetails;
 import com.readrealm.catalog.service.CategoryService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -29,8 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayName("Category Integration Test")
 @Testcontainers
+@ActiveProfiles("test")
 @Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class CategoryIntegrationTest {
 
 
@@ -55,7 +56,7 @@ class CategoryIntegrationTest {
     @Test
     void when_requesting_all_categories_should_return_all_category_records() {
 
-        List<CategoryDetails> categories = categoryService.findAllCategories();
+        List<CategoryResponse> categories = categoryService.findAllCategories();
 
         assertThat(categories).hasSize(5);
 
@@ -64,11 +65,11 @@ class CategoryIntegrationTest {
     @Test
     void when_requesting_an_existing_category_then_should_return_all_category_record() {
 
-        CategoryDetails category = categoryService.findCategoryById(1L);
+        CategoryResponse category = categoryService.findCategoryById(1L);
 
         assertThat(category).isNotNull();
-        assertThat(category.getId()).isEqualTo(1L);
-        assertThat(category.getName()).isEqualTo("Fantasy");
+        assertThat(category.id()).isEqualTo(1L);
+        assertThat(category.name()).isEqualTo("Fantasy");
 
 
     }
@@ -89,9 +90,9 @@ class CategoryIntegrationTest {
 
         categoryService.addCategory(request);
 
-        CategoryDetails createdCategory = categoryService.findCategoryById(6L);
+        CategoryResponse createdCategory = categoryService.findCategoryById(6L);
 
-        assertThat(createdCategory.getName()).isEqualTo("Thriller" );
+        assertThat(createdCategory.name()).isEqualTo("Thriller" );
 
 
     }
@@ -112,9 +113,9 @@ class CategoryIntegrationTest {
 
         categoryService.updateCategory(request);
 
-        CategoryDetails updatedCategory = categoryService.findCategoryById(1L);
+        CategoryResponse updatedCategory = categoryService.findCategoryById(1L);
 
-        assertThat(updatedCategory.getName()).isEqualTo("Thriller" );
+        assertThat(updatedCategory.name()).isEqualTo("Thriller" );
 
     }
 

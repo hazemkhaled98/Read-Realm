@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS `catalog-db-test`;
+
 -- Create the database if it doesn't exist
 CREATE DATABASE IF NOT EXISTS `catalog-db-test`;
 

@@ -1,11 +1,10 @@
-package com.readrealm.catalog.contoller;
+package com.readrealm.catalog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.readrealm.catalog.controller.BookController;
 import com.readrealm.catalog.dto.book.BookRequest;
+import com.readrealm.catalog.dto.book.BookResponse;
 import com.readrealm.catalog.dto.book.BookSearchCriteria;
-import com.readrealm.catalog.repository.projection.BookDetails;
 import com.readrealm.catalog.service.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,7 +53,7 @@ class BookControllerTest {
 
     @Test
     void Requesting_all_books_returns_200() throws Exception {
-        BookDetails bookDetails = Mockito.mock(BookDetails.class);
+        BookResponse bookDetails = Mockito.mock(BookResponse.class);
         when(bookService.searchBooks(any(BookSearchCriteria.class)))
                 .thenReturn(Collections.singletonList(bookDetails));
 
@@ -68,10 +67,10 @@ class BookControllerTest {
 
     @Test
     void Given_a_valid_ISBN_of_book_should_return_200() throws Exception {
-        BookDetails bookDetails = Mockito.mock(BookDetails.class);
+        BookResponse bookResponse = Mockito.mock(BookResponse.class);
 
         when(bookService.getBookByIsbn("9780553103540"))
-                .thenReturn(bookDetails);
+                .thenReturn(bookResponse);
 
         mockMvc.perform(get("/v1/books/9780553103540"))
                 .andExpect(status().isOk())

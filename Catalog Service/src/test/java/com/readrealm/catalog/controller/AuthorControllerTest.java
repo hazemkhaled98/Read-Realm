@@ -1,11 +1,10 @@
-package com.readrealm.catalog.contoller;
+package com.readrealm.catalog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.readrealm.catalog.controller.AuthorController;
 import com.readrealm.catalog.dto.author.AuthorRequest;
+import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
-import com.readrealm.catalog.repository.projection.AuthorDetails;
 import com.readrealm.catalog.service.AuthorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,26 +54,20 @@ class AuthorControllerTest {
     @Test
     void Requesting_all_authors_returns_200() throws Exception {
 
-        AuthorDetails authorDetails = Mockito.mock(AuthorDetails.class);
+        AuthorResponse authorResponse = Mockito.mock(AuthorResponse.class);
 
-        when(authorService.findAllAuthors())
-                .thenReturn(Collections.singletonList(authorDetails));
+        when(authorService.findAllAuthors()).thenReturn(Collections.singletonList(authorResponse));
 
-        mockMvc.perform(get("/v1/authors"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/v1/authors")).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     void Given_a_valid_Id_of_author_should_return_200() throws Exception {
-        AuthorDetails authorDetails = Mockito.mock(AuthorDetails.class);
+        AuthorResponse authorResponse = Mockito.mock(AuthorResponse.class);
 
-        when(authorService.findAuthorById(1L))
-                .thenReturn(authorDetails);
+        when(authorService.findAuthorById(1L)).thenReturn(authorResponse);
 
-        mockMvc.perform(get("/v1/authors/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/v1/authors/1")).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
 
@@ -89,10 +82,7 @@ class AuthorControllerTest {
                 }
                 """;
 
-        mockMvc.perform(post("/v1/authors")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(authorCreateRequest))
-                .andExpect(status().isCreated());
+        mockMvc.perform(post("/v1/authors").contentType(MediaType.APPLICATION_JSON).content(authorCreateRequest)).andExpect(status().isCreated());
     }
 
     @Test
@@ -102,20 +92,18 @@ class AuthorControllerTest {
         String authorUpdateRequest = """
                 {
                     "id": 1,
-                    "firstName": "Hazem",
-                    "lastName": "Khaled"
+                    "details":{
+                        "firstName": "Hazem",
+                        "lastName": "Khaled"
+                    }
                 }
                 """;
 
-        mockMvc.perform(put("/v1/authors")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(authorUpdateRequest))
-                .andExpect(status().isOk());
+        mockMvc.perform(put("/v1/authors").contentType(MediaType.APPLICATION_JSON).content(authorUpdateRequest)).andExpect(status().isOk());
     }
 
     @Test
     void Given_an_author_id_to_delete_should_return_204() throws Exception {
-        mockMvc.perform(delete("/v1/authors/1234567890"))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/v1/authors/1234567890")).andExpect(status().isNoContent());
     }
 }
