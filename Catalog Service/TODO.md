@@ -1,0 +1,10 @@
+- [x] Unit and Integration Tests   
+- [x] Virtual Threads   
+- [ ] Caching => Redis  
+  - [ ] read redis notes
+  - [ ] check redis config
+  - [ ] read about redis hash annotation
+  - [ ] revise projections
+  - [ ] repair tests
+  - [ ] redis volume and clear cache mechanism
+- [ ] Security
