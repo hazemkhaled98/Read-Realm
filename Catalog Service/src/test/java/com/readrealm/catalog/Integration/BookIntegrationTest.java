@@ -1,6 +1,5 @@
 package com.readrealm.catalog.Integration;
 
-
 import com.readrealm.catalog.dto.book.BookRequest;
 import com.readrealm.catalog.dto.book.BookResponse;
 import com.readrealm.catalog.dto.book.BookSearchCriteria;
@@ -28,7 +27,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
 @SpringBootTest(properties = "spring.flyway.enabled=false")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayName("Book Integration Test")
@@ -37,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class BookIntegrationTest {
 
-
     @Container
     @ServiceConnection
     private static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.3.0")
@@ -45,15 +42,13 @@ class BookIntegrationTest {
             .withUsername("root")
             .withPassword("root");
 
-
     @Autowired
     private BookService bookService;
 
     @AfterAll
-    static void closeContainer(){
+    static void closeContainer() {
         mySQLContainer.close();
     }
-
 
     @Test
     void when_found_books_with_matched_criteria_then_should_returns_matched_books() {
@@ -96,7 +91,6 @@ class BookIntegrationTest {
         assertThat(matchedBooks).hasSize(2);
     }
 
-
     @Test
     void when_no_books_matched_criteria_then_should_throw_not_found_exception() {
 
@@ -106,7 +100,7 @@ class BookIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookService.searchBooks(criteria))
-        .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -122,7 +116,7 @@ class BookIntegrationTest {
     void when_given_isbn_does_not_exists_then_should_throw_not_found_exception() {
 
         assertThatThrownBy(() -> bookService.getBookByIsbn("9780553103549"))
-        .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -138,11 +132,7 @@ class BookIntegrationTest {
                 .categoriesIds(List.of(1L, 2L))
                 .build();
 
-        String message = bookService.addBook(bookRequest);
-
-        assertThat(message).isEqualTo("Book with isbn: 9780553103549 created successfully");
-
-        BookResponse addedBook = bookService.getBookByIsbn("9780553103549");
+        BookResponse addedBook = bookService.addBook(bookRequest);
 
         assertThat(addedBook).isNotNull();
         assertThat(addedBook.isbn()).isEqualTo("9780553103549");
@@ -166,8 +156,7 @@ class BookIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookService.addBook(bookRequest))
-        .isInstanceOf(InvalidInputException.class);
-
+                .isInstanceOf(InvalidInputException.class);
 
     }
 
@@ -188,7 +177,6 @@ class BookIntegrationTest {
 
     }
 
-
     @Test
     @Transactional
     void when_given_a_valid_book_request_to_update_then_should_update_book() {
@@ -202,11 +190,7 @@ class BookIntegrationTest {
                 .categoriesIds(List.of(1L, 2L, 5L))
                 .build();
 
-        String message = bookService.updateBook(bookRequest);
-
-        assertThat(message).isEqualTo("Book with isbn: 9780553103540 updated successfully");
-
-        BookResponse updatedBook = bookService.getBookByIsbn("9780553103540");
+        BookResponse updatedBook = bookService.updateBook(bookRequest);
 
         assertThat(updatedBook).isNotNull();
         assertThat(updatedBook.isbn()).isEqualTo("9780553103540");
@@ -229,11 +213,9 @@ class BookIntegrationTest {
                 .categoriesIds(List.of(1L, 2L, 5L))
                 .build();
 
-
         assertThatThrownBy(() -> bookService.updateBook(bookRequest))
                 .isInstanceOf(InvalidInputException.class);
     }
-
 
     @Test
     void when_one_or_more_categories_does_not_exist_in_update_request_then_should_throw_invalid_input_exception() {
@@ -247,12 +229,9 @@ class BookIntegrationTest {
                 .categoriesIds(List.of(1000L, 2L, 5L))
                 .build();
 
-
         assertThatThrownBy(() -> bookService.updateBook(bookRequest))
-        .isInstanceOf(InvalidInputException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
-
-
 
     @Test
     void when_isbn_exists_then_book_should_be_deleted() {
@@ -260,10 +239,7 @@ class BookIntegrationTest {
         bookService.deleteBook("9780553103540");
 
         assertThatThrownBy(() -> bookService.getBookByIsbn("9780553103540"))
-        .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
-
-
-
 
 }

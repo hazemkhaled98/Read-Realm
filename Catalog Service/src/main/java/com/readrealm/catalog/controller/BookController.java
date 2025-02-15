@@ -36,14 +36,14 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String addBook(@Valid @RequestBody BookRequest bookRequest) {
+    public BookResponse addBook(@Valid @RequestBody BookRequest bookRequest) {
         return bookService.addBook(bookRequest);
     }
 
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public String updateBook(@Valid @RequestBody BookRequest bookRequest){
+    public BookResponse updateBook(@Valid @RequestBody BookRequest bookRequest){
         return bookService.updateBook(bookRequest);
     }
 

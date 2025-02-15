@@ -1,6 +1,5 @@
 package com.readrealm.catalog.Integration;
 
-
 import com.readrealm.catalog.dto.author.AuthorRequest;
 import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
@@ -25,7 +24,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
 @SpringBootTest(properties = "spring.flyway.enabled=false")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayName("Author Integration Test")
@@ -34,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class AuthorIntegrationTest {
 
-
     @Container
     @ServiceConnection
     private static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.3.0")
@@ -42,15 +39,13 @@ class AuthorIntegrationTest {
             .withUsername("root")
             .withPassword("root");
 
-
     @Autowired
     private AuthorService authorService;
 
     @AfterAll
-    static void closeContainer(){
+    static void closeContainer() {
         mySQLContainer.close();
     }
-
 
     @Test
     void when_requesting_all_authors_should_return_all_authors_records() {
@@ -71,37 +66,30 @@ class AuthorIntegrationTest {
         assertThat(author.firstName()).isEqualTo("George R.R.");
         assertThat(author.lastName()).isEqualTo("Martin");
 
-
     }
 
-
     @Test
-    void when_requesting_non_existing_author_then_should_throw_not_found_exception(){
+    void when_requesting_non_existing_author_then_should_throw_not_found_exception() {
 
         assertThatThrownBy(() -> authorService.findAuthorById(1000L))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
-    void when_receiving_valid_create_author_request_then_should_create_author_record(){
+    void when_receiving_valid_create_author_request_then_should_create_author_record() {
         AuthorRequest request = AuthorRequest.builder()
                 .firstName("Naguib")
                 .lastName("Mahfouz")
                 .build();
 
-        authorService.addAuthor(request);
+        AuthorResponse createdAuthor = authorService.addAuthor(request);
 
-        AuthorResponse createdAuthor = authorService.findAuthorById(6L);
-
-        assertThat(createdAuthor.firstName()).isEqualTo("Naguib" );
-        assertThat(createdAuthor.lastName()).isEqualTo("Mahfouz" );
-
-
+        assertThat(createdAuthor.firstName()).isEqualTo("Naguib");
+        assertThat(createdAuthor.lastName()).isEqualTo("Mahfouz");
     }
 
-
     @Test
-    void when_receiving_valid_update_author_request_then_should_update_author_record(){
+    void when_receiving_valid_update_author_request_then_should_update_author_record() {
 
         AuthorRequest details = AuthorRequest.builder()
                 .firstName("Naguib")
@@ -114,17 +102,15 @@ class AuthorIntegrationTest {
                 .details(details)
                 .build();
 
-        authorService.updateAuthor(request);
+        AuthorResponse updatedAuthor = authorService.updateAuthor(request);
 
-        AuthorResponse updatedAuthor = authorService.findAuthorById(1L);
-
-        assertThat(updatedAuthor.firstName()).isEqualTo("Naguib" );
-        assertThat(updatedAuthor.lastName()).isEqualTo("Mahfouz" );
+        assertThat(updatedAuthor.firstName()).isEqualTo("Naguib");
+        assertThat(updatedAuthor.lastName()).isEqualTo("Mahfouz");
 
     }
 
     @Test
-    void when_receiving_non_existing_author_update_request_then_should_throw_not_found_exception(){
+    void when_receiving_non_existing_author_update_request_then_should_throw_not_found_exception() {
 
         AuthorRequest details = AuthorRequest.builder()
                 .firstName("Naguib")
@@ -142,7 +128,6 @@ class AuthorIntegrationTest {
 
     }
 
-
     @Test
     void when_author_id_exists_then_author_should_be_deleted() {
 
@@ -151,6 +136,5 @@ class AuthorIntegrationTest {
         assertThatThrownBy(() -> authorService.findAuthorById(1L))
                 .isInstanceOf(NotFoundException.class);
     }
-
 
 }

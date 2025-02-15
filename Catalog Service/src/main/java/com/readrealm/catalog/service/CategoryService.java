@@ -1,6 +1,5 @@
 package com.readrealm.catalog.service;
 
-
 import com.readrealm.catalog.dto.category.CategoryRequest;
 import com.readrealm.catalog.dto.category.CategoryResponse;
 import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
@@ -10,6 +9,10 @@ import com.readrealm.catalog.mapper.CategoryMapper;
 import com.readrealm.catalog.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +26,11 @@ import java.util.Optional;
 @Transactional(isolation = Isolation.REPEATABLE_READ)
 public class CategoryService {
     private final CategoryMapper categoryMapper;
-
-
     private final CategoryRepository categoryRepository;
 
-
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "categories", cacheManager = "cacheManager")
     public List<CategoryResponse> findAllCategories() {
-
         log.info("Finding All Categories");
         return categoryRepository
                 .findAllCategoriesDetails()
@@ -40,44 +40,46 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "categoryById", key = "#id", cacheManager = "cacheManager")
     public CategoryResponse findCategoryById(Long id) {
         log.info("Finding Category by ID {}", id);
-
         return categoryRepository.findCategoryDetailsById(id)
                 .map(categoryMapper::toCategoryResponse)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id %s not found", id)));
     }
 
-    public String addCategory(CategoryRequest request) {
-
+    @Transactional
+    @CachePut(cacheNames = "categoryById", key = "#createCategory.id()", cacheManager = "cacheManager")
+    @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
+    public CategoryResponse addCategory(CategoryRequest request) {
         log.info("Adding Category {}", request);
         Category createCategory = Category
                 .builder()
                 .name(request.name())
                 .build();
-
         createCategory = categoryRepository.save(createCategory);
-
-        return String.format("Author with id %s added", createCategory.getId());
+        return categoryMapper.toCategoryResponse(createCategory);
     }
 
-    public String updateCategory(UpdateCategoryRequest request) {
+    @Transactional
+    @CachePut(cacheNames = "categoryById", key = "#updatedCategory.id()", cacheManager = "cacheManager")
+    @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
+    public CategoryResponse updateCategory(UpdateCategoryRequest request) {
         log.info("Updating Category {}", request);
-
         long id = Long.parseLong(request.id());
-
         Optional<Category> optionalCategory = categoryRepository.findById(id);
-
-        Category updatedCategory = optionalCategory.orElseThrow(() -> new NotFoundException(String.format("Category with id %s not found", request.id())));
-
+        Category updatedCategory = optionalCategory
+                .orElseThrow(() -> new NotFoundException(String.format("Category with id %s not found", request.id())));
         updatedCategory.setName(request.details().name());
-
         updatedCategory = categoryRepository.save(updatedCategory);
-
-        return String.format("Category with id %s updated", updatedCategory.getId());
+        return categoryMapper.toCategoryResponse(updatedCategory);
     }
 
-
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "categoryById", key = "#isbn", cacheManager = "cacheManager"),
+            @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
+    })
     public void deleteCategory(long id) {
         log.info("Deleting category with id {}", id);
         categoryRepository.deleteById(id);

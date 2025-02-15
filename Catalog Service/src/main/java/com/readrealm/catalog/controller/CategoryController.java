@@ -1,6 +1,5 @@
 package com.readrealm.catalog.controller;
 
-
 import com.readrealm.catalog.dto.category.CategoryRequest;
 import com.readrealm.catalog.dto.category.CategoryResponse;
 import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
@@ -18,7 +17,6 @@ import java.util.List;
 
 public class CategoryController {
 
-
     private final CategoryService categoryService;
 
     @GetMapping
@@ -34,19 +32,17 @@ public class CategoryController {
         return categoryService.findCategoryById(id);
     }
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String addCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+    public CategoryResponse addCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
         return categoryService.addCategory(categoryRequest);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public String updateCategory(@Valid @RequestBody UpdateCategoryRequest updateCategoryRequest) {
+    public CategoryResponse updateCategory(@Valid @RequestBody UpdateCategoryRequest updateCategoryRequest) {
         return categoryService.updateCategory(updateCategoryRequest);
     }
-
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,6 +1,5 @@
 package com.readrealm.catalog.controller;
 
-
 import com.readrealm.catalog.dto.author.AuthorRequest;
 import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
@@ -18,7 +17,6 @@ import java.util.List;
 
 public class AuthorController {
 
-
     private final AuthorService authorService;
 
     @GetMapping
@@ -34,19 +32,17 @@ public class AuthorController {
         return authorService.findAuthorById(id);
     }
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String addAuthor(@Valid @RequestBody AuthorRequest authorRequest) {
+    public AuthorResponse addAuthor(@Valid @RequestBody AuthorRequest authorRequest) {
         return authorService.addAuthor(authorRequest);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public String updateAuthor(@Valid @RequestBody UpdateAuthorRequest updateAuthorRequest) {
+    public AuthorResponse updateAuthor(@Valid @RequestBody UpdateAuthorRequest updateAuthorRequest) {
         return authorService.updateAuthor(updateAuthorRequest);
     }
-
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

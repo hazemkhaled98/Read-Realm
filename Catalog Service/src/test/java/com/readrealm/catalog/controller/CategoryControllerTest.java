@@ -50,7 +50,6 @@ class CategoryControllerTest {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-
     @Test
     void Requesting_all_categories_returns_200() throws Exception {
 
@@ -76,10 +75,10 @@ class CategoryControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-
     @Test
     void Given_a_valid_category_body_to_create_should_return_201() throws Exception {
-        when(categoryService.addCategory(any(CategoryRequest.class))).thenReturn("Category added successfully");
+        CategoryResponse categoryResponse = Mockito.mock(CategoryResponse.class);
+        when(categoryService.addCategory(any(CategoryRequest.class))).thenReturn(categoryResponse);
 
         String categoryCreateRequest = """
                 {
@@ -88,14 +87,16 @@ class CategoryControllerTest {
                 """;
 
         mockMvc.perform(post("/v1/categories")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(categoryCreateRequest))
-                .andExpect(status().isCreated());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(categoryCreateRequest))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     void Given_a_valid_author_body_to_update_should_return_200() throws Exception {
-        when(categoryService.updateCategory(any(UpdateCategoryRequest.class))).thenReturn("Category updated successfully");
+        CategoryResponse categoryResponse = Mockito.mock(CategoryResponse.class);
+        when(categoryService.updateCategory(any(UpdateCategoryRequest.class))).thenReturn(categoryResponse);
 
         String categoryUpdateRequest = """
                 {
@@ -107,9 +108,10 @@ class CategoryControllerTest {
                 """;
 
         mockMvc.perform(put("/v1/categories")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(categoryUpdateRequest))
-                .andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(categoryUpdateRequest))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test

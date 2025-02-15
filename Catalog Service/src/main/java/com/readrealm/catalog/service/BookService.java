@@ -1,6 +1,5 @@
 package com.readrealm.catalog.service;
 
-
 import com.readrealm.catalog.dto.book.BookRequest;
 import com.readrealm.catalog.dto.book.BookResponse;
 import com.readrealm.catalog.dto.book.BookSearchCriteria;
@@ -17,7 +16,10 @@ import com.readrealm.catalog.repository.projection.BookDetails;
 import com.readrealm.catalog.repository.specification.BookSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,9 +41,8 @@ public class BookService {
     private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
 
-
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "booksByCriteria", cacheManager = "cacheManager")
+    @Cacheable(cacheNames = "booksByCriteria", key = "#criteria", cacheManager = "cacheManager")
     public List<BookResponse> searchBooks(BookSearchCriteria criteria) {
         log.info("Searching for books with criteria: {}", criteria);
 
@@ -50,9 +51,7 @@ public class BookService {
                 query -> query
                         .as(BookDetails.class)
                         .page(createPageable(criteria))
-                        .toList()
-        );
-
+                        .toList());
 
         if (matchedBooks.isEmpty()) {
             throw new NotFoundException("No books are found with specified criteria");
@@ -65,7 +64,7 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "bookByISBN", cacheManager = "cacheManager")
+    @Cacheable(cacheNames = "bookByISBN", key = "#isbn", cacheManager = "cacheManager")
     public BookResponse getBookByIsbn(String isbn) {
         log.info("Searching for book by ISBN: {}", isbn);
 
@@ -75,9 +74,10 @@ public class BookService {
     }
 
     @Transactional
-    public String addBook(BookRequest bookRequest) {
+    @CachePut(cacheNames = "bookByISBN", key = "#bookRequest.isbn()", cacheManager = "cacheManager")
+    @CacheEvict(cacheNames = "booksByCriteria", allEntries = true, cacheManager = "cacheManager")
+    public BookResponse addBook(BookRequest bookRequest) {
         log.info("Creating book: {}", bookRequest);
-
 
         List<Author> authors = authorRepository.findAllById(bookRequest.authorsIds());
         if (authors.size() != bookRequest.authorsIds().size()) {
@@ -98,16 +98,16 @@ public class BookService {
                 .categories(categories)
                 .build();
 
-
         bookRepository.save(book);
 
-        return "Book with isbn: " + book.getIsbn() + " created successfully";
+        return bookMapper.toBookResponse(book);
     }
 
     @Transactional
-    public String updateBook(BookRequest bookRequest) {
+    @CachePut(cacheNames = "bookByISBN", key = "#bookRequest.isbn()", cacheManager = "cacheManager")
+    @CacheEvict(cacheNames = "booksByCriteria", allEntries = true, cacheManager = "cacheManager")
+    public BookResponse updateBook(BookRequest bookRequest) {
         log.info("Updating book: {}", bookRequest);
-
 
         List<Author> authors = authorRepository.findAllById(bookRequest.authorsIds());
         if (authors.size() != bookRequest.authorsIds().size()) {
@@ -130,10 +130,14 @@ public class BookService {
 
         bookRepository.save(updatedBook);
 
-        return "Book with isbn: " + bookRequest.isbn() + " updated successfully";
+        return bookMapper.toBookResponse(updatedBook);
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "bookByISBN", key = "#isbn", cacheManager = "cacheManager"),
+            @CacheEvict(cacheNames = "booksByCriteria", allEntries = true, cacheManager = "cacheManager")
+    })
     public void deleteBook(String isbn) {
         bookRepository.deleteBookByIsbn(isbn);
     }

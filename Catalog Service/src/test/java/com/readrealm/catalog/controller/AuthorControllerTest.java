@@ -50,7 +50,6 @@ class AuthorControllerTest {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-
     @Test
     void Requesting_all_authors_returns_200() throws Exception {
 
@@ -58,7 +57,8 @@ class AuthorControllerTest {
 
         when(authorService.findAllAuthors()).thenReturn(Collections.singletonList(authorResponse));
 
-        mockMvc.perform(get("/v1/authors")).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/v1/authors")).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -67,13 +67,14 @@ class AuthorControllerTest {
 
         when(authorService.findAuthorById(1L)).thenReturn(authorResponse);
 
-        mockMvc.perform(get("/v1/authors/1")).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/v1/authors/1")).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
-
 
     @Test
     void Given_a_valid_author_body_to_create_should_return_201() throws Exception {
-        when(authorService.addAuthor(any(AuthorRequest.class))).thenReturn("Author added successfully");
+        AuthorResponse authorResponse = Mockito.mock(AuthorResponse.class);
+        when(authorService.addAuthor(any(AuthorRequest.class))).thenReturn(authorResponse);
 
         String authorCreateRequest = """
                 {
@@ -82,12 +83,17 @@ class AuthorControllerTest {
                 }
                 """;
 
-        mockMvc.perform(post("/v1/authors").contentType(MediaType.APPLICATION_JSON).content(authorCreateRequest)).andExpect(status().isCreated());
+        mockMvc.perform(post("/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(authorCreateRequest))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     void Given_a_valid_author_body_to_update_should_return_200() throws Exception {
-        when(authorService.updateAuthor(any(UpdateAuthorRequest.class))).thenReturn("Author updated successfully");
+        AuthorResponse authorResponse = Mockito.mock(AuthorResponse.class);
+        when(authorService.updateAuthor(any(UpdateAuthorRequest.class))).thenReturn(authorResponse);
 
         String authorUpdateRequest = """
                 {
@@ -99,7 +105,11 @@ class AuthorControllerTest {
                 }
                 """;
 
-        mockMvc.perform(put("/v1/authors").contentType(MediaType.APPLICATION_JSON).content(authorUpdateRequest)).andExpect(status().isOk());
+        mockMvc.perform(put("/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(authorUpdateRequest))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
