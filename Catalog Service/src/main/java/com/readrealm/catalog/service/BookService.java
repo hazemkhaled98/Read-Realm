@@ -80,14 +80,10 @@ public class BookService {
         log.info("Creating book: {}", bookRequest);
 
         List<Author> authors = authorRepository.findAllById(bookRequest.authorsIds());
-        if (authors.size() != bookRequest.authorsIds().size()) {
-            throw new InvalidInputException("One or more authors not found");
-        }
+        checkIfAuthorsExist(authors, bookRequest.authorsIds());
 
         List<Category> categories = categoryRepository.findAllById(bookRequest.categoriesIds());
-        if (categories.size() != bookRequest.categoriesIds().size()) {
-            throw new InvalidInputException("One or more categories not found");
-        }
+        checkIfCategoriesExist(categories, bookRequest.categoriesIds());
 
         Book book = Book.builder()
                 .isbn(bookRequest.isbn())
@@ -110,14 +106,10 @@ public class BookService {
         log.info("Updating book: {}", bookRequest);
 
         List<Author> authors = authorRepository.findAllById(bookRequest.authorsIds());
-        if (authors.size() != bookRequest.authorsIds().size()) {
-            throw new InvalidInputException("One or more authors not found");
-        }
+        checkIfAuthorsExist(authors, bookRequest.authorsIds());
 
         List<Category> categories = categoryRepository.findAllById(bookRequest.categoriesIds());
-        if (categories.size() != bookRequest.categoriesIds().size()) {
-            throw new InvalidInputException("One or more categories not found");
-        }
+        checkIfCategoriesExist(categories, bookRequest.categoriesIds());
 
         Book updatedBook = bookRepository.findBookByIsbn(bookRequest.isbn())
                 .orElseThrow(() -> new InvalidInputException("Book with isbn: " + bookRequest.isbn() + " not found"));
@@ -148,5 +140,17 @@ public class BookService {
         int pageSize = criteria.pageSize() != null ? criteria.pageSize() : DEFAULT_PAGE_SIZE;
 
         return PageRequest.of(pageNumber, pageSize);
+    }
+
+    private static void checkIfAuthorsExist(List<Author> authors, List<Long> authorsIds) {
+        if (authors.size() != authorsIds.size()) {
+            throw new InvalidInputException("One or more authors not found");
+        }
+    }
+
+    private static void checkIfCategoriesExist(List<Category> categories, List<Long> categoriesIds) {
+        if (categories.size() != categoriesIds.size()) {
+            throw new InvalidInputException("One or more categories not found");
+        }
     }
 }
