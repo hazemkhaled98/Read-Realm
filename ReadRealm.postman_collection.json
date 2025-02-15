@@ -1,0 +1,363 @@
+{
+	"info": {
+		"_postman_id": "f2074904-1733-4b2c-b943-5e4eedd37220",
+		"name": "ReadRealm",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "19754707"
+	},
+	"item": [
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Get All Books",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/books?sortBy=PRICE&sortOrder=desc&pageNumber=1&pageSize=7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"books"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "PRICE"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book By ISBN",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/books/123124332632",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"books",
+								"123124332632"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "game",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/books?title=game",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"books"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "game"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/books",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"books"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "game",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/books/9780062073488",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"books",
+								"9780062073488"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "game",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authors",
+			"item": [
+				{
+					"name": "Get All Authors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/v1/authors"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Author",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/v1/authors/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Author",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "http://localhost:8080/v1/authors"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Author",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"authorRequest\": {\r\n        \"firstName\": \"Hazem\",\r\n        \"lastName\": \"Khaled\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/v1/authors"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Author",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/v1/authors/6"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/v1/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/v1/categories/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "http://localhost:8080/v1/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"hazem\",\r\n    \"lastName\": \"Khaled\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/v1/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/v1/categories/6"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cache",
+			"item": [
+				{
+					"name": "Clear Cache",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/v1/refresh"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
