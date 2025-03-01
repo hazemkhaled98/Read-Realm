@@ -4,9 +4,9 @@ import com.readrealm.catalog.dto.category.CategoryRequest;
 import com.readrealm.catalog.dto.category.CategoryResponse;
 import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
 import com.readrealm.catalog.entity.Category;
-import com.readrealm.catalog.exception.NotFoundException;
 import com.readrealm.catalog.mapper.CategoryMapper;
 import com.readrealm.catalog.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -45,7 +45,7 @@ public class CategoryService {
         log.info("Finding Category by ID {}", id);
         return categoryRepository.findCategoryDetailsById(id)
                 .map(categoryMapper::toCategoryResponse)
-                .orElseThrow(() -> new NotFoundException(String.format("Category with id %s not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category with id %s not found", id)));
     }
 
     @Transactional
@@ -69,7 +69,7 @@ public class CategoryService {
         long id = Long.parseLong(request.id());
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         Category updatedCategory = optionalCategory
-                .orElseThrow(() -> new NotFoundException(String.format("Category with id %s not found", request.id())));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category with id %s not found", request.id())));
         updatedCategory.setName(request.details().name());
         updatedCategory = categoryRepository.save(updatedCategory);
         return categoryMapper.toCategoryResponse(updatedCategory);

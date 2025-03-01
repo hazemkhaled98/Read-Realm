@@ -4,9 +4,9 @@ import com.readrealm.catalog.dto.author.AuthorRequest;
 import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
 import com.readrealm.catalog.entity.Author;
-import com.readrealm.catalog.exception.NotFoundException;
 import com.readrealm.catalog.mapper.AuthorMapper;
 import com.readrealm.catalog.repository.AuthorRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -46,7 +46,7 @@ public class AuthorService {
         log.info("Finding Author by ID {}", id);
         return authorRepository.findAuthorDetailsById(id)
                 .map(authorMapper::toAuthorResponse)
-                .orElseThrow(() -> new NotFoundException(String.format("Author with id %s not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Author with id %s not found", id)));
     }
 
     @Transactional
@@ -75,7 +75,7 @@ public class AuthorService {
         Optional<Author> optionalAuthor = authorRepository.findById(id);
 
         Author updatedAuthor = optionalAuthor
-                .orElseThrow(() -> new NotFoundException(String.format("Author with id %s not found", request.id())));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Author with id %s not found", request.id())));
 
         updatedAuthor.setFirstName(request.details().firstName());
         updatedAuthor.setLastName(request.details().lastName());

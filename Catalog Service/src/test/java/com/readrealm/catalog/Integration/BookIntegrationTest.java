@@ -3,9 +3,8 @@ package com.readrealm.catalog.Integration;
 import com.readrealm.catalog.dto.book.BookRequest;
 import com.readrealm.catalog.dto.book.BookResponse;
 import com.readrealm.catalog.dto.book.BookSearchCriteria;
-import com.readrealm.catalog.exception.InvalidInputException;
-import com.readrealm.catalog.exception.NotFoundException;
 import com.readrealm.catalog.service.BookService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -100,7 +99,7 @@ class BookIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookService.searchBooks(criteria))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
@@ -116,7 +115,7 @@ class BookIntegrationTest {
     void when_given_isbn_does_not_exists_then_should_throw_not_found_exception() {
 
         assertThatThrownBy(() -> bookService.getBookByIsbn("9780553103549"))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
@@ -156,7 +155,7 @@ class BookIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookService.addBook(bookRequest))
-                .isInstanceOf(InvalidInputException.class);
+                .isInstanceOf(IllegalArgumentException.class);
 
     }
 
@@ -173,7 +172,7 @@ class BookIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookService.addBook(bookRequest))
-                .isInstanceOf(InvalidInputException.class);
+                .isInstanceOf(IllegalArgumentException.class);
 
     }
 
@@ -214,7 +213,7 @@ class BookIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookService.updateBook(bookRequest))
-                .isInstanceOf(InvalidInputException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -230,7 +229,7 @@ class BookIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookService.updateBook(bookRequest))
-                .isInstanceOf(InvalidInputException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -239,7 +238,7 @@ class BookIntegrationTest {
         bookService.deleteBook("9780553103540");
 
         assertThatThrownBy(() -> bookService.getBookByIsbn("9780553103540"))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
 }
