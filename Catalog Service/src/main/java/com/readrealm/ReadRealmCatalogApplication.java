@@ -1,4 +1,4 @@
-package com.readrealm.catalog;
+package com.readrealm;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

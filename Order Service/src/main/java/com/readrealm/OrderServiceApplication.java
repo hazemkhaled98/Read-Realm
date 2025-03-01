@@ -1,4 +1,4 @@
-package com.readrealm.order;
+package com.readrealm;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

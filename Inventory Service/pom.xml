@@ -69,8 +69,8 @@
 
                 <dependency>
                         <groupId>com.readrealm</groupId>
-                        <artifactId>Exceptions</artifactId>
-                        <version>1.0</version>
+                        <artifactId>exceptions</artifactId>
+                        <version>1.0.0</version>
                 </dependency>
         </dependencies>
 
