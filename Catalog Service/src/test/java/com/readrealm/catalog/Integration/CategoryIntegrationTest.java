@@ -3,8 +3,8 @@ package com.readrealm.catalog.Integration;
 import com.readrealm.catalog.dto.category.CategoryRequest;
 import com.readrealm.catalog.dto.category.CategoryResponse;
 import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
-import com.readrealm.catalog.exception.NotFoundException;
 import com.readrealm.catalog.service.CategoryService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -71,7 +71,7 @@ class CategoryIntegrationTest {
     void when_requesting_non_existing_category_then_should_throw_not_found_exception() {
 
         assertThatThrownBy(() -> categoryService.findCategoryById(1000L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
@@ -118,7 +118,7 @@ class CategoryIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> categoryService.updateCategory(request))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
 
     }
 
@@ -128,7 +128,7 @@ class CategoryIntegrationTest {
         categoryService.deleteCategory(1L);
 
         assertThatThrownBy(() -> categoryService.findCategoryById(1L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
 }

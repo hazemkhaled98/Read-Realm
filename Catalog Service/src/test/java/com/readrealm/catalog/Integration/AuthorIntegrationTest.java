@@ -3,8 +3,8 @@ package com.readrealm.catalog.Integration;
 import com.readrealm.catalog.dto.author.AuthorRequest;
 import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
-import com.readrealm.catalog.exception.NotFoundException;
 import com.readrealm.catalog.service.AuthorService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -72,7 +72,7 @@ class AuthorIntegrationTest {
     void when_requesting_non_existing_author_then_should_throw_not_found_exception() {
 
         assertThatThrownBy(() -> authorService.findAuthorById(1000L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
@@ -124,7 +124,7 @@ class AuthorIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> authorService.updateAuthor(request))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
 
     }
 
@@ -134,7 +134,7 @@ class AuthorIntegrationTest {
         authorService.deleteAuthor(1L);
 
         assertThatThrownBy(() -> authorService.findAuthorById(1L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
 }

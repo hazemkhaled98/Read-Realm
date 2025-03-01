@@ -6,14 +6,13 @@ import com.readrealm.catalog.dto.book.BookSearchCriteria;
 import com.readrealm.catalog.entity.Author;
 import com.readrealm.catalog.entity.Book;
 import com.readrealm.catalog.entity.Category;
-import com.readrealm.catalog.exception.InvalidInputException;
-import com.readrealm.catalog.exception.NotFoundException;
 import com.readrealm.catalog.mapper.BookMapper;
 import com.readrealm.catalog.repository.AuthorRepository;
 import com.readrealm.catalog.repository.BookRepository;
 import com.readrealm.catalog.repository.CategoryRepository;
 import com.readrealm.catalog.repository.projection.BookDetails;
 import com.readrealm.catalog.repository.specification.BookSpecifications;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -54,7 +53,7 @@ public class BookService {
                         .toList());
 
         if (matchedBooks.isEmpty()) {
-            throw new NotFoundException("No books are found with specified criteria");
+            throw new EntityNotFoundException("No books are found with specified criteria");
         }
 
         return matchedBooks
@@ -70,7 +69,7 @@ public class BookService {
 
         return bookRepository.findBookDetailsByIsbn(isbn)
                 .map(bookMapper::toBookResponse)
-                .orElseThrow(() -> new NotFoundException("No book found with ISBN: " + isbn));
+                .orElseThrow(() -> new EntityNotFoundException("No book found with ISBN: " + isbn));
     }
 
     @Transactional
@@ -112,7 +111,7 @@ public class BookService {
         checkIfCategoriesExist(categories, bookRequest.categoriesIds());
 
         Book updatedBook = bookRepository.findBookByIsbn(bookRequest.isbn())
-                .orElseThrow(() -> new InvalidInputException("Book with isbn: " + bookRequest.isbn() + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Book with isbn: " + bookRequest.isbn() + " not found"));
 
         updatedBook.setTitle(bookRequest.title());
         updatedBook.setDescription(bookRequest.description());
@@ -144,13 +143,13 @@ public class BookService {
 
     private static void checkIfAuthorsExist(List<Author> authors, List<Long> authorsIds) {
         if (authors.size() != authorsIds.size()) {
-            throw new InvalidInputException("One or more authors not found");
+            throw new IllegalArgumentException("One or more authors not found");
         }
     }
 
     private static void checkIfCategoriesExist(List<Category> categories, List<Long> categoriesIds) {
         if (categories.size() != categoriesIds.size()) {
-            throw new InvalidInputException("One or more categories not found");
+            throw new IllegalArgumentException("One or more categories not found");
         }
     }
 }
