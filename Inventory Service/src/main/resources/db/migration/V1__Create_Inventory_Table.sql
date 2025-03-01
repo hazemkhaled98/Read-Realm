@@ -1,0 +1,6 @@
+-- Status can be: IN_STOCK, LOW_STOCK, OUT_OF_STOCK, DISCONTINUED
+CREATE TABLE inventory (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    isbn VARCHAR(13) NOT NULL,
+    quantity INT NOT NULL CHECK (quantity >= 0)
+);
