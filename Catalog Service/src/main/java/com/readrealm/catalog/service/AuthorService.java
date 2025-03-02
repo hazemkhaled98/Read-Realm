@@ -13,9 +13,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +48,8 @@ public class AuthorService {
         log.info("Finding Author by ID {}", id);
         return authorRepository.findAuthorDetailsById(id)
                 .map(authorMapper::toAuthorResponse)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Author with id %s not found", id)));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Author with id %s not found", id)));
     }
 
     @Transactional
@@ -75,7 +78,8 @@ public class AuthorService {
         Optional<Author> optionalAuthor = authorRepository.findById(id);
 
         Author updatedAuthor = optionalAuthor
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Author with id %s not found", request.id())));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Author with id %s not found", request.id())));
 
         updatedAuthor.setFirstName(request.details().firstName());
         updatedAuthor.setLastName(request.details().lastName());

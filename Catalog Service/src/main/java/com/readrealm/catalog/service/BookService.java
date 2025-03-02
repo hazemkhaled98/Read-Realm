@@ -21,9 +21,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class BookService {
                         .toList());
 
         if (matchedBooks.isEmpty()) {
-            throw new EntityNotFoundException("No books are found with specified criteria");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No books are found with specified criteria");
         }
 
         return matchedBooks
@@ -69,7 +71,8 @@ public class BookService {
 
         return bookRepository.findBookDetailsByIsbn(isbn)
                 .map(bookMapper::toBookResponse)
-                .orElseThrow(() -> new EntityNotFoundException("No book found with ISBN: " + isbn));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No book found with ISBN: " + isbn));
     }
 
     @Transactional
@@ -111,7 +114,8 @@ public class BookService {
         checkIfCategoriesExist(categories, bookRequest.categoriesIds());
 
         Book updatedBook = bookRepository.findBookByIsbn(bookRequest.isbn())
-                .orElseThrow(() -> new IllegalArgumentException("Book with isbn: " + bookRequest.isbn() + " not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Book with isbn: " + bookRequest.isbn() + " not found"));
 
         updatedBook.setTitle(bookRequest.title());
         updatedBook.setDescription(bookRequest.description());
@@ -122,6 +126,18 @@ public class BookService {
         bookRepository.save(updatedBook);
 
         return bookMapper.toBookResponse(updatedBook);
+    }
+
+    private static void checkIfAuthorsExist(List<Author> authors, List<Long> authorsIds) {
+        if (authors.size() != authorsIds.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more authors not found");
+        }
+    }
+
+    private static void checkIfCategoriesExist(List<Category> categories, List<Long> categoriesIds) {
+        if (categories.size() != categoriesIds.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more categories not found");
+        }
     }
 
     @Transactional
@@ -139,17 +155,5 @@ public class BookService {
         int pageSize = criteria.pageSize() != null ? criteria.pageSize() : DEFAULT_PAGE_SIZE;
 
         return PageRequest.of(pageNumber, pageSize);
-    }
-
-    private static void checkIfAuthorsExist(List<Author> authors, List<Long> authorsIds) {
-        if (authors.size() != authorsIds.size()) {
-            throw new IllegalArgumentException("One or more authors not found");
-        }
-    }
-
-    private static void checkIfCategoriesExist(List<Category> categories, List<Long> categoriesIds) {
-        if (categories.size() != categoriesIds.size()) {
-            throw new IllegalArgumentException("One or more categories not found");
-        }
     }
 }

@@ -6,16 +6,17 @@ import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
 import com.readrealm.catalog.entity.Category;
 import com.readrealm.catalog.mapper.CategoryMapper;
 import com.readrealm.catalog.repository.CategoryRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +46,8 @@ public class CategoryService {
         log.info("Finding Category by ID {}", id);
         return categoryRepository.findCategoryDetailsById(id)
                 .map(categoryMapper::toCategoryResponse)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Category with id %s not found", id)));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Category with id %s not found", id)));
     }
 
     @Transactional
@@ -69,7 +71,8 @@ public class CategoryService {
         long id = Long.parseLong(request.id());
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         Category updatedCategory = optionalCategory
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Category with id %s not found", request.id())));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Category with id %s not found", request.id())));
         updatedCategory.setName(request.details().name());
         updatedCategory = categoryRepository.save(updatedCategory);
         return categoryMapper.toCategoryResponse(updatedCategory);

@@ -1,7 +1,6 @@
 package com.readrealm.exception;
 
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -9,6 +8,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,16 +18,9 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionsHandler {
 
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(EntityNotFoundException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleInvalidInputException(IllegalArgumentException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException e) {
+        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
