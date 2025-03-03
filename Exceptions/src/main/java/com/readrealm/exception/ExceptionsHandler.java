@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 public class ExceptionsHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
+    public ResponseEntity<?> handleResponseStatusException(ResponseStatusException e) {
+        return new ResponseEntity<>(ErrorResponse.of(e), e.getStatusCode());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
