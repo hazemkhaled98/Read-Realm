@@ -46,4 +46,10 @@ public class InventoryController {
     public void deleteInventory(@PathVariable @ISBN(message = "ISBN is invalid") String isbn) {
         inventoryService.deleteInventory(isbn);
     }
+
+    @PostMapping("/reserve-stock")
+    @ResponseStatus(HttpStatus.CREATED)
+    public InventoryResponse reserveStock(@Valid @RequestBody InventoryRequest request) {
+        return inventoryService.reserveStock(request);
+    }
 }

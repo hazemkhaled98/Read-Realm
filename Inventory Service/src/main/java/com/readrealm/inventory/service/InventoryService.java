@@ -27,10 +27,12 @@ public class InventoryService {
     }
 
     public InventoryResponse updateInventory(InventoryRequest request) {
-        if (!inventoryRepository.existsByIsbn(request.isbn())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found for ISBN: " + request.isbn());
-        }
-        Inventory inventory = inventoryMapper.toInventory(request);
+
+        Inventory inventory = inventoryRepository.findByIsbn(request.isbn())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found for ISBN: " + request.isbn()));
+
+        inventory.setQuantity(inventory.getQuantity() + request.quantity());
+
         return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
     }
 
@@ -43,5 +45,18 @@ public class InventoryService {
 
     public void deleteInventory(String isbn) {
         inventoryRepository.deleteByIsbn(isbn);
+    }
+
+    public InventoryResponse reserveStock(InventoryRequest request) {
+        Inventory inventory = inventoryRepository.findByIsbn(request.isbn())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found for ISBN: " + request.isbn()));
+
+        if(inventory.getQuantity() < request.quantity()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient inventory for ISBN: " + request.isbn());
+        }
+
+        inventory.setQuantity(inventory.getQuantity() - request.quantity());
+
+        return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
     }
 }
