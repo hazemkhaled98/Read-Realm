@@ -8,7 +8,4 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
     volumes:
-      - mongodb_data:/data/db
-
-volumes:
-  mongodb_data:
+      - ./data/mongodb:/data/db
