@@ -55,7 +55,7 @@ public class PaymentService {
             Payment savedPayment = paymentRepository.save(payment);
             return paymentMapper.toPaymentResponse(savedPayment, paymentIntent.getClientSecret());
         } catch (StripeException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.valueOf(e.getStatusCode()), e.getMessage());
         }
 
     }
@@ -101,7 +101,7 @@ public class PaymentService {
             params.put("payment_intent", paymentIntent.getId());
             Refund.create(params);
         } catch (StripeException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.valueOf(e.getStatusCode()), e.getMessage());
         }
 
         payment.setStatus(PaymentStatus.REFUNDED);
