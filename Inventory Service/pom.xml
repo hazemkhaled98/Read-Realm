@@ -12,7 +12,7 @@
 
         <groupId>com.bookstore</groupId>
         <artifactId>inventory-service</artifactId>
-        <name>readrealm-inventory-service</name>
+        <name>ReadRealm Inventory Service</name>
         <description>ReadRealm Inventory Service</description>
 
         <properties>

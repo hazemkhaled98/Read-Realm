@@ -12,7 +12,7 @@
 
     <groupId>com.bookstore</groupId>
     <artifactId>order-service</artifactId>
-    <name>readrealm-order-service</name>
+    <name>ReadRealm Order Service</name>
     <description>ReadRealm Order Service</description>
 
     <properties>

@@ -12,7 +12,7 @@
 
     <groupId>com.bookstore</groupId>
     <artifactId>payment-service</artifactId>
-    <name>readrealm-payment-service</name>
+    <name>ReadRealm Payment Service</name>
     <description>ReadRealm Payment Service</description>
 
     <properties>
