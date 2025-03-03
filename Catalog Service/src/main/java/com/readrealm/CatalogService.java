@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ReadRealmCatalogApplication {
+public class CatalogService {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ReadRealmCatalogApplication.class, args);
+		SpringApplication.run(CatalogService.class, args);
 	}
 
 }

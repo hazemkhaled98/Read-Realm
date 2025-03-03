@@ -22,16 +22,16 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@RequestParam String orderId) {
-        PaymentResponse response = paymentService.getPaymentByOrderId(orderId);
-        return ResponseEntity.ok(response);
-    }
-
     @PutMapping
     public ResponseEntity<PaymentResponse> updatePaymentStatus(
             @Valid @RequestBody PaymentUpdate paymentUpdate) {
         PaymentResponse response = paymentService.updatePaymentStatus(paymentUpdate);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@RequestParam String orderId) {
+        PaymentResponse response = paymentService.getPaymentByOrderId(orderId);
         return ResponseEntity.ok(response);
     }
 

@@ -12,7 +12,6 @@ import com.readrealm.catalog.repository.BookRepository;
 import com.readrealm.catalog.repository.CategoryRepository;
 import com.readrealm.catalog.repository.projection.BookDetails;
 import com.readrealm.catalog.repository.specification.BookSpecifications;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -41,39 +40,6 @@ public class BookService {
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
-
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "booksByCriteria", key = "#criteria", cacheManager = "cacheManager")
-    public List<BookResponse> searchBooks(BookSearchCriteria criteria) {
-        log.info("Searching for books with criteria: {}", criteria);
-
-        List<BookDetails> matchedBooks = bookRepository.findBy(
-                BookSpecifications.withSearchCriteria(criteria),
-                query -> query
-                        .as(BookDetails.class)
-                        .page(createPageable(criteria))
-                        .toList());
-
-        if (matchedBooks.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No books are found with specified criteria");
-        }
-
-        return matchedBooks
-                .stream()
-                .map(bookMapper::toBookResponse)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "bookByISBN", key = "#isbn", cacheManager = "cacheManager")
-    public BookResponse getBookByIsbn(String isbn) {
-        log.info("Searching for book by ISBN: {}", isbn);
-
-        return bookRepository.findBookDetailsByIsbn(isbn)
-                .map(bookMapper::toBookResponse)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No book found with ISBN: " + isbn));
-    }
 
     @Transactional
     @CachePut(cacheNames = "bookByISBN", key = "#bookRequest.isbn()", cacheManager = "cacheManager")
@@ -128,16 +94,15 @@ public class BookService {
         return bookMapper.toBookResponse(updatedBook);
     }
 
-    private static void checkIfAuthorsExist(List<Author> authors, List<Long> authorsIds) {
-        if (authors.size() != authorsIds.size()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more authors not found");
-        }
-    }
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "bookByISBN", key = "#isbn", cacheManager = "cacheManager")
+    public BookResponse getBookByIsbn(String isbn) {
+        log.info("Searching for book by ISBN: {}", isbn);
 
-    private static void checkIfCategoriesExist(List<Category> categories, List<Long> categoriesIds) {
-        if (categories.size() != categoriesIds.size()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more categories not found");
-        }
+        return bookRepository.findBookDetailsByIsbn(isbn)
+                .map(bookMapper::toBookResponse)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No book found with ISBN: " + isbn));
     }
 
     @Transactional
@@ -155,5 +120,39 @@ public class BookService {
         int pageSize = criteria.pageSize() != null ? criteria.pageSize() : DEFAULT_PAGE_SIZE;
 
         return PageRequest.of(pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "booksByCriteria", key = "#criteria", cacheManager = "cacheManager")
+    public List<BookResponse> searchBooks(BookSearchCriteria criteria) {
+        log.info("Searching for books with criteria: {}", criteria);
+
+        List<BookDetails> matchedBooks = bookRepository.findBy(
+                BookSpecifications.withSearchCriteria(criteria),
+                query -> query
+                        .as(BookDetails.class)
+                        .page(createPageable(criteria))
+                        .toList());
+
+        if (matchedBooks.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No books are found with specified criteria");
+        }
+
+        return matchedBooks
+                .stream()
+                .map(bookMapper::toBookResponse)
+                .toList();
+    }
+
+    private static void checkIfAuthorsExist(List<Author> authors, List<Long> authorsIds) {
+        if (authors.size() != authorsIds.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more authors not found");
+        }
+    }
+
+    private static void checkIfCategoriesExist(List<Category> categories, List<Long> categoriesIds) {
+        if (categories.size() != categoriesIds.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more categories not found");
+        }
     }
 }

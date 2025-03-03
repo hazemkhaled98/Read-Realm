@@ -7,7 +7,15 @@ import com.readrealm.catalog.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,6 +26,18 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryResponse addCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+        return categoryService.addCategory(categoryRequest);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryResponse updateCategory(@Valid @RequestBody UpdateCategoryRequest updateCategoryRequest) {
+        return categoryService.updateCategory(updateCategoryRequest);
+    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -30,18 +50,6 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.OK)
     public CategoryResponse getCategory(@PathVariable long id) {
         return categoryService.findCategoryById(id);
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse addCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
-        return categoryService.addCategory(categoryRequest);
-    }
-
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public CategoryResponse updateCategory(@Valid @RequestBody UpdateCategoryRequest updateCategoryRequest) {
-        return categoryService.updateCategory(updateCategoryRequest);
     }
 
     @DeleteMapping("{id}")

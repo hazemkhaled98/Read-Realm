@@ -61,14 +61,6 @@ public class PaymentService {
 
     }
 
-    @Transactional(readOnly = true)
-    public PaymentResponse getPaymentByOrderId(String orderId) {
-        return paymentRepository.findByOrderId(orderId)
-                .map(paymentMapper::toPaymentResponse)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Payment not found for order: " + orderId));
-    }
-
     // Only exists as a way to update the status of a payment
     // best practice would be to use webhooks to update the status of a payment
     public PaymentResponse updatePaymentStatus(@Valid PaymentUpdate paymentUpdate) {
@@ -89,6 +81,14 @@ public class PaymentService {
         payment.setUpdatedAt(LocalDateTime.now());
 
         return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentResponse getPaymentByOrderId(String orderId) {
+        return paymentRepository.findByOrderId(orderId)
+                .map(paymentMapper::toPaymentResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Payment not found for order: " + orderId));
     }
 
     public PaymentResponse refundPayment(String orderId) {

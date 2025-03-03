@@ -6,7 +6,6 @@ import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
 import com.readrealm.catalog.entity.Author;
 import com.readrealm.catalog.mapper.AuthorMapper;
 import com.readrealm.catalog.repository.AuthorRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -30,27 +29,6 @@ public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final AuthorMapper authorMapper;
-
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "authors", cacheManager = "cacheManager")
-    public List<AuthorResponse> findAllAuthors() {
-
-        log.info("Finding All Authors");
-        return authorRepository.findAllAuthorDetails()
-                .stream()
-                .map(authorMapper::toAuthorResponse)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "authorById", key = "#id", cacheManager = "cacheManager")
-    public AuthorResponse findAuthorById(Long id) {
-        log.info("Finding Author by ID {}", id);
-        return authorRepository.findAuthorDetailsById(id)
-                .map(authorMapper::toAuthorResponse)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        String.format("Author with id %s not found", id)));
-    }
 
     @Transactional
     @CachePut(cacheNames = "authorById", key = "#createdAuthor.id()", cacheManager = "cacheManager")
@@ -87,6 +65,27 @@ public class AuthorService {
         updatedAuthor = authorRepository.save(updatedAuthor);
 
         return authorMapper.toAuthorResponse(updatedAuthor);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "authors", cacheManager = "cacheManager")
+    public List<AuthorResponse> findAllAuthors() {
+
+        log.info("Finding All Authors");
+        return authorRepository.findAllAuthorDetails()
+                .stream()
+                .map(authorMapper::toAuthorResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "authorById", key = "#id", cacheManager = "cacheManager")
+    public AuthorResponse findAuthorById(Long id) {
+        log.info("Finding Author by ID {}", id);
+        return authorRepository.findAuthorDetailsById(id)
+                .map(authorMapper::toAuthorResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Author with id %s not found", id)));
     }
 
     @Transactional

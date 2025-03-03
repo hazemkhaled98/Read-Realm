@@ -29,27 +29,6 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
 
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "categories", cacheManager = "cacheManager")
-    public List<CategoryResponse> findAllCategories() {
-        log.info("Finding All Categories");
-        return categoryRepository
-                .findAllCategoriesDetails()
-                .stream()
-                .map(categoryMapper::toCategoryResponse)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "categoryById", key = "#id", cacheManager = "cacheManager")
-    public CategoryResponse findCategoryById(Long id) {
-        log.info("Finding Category by ID {}", id);
-        return categoryRepository.findCategoryDetailsById(id)
-                .map(categoryMapper::toCategoryResponse)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        String.format("Category with id %s not found", id)));
-    }
-
     @Transactional
     @CachePut(cacheNames = "categoryById", key = "#createCategory.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
@@ -76,6 +55,27 @@ public class CategoryService {
         updatedCategory.setName(request.details().name());
         updatedCategory = categoryRepository.save(updatedCategory);
         return categoryMapper.toCategoryResponse(updatedCategory);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "categories", cacheManager = "cacheManager")
+    public List<CategoryResponse> findAllCategories() {
+        log.info("Finding All Categories");
+        return categoryRepository
+                .findAllCategoriesDetails()
+                .stream()
+                .map(categoryMapper::toCategoryResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "categoryById", key = "#id", cacheManager = "cacheManager")
+    public CategoryResponse findCategoryById(Long id) {
+        log.info("Finding Category by ID {}", id);
+        return categoryRepository.findCategoryDetailsById(id)
+                .map(categoryMapper::toCategoryResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Category with id %s not found", id)));
     }
 
     @Transactional
