@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,7 +26,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(isolation = Isolation.REPEATABLE_READ)
 @Slf4j
 public class PaymentService {
     private final PaymentRepository paymentRepository;
