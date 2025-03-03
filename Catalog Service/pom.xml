@@ -10,7 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.readrealm</groupId>
-	<artifactId>readrealm-catalog-service</artifactId>
+	<artifactId>catalog-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>readrealm-catalog-service</name>
 	<description>ReadRealm Catalog Service</description>
