@@ -2,6 +2,7 @@ package com.readrealm.catalog.dto.book;
 
 import jakarta.validation.constraints.*;
 import lombok.Builder;
+import org.hibernate.validator.constraints.ISBN;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -10,8 +11,7 @@ import java.util.List;
 public record BookRequest(
 
         @NotBlank(message = "ISBN cannot be blank")
-        @Pattern(regexp = "^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$",
-                message = "Invalid ISBN format")
+        @ISBN(message = "ISBN is invalid")
         String isbn,
 
         @NotBlank(message = "Title cannot be blank")
