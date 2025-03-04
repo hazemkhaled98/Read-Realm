@@ -12,7 +12,7 @@ import java.util.List;
 public interface OrderMapper {
 
         @Mapping(target = "orderId", ignore = true)
-        Order toOrder(OrderRequest orderDTO);
+        Order toOrder(OrderRequest orderRequest);
 
         @Mapping(target = "orderRequest.userId", source = "userId")
         @Mapping(target = "orderRequest.totalAmount", source = "totalAmount")
@@ -21,5 +21,5 @@ public interface OrderMapper {
         OrderResponse toOrderResponse(Order order);
 
 
-        List<OrderResponse> toOrderResponseList(List<Order> byUserId);
+        List<OrderResponse> toOrderResponseList(List<Order> orders);
 }

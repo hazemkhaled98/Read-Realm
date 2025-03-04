@@ -14,6 +14,5 @@ public record PaymentResponse(
         PaymentStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        String clientSecret,
-        String errorMessage
+        String clientSecret
 ) {}

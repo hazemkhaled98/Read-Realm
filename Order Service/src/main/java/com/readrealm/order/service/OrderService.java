@@ -21,8 +21,8 @@ public class OrderService {
         private final OrderRepository orderRepository;
         private final OrderMapper orderMapper;
 
-        public OrderResponse createOrder(OrderRequest orderDTO) {
-                Order order = orderMapper.toOrder(orderDTO);
+        public OrderResponse createOrder(OrderRequest orderRequest) {
+                Order order = orderMapper.toOrder(orderRequest);
                 return orderMapper.toOrderResponse(orderRepository.save(order));
         }
 
@@ -32,6 +32,7 @@ public class OrderService {
                         orderRepository.findByOrderId(orderId)
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found with ID: " + orderId)));
         }
+
         @Transactional(readOnly = true)
         public List<OrderResponse> getOrdersByUserId(Integer userId) {
                 List<OrderResponse> orders = orderMapper.toOrderResponseList(orderRepository.findByUserId(userId));

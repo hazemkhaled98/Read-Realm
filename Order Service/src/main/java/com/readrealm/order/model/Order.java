@@ -17,5 +17,5 @@ public class Order {
         private String orderId;
         private Integer userId;
         private double totalAmount;
-        private List<OrderDetail> details;
+        private List<OrderDetails> details;
 }
