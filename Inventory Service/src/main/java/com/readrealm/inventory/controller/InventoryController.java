@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/v1/inventory")
@@ -49,7 +51,7 @@ public class InventoryController {
 
     @PostMapping("/reserve-stock")
     @ResponseStatus(HttpStatus.CREATED)
-    public InventoryResponse reserveStock(@Valid @RequestBody InventoryRequest request) {
+    public List<InventoryResponse> reserveStock(@Valid @RequestBody List<InventoryRequest> request) {
         return inventoryService.reserveStock(request);
     }
 }
