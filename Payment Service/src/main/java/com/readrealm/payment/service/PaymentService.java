@@ -11,7 +11,6 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.param.PaymentIntentCreateParams;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -61,9 +60,7 @@ public class PaymentService {
 
     }
 
-    // Only exists as a way to update the status of a payment
-    // best practice would be to use webhooks to update the status of a payment
-    public PaymentResponse updatePaymentStatus(@Valid PaymentUpdate paymentUpdate) {
+    public PaymentResponse updatePaymentStatus(PaymentUpdate paymentUpdate) {
         Payment payment = paymentRepository.findByOrderId(paymentUpdate.orderId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Payment not found for order: " + paymentUpdate.orderId()));
@@ -89,6 +86,24 @@ public class PaymentService {
                 .map(paymentMapper::toPaymentResponse)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Payment not found for order: " + orderId));
+    }
+
+    public PaymentResponse cancelPayment(String orderId) {
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Payment not found for order: " + orderId));
+
+        try {
+            PaymentIntent paymentIntent = PaymentIntent.retrieve(payment.getStripePaymentIntentId());
+            paymentIntent.cancel();
+        } catch (StripeException e) {
+            throw new ResponseStatusException(HttpStatus.valueOf(e.getStatusCode()), formatStripeError(e.getMessage()));
+        }
+
+        payment.setStatus(PaymentStatus.CANCELED);
+        payment.setUpdatedAt(LocalDateTime.now());
+
+        return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
     }
 
     public PaymentResponse refundPayment(String orderId) {

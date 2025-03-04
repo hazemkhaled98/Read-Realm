@@ -106,15 +106,15 @@ public class BookService {
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No book found with ISBN: " + isbn));
     }
 
-    public List<BookResponse> getBooks(Collection<String> ISBNs) {
-        List<BookDetails> books = bookRepository.findBooksByISBNs(ISBNs);
+    public List<BookResponse> getBooks(Collection<String> isbns) {
+        List<BookDetails> books = bookRepository.findBooksByISBNs(isbns);
 
         if(books.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No books found with specified ISBNs");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No books found with specified isbns");
         }
 
-        if(books.size() < ISBNs.size()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more books not found with specified ISBNs");
+        if(books.size() < isbns.size()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more books not found with specified isbns");
         }
 
         return bookMapper.toBookResponseList(books);

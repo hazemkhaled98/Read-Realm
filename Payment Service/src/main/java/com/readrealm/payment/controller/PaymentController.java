@@ -22,7 +22,7 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<PaymentResponse> updatePaymentStatus(
             @Valid @RequestBody PaymentUpdate paymentUpdate) {
         PaymentResponse response = paymentService.updatePaymentStatus(paymentUpdate);
@@ -32,6 +32,12 @@ public class PaymentController {
     @GetMapping
     public ResponseEntity<PaymentResponse> getPaymentByOrderId(@RequestParam String orderId) {
         PaymentResponse response = paymentService.getPaymentByOrderId(orderId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<PaymentResponse> cancelPayment(@RequestParam String orderId) {
+        PaymentResponse response = paymentService.cancelPayment(orderId);
         return ResponseEntity.ok(response);
     }
 

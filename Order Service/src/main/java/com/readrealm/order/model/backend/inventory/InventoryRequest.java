@@ -1,4 +1,4 @@
-package com.readrealm.inventory.dto;
+package com.readrealm.order.model.backend.inventory;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

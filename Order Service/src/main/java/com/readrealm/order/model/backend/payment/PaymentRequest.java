@@ -1,4 +1,4 @@
-package com.readrealm.payment.dto;
+package com.readrealm.order.model.backend.payment;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

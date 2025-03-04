@@ -18,7 +18,7 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
 
     void deleteBookByIsbn(String isbn);
 
-    @Query("SELECT b FROM Book b WHERE b.isbn IN :ISBNs")
-    List<BookDetails> findBooksByISBNs(Collection<String> ISBNs);
+    @Query("SELECT b FROM Book b WHERE b.isbn IN :isbns")
+    List<BookDetails> findBooksByISBNs(Collection<String> isbns);
 }
 

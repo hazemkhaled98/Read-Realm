@@ -1,7 +1,6 @@
 package com.readrealm.inventory.service;
 
-import com.readrealm.inventory.dto.InventoryRequest;
-import com.readrealm.inventory.dto.InventoryResponse;
+import com.readrealm.inventory.dto.InventoryDTO;
 import com.readrealm.inventory.mapper.InventoryMapper;
 import com.readrealm.inventory.model.Inventory;
 import com.readrealm.inventory.repository.InventoryRepository;
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -18,27 +19,27 @@ public class InventoryService {
     private final InventoryRepository inventoryRepository;
     private final InventoryMapper inventoryMapper;
 
-    public InventoryResponse createInventory(InventoryRequest request) {
+    public InventoryDTO createInventory(InventoryDTO request) {
         if(inventoryRepository.existsByIsbn(request.isbn())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Inventory already exists for ISBN: " + request.isbn());
         }
         Inventory inventory = inventoryMapper.toInventory(request);
-        return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
+        return inventoryMapper.toInventoryDTO(inventoryRepository.save(inventory));
     }
 
-    public InventoryResponse updateInventory(InventoryRequest request) {
+    public InventoryDTO updateInventory(InventoryDTO request) {
 
         Inventory inventory = inventoryRepository.findByIsbn(request.isbn())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found for ISBN: " + request.isbn()));
 
         inventory.setQuantity(inventory.getQuantity() + request.quantity());
 
-        return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
+        return inventoryMapper.toInventoryDTO(inventoryRepository.save(inventory));
     }
 
     @Transactional(readOnly = true)
-    public InventoryResponse getInventoryByIsbn(String isbn) {
-        return inventoryMapper.toInventoryResponse(
+    public InventoryDTO getInventoryByIsbn(String isbn) {
+        return inventoryMapper.toInventoryDTO(
                 inventoryRepository.findByIsbn(isbn)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found for ISBN: " + isbn)));
     }
@@ -47,7 +48,14 @@ public class InventoryService {
         inventoryRepository.deleteByIsbn(isbn);
     }
 
-    public InventoryResponse reserveStock(InventoryRequest request) {
+
+    public List<InventoryDTO> reserveStock(List<InventoryDTO> requests) {
+        return requests.stream()
+                .map(this::reserveStock)
+                .toList();
+    }
+
+    private InventoryDTO reserveStock(InventoryDTO request) {
         Inventory inventory = inventoryRepository.findByIsbn(request.isbn())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found for ISBN: " + request.isbn()));
 
@@ -57,6 +65,6 @@ public class InventoryService {
 
         inventory.setQuantity(inventory.getQuantity() - request.quantity());
 
-        return inventoryMapper.toInventoryResponse(inventoryRepository.save(inventory));
+        return inventoryMapper.toInventoryDTO(inventoryRepository.save(inventory));
     }
 }

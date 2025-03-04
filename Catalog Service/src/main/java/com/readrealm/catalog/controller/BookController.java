@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,8 +52,8 @@ public class BookController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<BookResponse> getBooks(@RequestBody Collection<String> ISBNs) {
-        return bookService.getBooks(ISBNs);
+    public List<BookResponse> getBooks(@RequestParam(name = "isbn") Collection<String> isbns) {
+        return bookService.getBooks(isbns);
     }
 
 
