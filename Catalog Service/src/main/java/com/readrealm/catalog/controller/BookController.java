@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -48,6 +49,12 @@ public class BookController {
         return bookService.getBookByIsbn(isbn);
     }
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<BookResponse> getBooks(@RequestBody Collection<String> ISBNs) {
+        return bookService.getBooks(ISBNs);
+    }
+
 
     @DeleteMapping("{isbn}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -55,7 +62,7 @@ public class BookController {
         bookService.deleteBook(isbn);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public List<BookResponse> getBooksByCriteria(@Valid @ModelAttribute BookSearchCriteria criteria) {
         return bookService.searchBooks(criteria);

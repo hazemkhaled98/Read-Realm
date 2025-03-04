@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -105,6 +106,11 @@ public class BookService {
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No book found with ISBN: " + isbn));
     }
 
+    public List<BookResponse> getBooks(Collection<String> ISBNs) {
+        List<BookDetails> books = bookRepository.findBooksByISBNs(ISBNs);
+        return bookMapper.toBookResponseList(books);
+    }
+
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "bookByISBN", key = "#isbn", cacheManager = "cacheManager"),
@@ -112,14 +118,6 @@ public class BookService {
     })
     public void deleteBook(String isbn) {
         bookRepository.deleteBookByIsbn(isbn);
-    }
-
-    private static Pageable createPageable(BookSearchCriteria criteria) {
-
-        int pageNumber = criteria.pageNumber() != null ? (criteria.pageNumber() - 1) : 0;
-        int pageSize = criteria.pageSize() != null ? criteria.pageSize() : DEFAULT_PAGE_SIZE;
-
-        return PageRequest.of(pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
@@ -142,6 +140,14 @@ public class BookService {
                 .stream()
                 .map(bookMapper::toBookResponse)
                 .toList();
+    }
+
+    private static Pageable createPageable(BookSearchCriteria criteria) {
+
+        int pageNumber = criteria.pageNumber() != null ? (criteria.pageNumber() - 1) : 0;
+        int pageSize = criteria.pageSize() != null ? criteria.pageSize() : DEFAULT_PAGE_SIZE;
+
+        return PageRequest.of(pageNumber, pageSize);
     }
 
     private static void checkIfAuthorsExist(List<Author> authors, List<Long> authorsIds) {

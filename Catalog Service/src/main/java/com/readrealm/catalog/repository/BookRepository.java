@@ -4,7 +4,10 @@ import com.readrealm.catalog.entity.Book;
 import com.readrealm.catalog.repository.projection.BookDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
@@ -14,5 +17,8 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
     Optional<Book> findBookByIsbn(String isbn);
 
     void deleteBookByIsbn(String isbn);
+
+    @Query("SELECT b FROM Book b WHERE b.isbn IN :ISBNs")
+    List<BookDetails> findBooksByISBNs(Collection<String> ISBNs);
 }
 
