@@ -1,5 +1,7 @@
 package com.readrealm.payment.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readrealm.payment.client.OrderClient;
 import com.readrealm.payment.dto.PaymentRequest;
 import com.readrealm.payment.dto.PaymentResponse;
@@ -8,12 +10,16 @@ import com.readrealm.payment.mapper.PaymentMapper;
 import com.readrealm.payment.model.Payment;
 import com.readrealm.payment.model.PaymentStatus;
 import com.readrealm.payment.repository.PaymentRepository;
+import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
+import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -32,10 +38,14 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderClient orderClient;
+    private final ObjectMapper objectMapper;
+
+    @Value("${stripe.webhook.secret}")
+    private String stripeWebhookSecret;
 
     public PaymentResponse createPayment(PaymentRequest paymentRequest) {
 
-        if(paymentRepository.existsByOrderId(paymentRequest.orderId())) {
+        if (paymentRepository.existsByOrderId(paymentRequest.orderId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Payment already exists for order: " + paymentRequest.orderId());
         }
@@ -70,21 +80,30 @@ public class PaymentService {
                         "Payment not found for order: " + orderId));
     }
 
-    public void handleStripWebhook(StripeWebhookRequest stripeWebhookRequest) {
-        String eventType = stripeWebhookRequest.type();
 
-        if("payment_intent.succeeded".equals(eventType)) {
-            String orderId = (String) stripeWebhookRequest.data().object().metadata().get("orderId");
-            Payment payment = paymentRepository.findByOrderId(orderId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                            "Payment not found for order: " + orderId));
+    public void handleStripeWebhook(String requestSignature, String webhookPayload) throws JsonProcessingException, SignatureVerificationException {
 
-            orderClient.confirmOrder(orderId);
-            payment.setStatus(PaymentStatus.COMPLETED);
-            payment.setUpdatedAt(LocalDateTime.now());
-            paymentRepository.save(payment);
+        try {
+            Event event = Webhook.constructEvent(webhookPayload, requestSignature, stripeWebhookSecret);
+            String eventType = event.getType();
+
+            if ("payment_intent.succeeded".equals(eventType)) {
+                StripeWebhookRequest stripeWebhookRequest = objectMapper.readValue(webhookPayload, StripeWebhookRequest.class);
+                String orderId = stripeWebhookRequest.data().setupIntent().metadata().get("orderId");
+                Payment payment = paymentRepository.findByOrderId(orderId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "Payment not found for order: " + orderId));
+
+                orderClient.confirmOrder(orderId);
+                payment.setStatus(PaymentStatus.COMPLETED);
+                payment.setUpdatedAt(LocalDateTime.now());
+                paymentRepository.save(payment);
+            }
+        } catch (SignatureVerificationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Stripe signature");
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing Stripe webhook");
         }
-
     }
 
     public PaymentResponse cancelPayment(String orderId) {
