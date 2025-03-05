@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "paymentsClient", url = "http://localhost:8083/v1/payments")
+@FeignClient(name = "payment-service")
 public interface PaymentClient {
 
-        @PostMapping
+        @PostMapping("/v1/payments")
         PaymentResponse processPayment(@RequestBody PaymentRequest paymentRequest);
 
-        @PostMapping("/cancel")
+        @PostMapping("v1/payments/cancel")
         PaymentResponse cancelPayment(@RequestParam String orderId);
 
-        @PostMapping("/refund")
+        @PostMapping("v1/payments/refund")
         PaymentResponse refundPayment(@RequestParam String orderId);
 }
