@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "inventoryClient", url = "http://localhost:8082")
+@FeignClient(name = "inventoryClient", url = "http://localhost:8082/v1/inventory/reserve-stock")
 public interface InventoryClient {
 
-        @PostMapping("/v1/inventory/reserve-stock")
+        @PostMapping
         void reserveInventory(@RequestBody List<InventoryRequest> inventoryRequest);
 }

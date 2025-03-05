@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Collection;
 import java.util.List;
 
-@FeignClient(name = "catalogClient", url = "http://localhost:8080")
+@FeignClient(name = "catalogClient", url = "http://localhost:8080/v1/books")
 public interface CatalogClient {
 
-        @GetMapping("/v1/books")
+        @GetMapping
         List<BookResponse> getBooksByISBNs(@RequestParam(value = "isbn") Collection<String> isbns);
 }

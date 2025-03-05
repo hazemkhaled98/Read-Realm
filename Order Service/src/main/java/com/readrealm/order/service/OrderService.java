@@ -14,7 +14,6 @@ import com.readrealm.order.model.backend.inventory.InventoryRequest;
 import com.readrealm.order.model.backend.payment.PaymentRequest;
 import com.readrealm.order.model.backend.payment.PaymentResponse;
 import com.readrealm.order.model.backend.payment.PaymentStatus;
-import com.readrealm.order.model.backend.payment.PaymentUpdate;
 import com.readrealm.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,26 +57,6 @@ public class OrderService {
         return orderMapper.toOrderResponse(order, paymentResponse);
     }
 
-
-    public OrderResponse confirmOrder(PaymentUpdate paymentUpdate) {
-
-        Order order = orderRepository.findByOrderId(paymentUpdate.orderId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Order not found with ID: " + paymentUpdate.orderId()));
-
-        if (order.getPaymentStatus() == PaymentStatus.COMPLETED) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Order with ID: " + paymentUpdate.orderId() + " is already paid");
-        }
-
-        PaymentResponse paymentResponse = paymentClient.confirmPayment(paymentUpdate);
-
-        order.setPaymentStatus(PaymentStatus.COMPLETED);
-        orderRepository.save(order);
-
-        return orderMapper.toOrderResponse(order, paymentResponse);
-    }
-
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(String orderId) {
         return orderMapper.toOrderResponse(
@@ -94,6 +73,23 @@ public class OrderService {
                     "No orders found for user ID: " + userId);
         }
         return orders;
+    }
+
+    public OrderResponse confirmOrder(String orderId) {
+
+        Order order = orderRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Order not found with ID: " + orderId));
+
+        if (order.getPaymentStatus() == PaymentStatus.COMPLETED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Order with ID: " + orderId + " is already paid");
+        }
+
+        order.setPaymentStatus(PaymentStatus.COMPLETED);
+        orderRepository.save(order);
+
+        return orderMapper.toOrderResponse(order);
     }
 
     public OrderResponse cancelOrder(String orderId) {

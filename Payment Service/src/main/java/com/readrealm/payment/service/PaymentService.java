@@ -1,8 +1,9 @@
 package com.readrealm.payment.service;
 
+import com.readrealm.payment.client.OrderClient;
 import com.readrealm.payment.dto.PaymentRequest;
 import com.readrealm.payment.dto.PaymentResponse;
-import com.readrealm.payment.dto.PaymentUpdate;
+import com.readrealm.payment.dto.StripeWebhookRequest;
 import com.readrealm.payment.mapper.PaymentMapper;
 import com.readrealm.payment.model.Payment;
 import com.readrealm.payment.model.PaymentStatus;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+    private final OrderClient orderClient;
 
     public PaymentResponse createPayment(PaymentRequest paymentRequest) {
 
@@ -60,32 +62,29 @@ public class PaymentService {
 
     }
 
-    public PaymentResponse updatePaymentStatus(PaymentUpdate paymentUpdate) {
-        Payment payment = paymentRepository.findByOrderId(paymentUpdate.orderId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Payment not found for order: " + paymentUpdate.orderId()));
-
-        PaymentStatus newStatus = switch (paymentUpdate.status()) {
-            case "succeeded" -> PaymentStatus.COMPLETED;
-            case "processing" -> PaymentStatus.PROCESSING;
-            case "requires_payment_method" -> PaymentStatus.REQUIRES_PAYMENT_METHOD;
-            case "canceled" -> PaymentStatus.CANCELED;
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Invalid status: " + paymentUpdate.status());
-        };
-
-        payment.setStatus(newStatus);
-        payment.setUpdatedAt(LocalDateTime.now());
-
-        return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
-    }
-
     @Transactional(readOnly = true)
     public PaymentResponse getPaymentByOrderId(String orderId) {
         return paymentRepository.findByOrderId(orderId)
                 .map(paymentMapper::toPaymentResponse)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Payment not found for order: " + orderId));
+    }
+
+    public void handleStripWebhook(StripeWebhookRequest stripeWebhookRequest) {
+        String eventType = stripeWebhookRequest.type();
+
+        if("payment_intent.succeeded".equals(eventType)) {
+            String orderId = (String) stripeWebhookRequest.data().object().metadata().get("orderId");
+            Payment payment = paymentRepository.findByOrderId(orderId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                            "Payment not found for order: " + orderId));
+
+            orderClient.confirmOrder(orderId);
+            payment.setStatus(PaymentStatus.COMPLETED);
+            payment.setUpdatedAt(LocalDateTime.now());
+            paymentRepository.save(payment);
+        }
+
     }
 
     public PaymentResponse cancelPayment(String orderId) {
