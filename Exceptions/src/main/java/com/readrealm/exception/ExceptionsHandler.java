@@ -1,6 +1,7 @@
 package com.readrealm.exception;
 
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@Profile("!test")
 public class ExceptionsHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
