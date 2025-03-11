@@ -23,7 +23,6 @@ spring:
               - openid
               - profile
               - email
-              - roles
             authorization-grant-type: authorization_code
   cloud:
     gateway:
