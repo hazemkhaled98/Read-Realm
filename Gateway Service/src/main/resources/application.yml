@@ -12,18 +12,17 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: http://localhost:8181/realms/read-realm
+            issuer-uri: http://localhost:8181/realms/readrealm
             user-name-attribute: preferred_username
         registration:
           keycloak:
             client-id: read-realm
             client-secret: tp8iUDlplMw14N16tOd23k9WMS7tYTuW
-            redirect-uri: http://localhost:9090/login/oauth2/code/read-realm
+            redirect-uri: http://localhost:9090/login/oauth2/code/readrealm
             scope:
               - openid
               - profile
               - email
-              - roles
             authorization-grant-type: authorization_code
   cloud:
     gateway:
