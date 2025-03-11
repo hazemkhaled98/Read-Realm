@@ -4,6 +4,27 @@ server:
 spring:
   application:
     name: gateway-service
+  docker:
+    compose:
+      file: Gateway Service\\docker-compose.yaml
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8181/realms/read-realm
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: read-realm
+            client-secret: tp8iUDlplMw14N16tOd23k9WMS7tYTuW
+            redirect-uri: http://localhost:9090/login/oauth2/code/read-realm
+            scope:
+              - openid
+              - profile
+              - email
+              - roles
+            authorization-grant-type: authorization_code
   cloud:
     gateway:
       discovery:
@@ -15,6 +36,9 @@ spring:
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/api/v1/orders/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
 
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
@@ -22,6 +46,7 @@ spring:
             - Path=/api/v1/books/**, /api/v1/authors/**, /api/v1/categories/**, /api/v1/refresh/**
       default-filters:
         - StripPrefix=1
+
 eureka:
   client:
     serviceUrl:
