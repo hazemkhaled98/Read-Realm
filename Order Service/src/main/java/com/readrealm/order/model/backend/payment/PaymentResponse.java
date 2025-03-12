@@ -3,7 +3,7 @@ package com.readrealm.order.model.backend.payment;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record PaymentResponse(
@@ -13,7 +13,7 @@ public record PaymentResponse(
         BigDecimal amount,
         String currency,
         PaymentStatus status,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        Instant createdDate,
+        Instant updatedDate,
         String clientSecret
 ) {}

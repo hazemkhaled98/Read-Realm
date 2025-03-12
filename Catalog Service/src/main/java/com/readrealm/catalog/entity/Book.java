@@ -32,7 +32,6 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "isbn", unique = true, nullable = false)
     @NaturalId
     @Setter(AccessLevel.NONE)
     @Pattern(regexp = "^(?:ISBN(?:-1[03])?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$",
@@ -49,15 +48,13 @@ public class Book {
 
     @DecimalMin(value = "0.0", inclusive = false, message = "If provided, price must be greater than 0")
     @Digits(integer = 6, fraction = 2, message = "Price can have up to 6 digits and 2 decimal places")
-    @Column(nullable = false)
     private BigDecimal price;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)

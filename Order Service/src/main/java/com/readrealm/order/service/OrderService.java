@@ -18,8 +18,6 @@ import com.readrealm.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -31,7 +29,6 @@ import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(isolation = Isolation.REPEATABLE_READ)
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
@@ -57,7 +54,7 @@ public class OrderService {
         return orderMapper.toOrderResponse(order, paymentResponse);
     }
 
-    @Transactional(readOnly = true)
+
     public OrderResponse getOrderById(String orderId) {
         return orderMapper.toOrderResponse(
                 orderRepository.findByOrderId(orderId)
@@ -65,7 +62,7 @@ public class OrderService {
                                 "Order not found with ID: " + orderId)));
     }
 
-    @Transactional(readOnly = true)
+
     public List<OrderResponse> getOrdersByUserId(Integer userId) {
         List<OrderResponse> orders = orderMapper.toOrderResponseList(orderRepository.findByUserId(userId));
         if (orders.isEmpty()) {

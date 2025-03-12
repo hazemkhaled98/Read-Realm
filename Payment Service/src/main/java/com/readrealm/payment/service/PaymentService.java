@@ -22,17 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(isolation = Isolation.REPEATABLE_READ)
 @Slf4j
 public class PaymentService {
     private final PaymentRepository paymentRepository;
@@ -72,7 +68,6 @@ public class PaymentService {
 
     }
 
-    @Transactional(readOnly = true)
     public PaymentResponse getPaymentByOrderId(String orderId) {
         return paymentRepository.findByOrderId(orderId)
                 .map(paymentMapper::toPaymentResponse)
@@ -96,7 +91,6 @@ public class PaymentService {
 
                 orderClient.confirmOrder(orderId);
                 payment.setStatus(PaymentStatus.COMPLETED);
-                payment.setUpdatedAt(LocalDateTime.now());
                 paymentRepository.save(payment);
             }
         } catch (SignatureVerificationException e) {
@@ -119,7 +113,7 @@ public class PaymentService {
         }
 
         payment.setStatus(PaymentStatus.CANCELED);
-        payment.setUpdatedAt(LocalDateTime.now());
+
 
         return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
     }
@@ -139,7 +133,7 @@ public class PaymentService {
         }
 
         payment.setStatus(PaymentStatus.REFUNDED);
-        payment.setUpdatedAt(LocalDateTime.now());
+
 
         return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
     }

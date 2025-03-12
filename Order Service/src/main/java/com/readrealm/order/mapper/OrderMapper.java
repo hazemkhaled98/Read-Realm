@@ -17,6 +17,8 @@ public interface OrderMapper {
 
         @Mapping(target = "paymentDetails", source = "paymentResponse")
         @Mapping(target = "orderId", source = "order.orderId")
+        @Mapping(target = "createdDate", source = "order.createdDate")
+        @Mapping(target = "updatedDate", source = "order.updatedDate")
         OrderResponse toOrderResponse(Order order, PaymentResponse paymentResponse);
 
         OrderResponse toOrderResponse(Order order);
