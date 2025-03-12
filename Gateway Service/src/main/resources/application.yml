@@ -16,7 +16,7 @@ spring:
             user-name-attribute: preferred_username
         registration:
           keycloak:
-            client-id: read-realm
+            client-id: readrealm
             client-secret: tp8iUDlplMw14N16tOd23k9WMS7tYTuW
             redirect-uri: http://localhost:9090/login/oauth2/code/readrealm
             scope:

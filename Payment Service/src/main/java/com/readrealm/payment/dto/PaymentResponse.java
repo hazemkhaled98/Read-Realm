@@ -3,7 +3,7 @@ package com.readrealm.payment.dto;
 import com.readrealm.payment.model.PaymentStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record PaymentResponse(
         String id,
@@ -12,7 +12,7 @@ public record PaymentResponse(
         BigDecimal amount,
         String currency,
         PaymentStatus status,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        Instant createdDate,
+        Instant updatedDate,
         String clientSecret
 ) {}

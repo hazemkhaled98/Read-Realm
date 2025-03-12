@@ -32,7 +32,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(isolation = Isolation.REPEATABLE_READ)
+@Transactional(isolation = Isolation.READ_COMMITTED)
 public class BookService {
 
     private static final int DEFAULT_PAGE_SIZE = 10;

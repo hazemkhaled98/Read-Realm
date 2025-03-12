@@ -5,3 +5,5 @@ CREATE DATABASE IF NOT EXISTS `inventory-db`
 
 -- Switch to the created database
 USE `inventory-db`;
+
+SET GLOBAL TRANSACTION ISOLATION LEVEL READ COMMITTED;

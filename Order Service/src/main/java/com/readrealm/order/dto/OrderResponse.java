@@ -5,6 +5,7 @@ import com.readrealm.order.model.backend.payment.PaymentResponse;
 import com.readrealm.order.model.backend.payment.PaymentStatus;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,7 +21,11 @@ public record OrderResponse(
 
         PaymentStatus paymentStatus,
 
-        PaymentResponse paymentDetails
+        PaymentResponse paymentDetails,
+
+        Instant createdDate,
+
+        Instant updatedDate
 
 ) {
 }

@@ -5,3 +5,5 @@ CREATE DATABASE IF NOT EXISTS `catalog-db`
 
 -- Switch to the created database
 USE `catalog-db`;
+
+SET GLOBAL TRANSACTION ISOLATION LEVEL READ COMMITTED;

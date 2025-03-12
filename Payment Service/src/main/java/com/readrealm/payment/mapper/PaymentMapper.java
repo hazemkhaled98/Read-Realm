@@ -13,9 +13,6 @@ public interface PaymentMapper {
 
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "stripePaymentIntentId", source = "paymentIntentId")
-        @Mapping(target = "status", source = "status")
-        @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
-        @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
         @Mapping(target = "errorMessage", ignore = true)
         Payment toPayment(PaymentRequest request, String paymentIntentId, PaymentStatus status);
 
