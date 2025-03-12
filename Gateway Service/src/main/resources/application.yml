@@ -17,7 +17,7 @@ spring:
         registration:
           keycloak:
             client-id: readrealm
-            client-secret: tp8iUDlplMw14N16tOd23k9WMS7tYTuW
+            client-secret: rytEJWsrvgeNcWN9JWai6UuEW075myeE
             redirect-uri: http://localhost:9090/login/oauth2/code/readrealm
             scope:
               - openid

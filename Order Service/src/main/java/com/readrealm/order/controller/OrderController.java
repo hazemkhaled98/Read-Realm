@@ -35,7 +35,7 @@ public class OrderController {
         }
 
         @GetMapping
-        public ResponseEntity<List<OrderResponse>> getUserOrders(@RequestParam Integer userId) {
+        public ResponseEntity<List<OrderResponse>> getUserOrders(@RequestParam String userId) {
                 List<OrderResponse> orders = orderService.getOrdersByUserId(userId);
                 return ResponseEntity.ok(orders);
         }

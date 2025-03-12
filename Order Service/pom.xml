@@ -87,6 +87,12 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.readrealm</groupId>
+            <artifactId>auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
 
     </dependencies>
 

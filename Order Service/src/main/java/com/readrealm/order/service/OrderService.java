@@ -17,6 +17,7 @@ import com.readrealm.order.model.backend.payment.PaymentStatus;
 import com.readrealm.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -63,7 +64,8 @@ public class OrderService {
     }
 
 
-    public List<OrderResponse> getOrdersByUserId(Integer userId) {
+    @PreAuthorize("hasRole('CUSTOMER') and #userId.equals(authentication.details.userId)")
+    public List<OrderResponse> getOrdersByUserId(String userId) {
         List<OrderResponse> orders = orderMapper.toOrderResponseList(orderRepository.findByUserId(userId));
         if (orders.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,

@@ -20,7 +20,7 @@ import java.util.List;
 public class Order {
         @Id
         private String orderId;
-        private Integer userId;
+        private String userId;
         private BigDecimal totalAmount;
         private List<OrderDetails> details;
         private PaymentStatus paymentStatus;

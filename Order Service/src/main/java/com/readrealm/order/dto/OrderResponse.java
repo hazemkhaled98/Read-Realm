@@ -13,7 +13,7 @@ public record OrderResponse(
 
         String orderId,
 
-        Integer userId,
+        String userId,
 
         BigDecimal totalAmount,
 
