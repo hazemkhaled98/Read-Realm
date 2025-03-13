@@ -2,24 +2,31 @@ package com.readrealm.auth.model;
 
 import org.springframework.security.oauth2.jwt.Jwt;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public record AuthUser(
+public record SecurityPrincipal(
         String userId,
         String username,
-        List<Role> roles,
+        Set<Role> roles,
         String email,
         String firstName,
         String lastName
 ) {
 
-    public AuthUser(Jwt jwt){
+    public SecurityPrincipal(Jwt jwt){
         this(jwt.getSubject(),
                 jwt.getClaimAsString("preferred_username"),
-                jwt.getClaimAsStringList("roles").stream().map(Role::fromValue).toList(),
+                extractRoles(jwt),
                 jwt.getClaimAsString("email"),
                 jwt.getClaimAsString("given_name"),
                 jwt.getClaimAsString("family_name"));
+    }
+
+    private static Set<Role> extractRoles(Jwt jwt) {
+        return jwt.getClaimAsStringList("roles").stream()
+                .map(Role::fromValue)
+                .collect(Collectors.toSet());
     }
 
 }

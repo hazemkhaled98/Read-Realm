@@ -6,6 +6,7 @@ import com.readrealm.inventory.model.Inventory;
 import com.readrealm.inventory.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ public class InventoryService {
     private final InventoryRepository inventoryRepository;
     private final InventoryMapper inventoryMapper;
 
+    @PreAuthorize("@authorizer.isAdmin()")
     public InventoryDTO createInventory(InventoryDTO request) {
         if (inventoryRepository.existsByIsbn(request.isbn())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Inventory already exists for ISBN: " + request.isbn());
@@ -45,6 +47,7 @@ public class InventoryService {
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found for ISBN: " + isbn)));
     }
 
+    @PreAuthorize("@authorizer.isAdmin()")
     public void deleteInventory(String isbn) {
         inventoryRepository.deleteByIsbn(isbn);
     }

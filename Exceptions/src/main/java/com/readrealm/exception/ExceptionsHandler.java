@@ -1,9 +1,16 @@
 package com.readrealm.exception;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,14 +27,18 @@ import java.util.stream.Collectors;
 @Profile("!test")
 public class ExceptionsHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionsHandler.class);
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> handleResponseStatusException(ResponseStatusException e) {
+        LOGGER.warn("Response status exception: {}", e.getMessage());
         return new ResponseEntity<>(ErrorResponse.of(e), e.getStatusCode());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleConstraintViolation(MethodArgumentNotValidException ex) {
 
+        LOGGER.warn("Validation Exception: {}", ex.getMessage());
         Map<String, Object> response = new HashMap<>();
 
         Map<String, List<String>> errors = ex.getBindingResult()
@@ -56,9 +67,30 @@ public class ExceptionsHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler({
+            AuthenticationException.class,
+            AuthenticationCredentialsNotFoundException.class,
+            BadCredentialsException.class,
+            InsufficientAuthenticationException.class,
+            UsernameNotFoundException.class
+    })
+    public ResponseEntity<?> handleAuthenticationException(Exception e) {
+        LOGGER.warn("Authentication failed: {}", e.getMessage());
+        return new ResponseEntity<>(ErrorResponse.of(new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED, "Authentication required. No valid credentials were provided.")), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        LOGGER.warn("Access denied: {}", e.getMessage());
+        return new ResponseEntity<>(ErrorResponse.of(new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "Access denied. You don't have permission to access this resource.")), HttpStatus.FORBIDDEN);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
+        LOGGER.error("Unexpected error: {}", e.getMessage(), e);
         return new ResponseEntity<>("Server has issues fulfilling your request", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

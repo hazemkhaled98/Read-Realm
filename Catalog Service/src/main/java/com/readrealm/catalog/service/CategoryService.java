@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class CategoryService {
     @Transactional
     @CachePut(cacheNames = "categoryById", key = "#createCategory.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
+    @PreAuthorize("@authorizer.isAdmin()")
     public CategoryResponse addCategory(CategoryRequest request) {
         log.info("Adding Category {}", request);
         Category createCategory = Category
@@ -45,6 +47,7 @@ public class CategoryService {
     @Transactional
     @CachePut(cacheNames = "categoryById", key = "#updatedCategory.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
+    @PreAuthorize("@authorizer.isAdmin()")
     public CategoryResponse updateCategory(UpdateCategoryRequest request) {
         log.info("Updating Category {}", request);
         long id = Long.parseLong(request.id());
@@ -83,6 +86,7 @@ public class CategoryService {
             @CacheEvict(cacheNames = "categoryById", key = "#isbn", cacheManager = "cacheManager"),
             @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
     })
+    @PreAuthorize("@authorizer.isAdmin()")
     public void deleteCategory(long id) {
         log.info("Deleting category with id {}", id);
         categoryRepository.deleteById(id);

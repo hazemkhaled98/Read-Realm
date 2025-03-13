@@ -13,6 +13,7 @@ import java.util.List;
 public interface OrderMapper {
 
         @Mapping(target = "orderId", ignore = true)
+        @Mapping(target = "userId", ignore = true)
         Order toOrder(OrderRequest orderRequest);
 
         @Mapping(target = "paymentDetails", source = "paymentResponse")

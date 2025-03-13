@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ public class AuthorService {
     @Transactional
     @CachePut(cacheNames = "authorById", key = "#createdAuthor.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "authors", allEntries = true, cacheManager = "cacheManager")
+    @PreAuthorize("@authorizer.isAdmin()")
     public AuthorResponse addAuthor(AuthorRequest request) {
 
         log.info("Adding Author {}", request);
@@ -49,6 +51,7 @@ public class AuthorService {
     @Transactional
     @CachePut(cacheNames = "authorById", key = "#updatedAuthor.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "authors", allEntries = true, cacheManager = "cacheManager")
+    @PreAuthorize("@authorizer.isAdmin()")
     public AuthorResponse updateAuthor(UpdateAuthorRequest request) {
         log.info("Updating Author {}", request);
 
@@ -93,6 +96,7 @@ public class AuthorService {
             @CacheEvict(cacheNames = "authorById", key = "#isbn", cacheManager = "cacheManager"),
             @CacheEvict(cacheNames = "authors", allEntries = true, cacheManager = "cacheManager")
     })
+    @PreAuthorize("@authorizer.isAdmin()")
     public void deleteAuthor(long id) {
         log.info("Deleting Author with id {}", id);
         authorRepository.deleteById(id);

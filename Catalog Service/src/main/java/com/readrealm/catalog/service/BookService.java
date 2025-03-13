@@ -21,6 +21,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,7 @@ public class BookService {
     @Transactional
     @CachePut(cacheNames = "bookByISBN", key = "#bookRequest.isbn()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "booksByCriteria", allEntries = true, cacheManager = "cacheManager")
+    @PreAuthorize("@authorizer.isAdmin()")
     public BookResponse addBook(BookRequest bookRequest) {
         log.info("Creating book: {}", bookRequest);
 
@@ -71,6 +73,7 @@ public class BookService {
     @Transactional
     @CachePut(cacheNames = "bookByISBN", key = "#bookRequest.isbn()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "booksByCriteria", allEntries = true, cacheManager = "cacheManager")
+    @PreAuthorize("@authorizer.isAdmin()")
     public BookResponse updateBook(BookRequest bookRequest) {
         log.info("Updating book: {}", bookRequest);
 
@@ -125,6 +128,7 @@ public class BookService {
             @CacheEvict(cacheNames = "bookByISBN", key = "#isbn", cacheManager = "cacheManager"),
             @CacheEvict(cacheNames = "booksByCriteria", allEntries = true, cacheManager = "cacheManager")
     })
+    @PreAuthorize("@authorizer.isAdmin()")
     public void deleteBook(String isbn) {
         bookRepository.deleteBookByIsbn(isbn);
     }

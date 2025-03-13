@@ -1,5 +1,6 @@
 package com.readrealm.order.service;
 
+import com.readrealm.auth.util.SecurityUtil;
 import com.readrealm.order.client.CatalogClient;
 import com.readrealm.order.client.InventoryClient;
 import com.readrealm.order.client.PaymentClient;
@@ -17,6 +18,8 @@ import com.readrealm.order.model.backend.payment.PaymentStatus;
 import com.readrealm.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,6 +40,7 @@ public class OrderService {
     private final CatalogClient catalogClient;
     private final PaymentClient paymentClient;
 
+    @PreAuthorize("@authorizer.isCustomer()")
     public OrderResponse createOrder(OrderRequest orderRequest) {
 
         Order order = orderRepository.save(orderMapper.toOrder(orderRequest));
@@ -56,6 +60,7 @@ public class OrderService {
     }
 
 
+    @PostAuthorize("@authorizer.isAuthorizedUser(returnObject.userId)")
     public OrderResponse getOrderById(String orderId) {
         return orderMapper.toOrderResponse(
                 orderRepository.findByOrderId(orderId)
@@ -64,7 +69,7 @@ public class OrderService {
     }
 
 
-    @PreAuthorize("hasRole('CUSTOMER') and #userId.equals(authentication.details.userId)")
+    @PreAuthorize("@authorizer.isAuthorizedUser(#userId)")
     public List<OrderResponse> getOrdersByUserId(String userId) {
         List<OrderResponse> orders = orderMapper.toOrderResponseList(orderRepository.findByUserId(userId));
         if (orders.isEmpty()) {
@@ -91,10 +96,15 @@ public class OrderService {
         return orderMapper.toOrderResponse(order);
     }
 
+    @PreAuthorize("@authorizer.isCustomer()")
     public OrderResponse cancelOrder(String orderId) {
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Order not found with ID: " + orderId));
+
+        if(!order.getUserId().equals(SecurityUtil.getCurrentUserId())) {
+            throw new AccessDeniedException("You are not authorized to cancel this order");
+        }
 
         if (order.getPaymentStatus() == PaymentStatus.COMPLETED) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -109,10 +119,15 @@ public class OrderService {
         return orderMapper.toOrderResponse(order, paymentResponse);
     }
 
+    @PreAuthorize("@authorizer.isCustomer()")
     public OrderResponse refundOrder(String orderId) {
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Order not found with ID: " + orderId));
+
+        if(!order.getUserId().equals(SecurityUtil.getCurrentUserId())) {
+            throw new AccessDeniedException("You are not authorized to refund this order");
+        }
 
         if (order.getPaymentStatus() != PaymentStatus.PENDING) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -152,6 +167,7 @@ public class OrderService {
             totalAmount = totalAmount.add(price.multiply(BigDecimal.valueOf(quantity)));
         }
 
+        order.setUserId(SecurityUtil.getCurrentUserId());
         order.setTotalAmount(totalAmount);
         order.setDetails(orderDetails);
         order.setPaymentStatus(PaymentStatus.PENDING);
