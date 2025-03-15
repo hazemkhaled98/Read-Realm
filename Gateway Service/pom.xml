@@ -20,6 +20,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-doc-version>2.6.0</spring-doc-version>
     </properties>
 
     <dependencies>
@@ -47,6 +48,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-docker-compose</artifactId>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>${spring-doc-version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>
