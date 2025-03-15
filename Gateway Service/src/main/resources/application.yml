@@ -38,13 +38,33 @@ spring:
           filters:
             - TokenRelay=
             - RemoveRequestHeader=Cookie
+            - StripPrefix=1
+
+        - id: order-service-api-docs
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/docs/order-service/v1/api-docs
+          filters:
+            - StripPrefix=2
+            - RemoveRequestHeader=Cookie
 
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
             - Path=/api/v1/books/**, /api/v1/authors/**, /api/v1/categories/**, /api/v1/refresh/**
-      default-filters:
-        - StripPrefix=1
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+            - StripPrefix=1
+
+        - id: order-service-api-docs
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/docs/catalog-service/v1/api-docs
+          filters:
+            - StripPrefix=2
+            - RemoveRequestHeader=Cookie
+
 
 eureka:
   client:
@@ -54,3 +74,15 @@ eureka:
     fetch-registry: true
   instance:
     preferIpAddress: true
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Order Service
+        url: /docs/order-service/v1/api-docs
+      - name: Catalog Service
+        url: /docs/catalog-service/v1/api-docs
+  api-docs:
+    path: /v1/api-docs
