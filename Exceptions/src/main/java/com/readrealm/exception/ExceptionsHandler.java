@@ -16,6 +16,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
@@ -88,6 +89,13 @@ public class ExceptionsHandler {
     }
 
 
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<?> handleHttpClientErrorException(HttpClientErrorException e) {
+        LOGGER.warn("HTTP Client error: {}", e.getMessage());
+        return new ResponseEntity<>(ErrorResponse.of(new ResponseStatusException(
+                e.getStatusCode(), formatHttpClientErrorMessages(e.getMessage()))), e.getStatusCode());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         LOGGER.error("Unexpected error: {}", e.getMessage(), e);
@@ -98,6 +106,13 @@ public class ExceptionsHandler {
         String message = error.getDefaultMessage();
 
         return message != null ? message : "Validation failed";
+    }
+
+    // An example message before formatting: // 400 : "{"message":"Insufficient inventory for ISBN: 9780553103540","statusCode":"BAD_REQUEST"}
+    private String formatHttpClientErrorMessages(String message) {
+        int startIndex = message.indexOf("\"message\":\"") + 11;
+        int endIndex = message.indexOf("\",\"statusCode\"");
+        return startIndex >= 11 && endIndex > startIndex ? message.substring(startIndex, endIndex) : message;
     }
 
 }
