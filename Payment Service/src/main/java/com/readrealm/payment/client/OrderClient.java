@@ -1,13 +1,11 @@
 package com.readrealm.payment.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.PostExchange;
 
-@FeignClient(name = "order-service")
 public interface OrderClient {
 
-    @PostMapping("/v1/orders/confirm")
+    @PostExchange("/v1/orders/confirm")
     void confirmOrder(@RequestParam String orderId);
 
 }
