@@ -39,6 +39,10 @@ spring:
             - StripPrefix=1
             - TokenRelay=
             - RemoveRequestHeader=Cookie
+            - name: CircuitBreaker
+              args:
+                name: orderServiceCircuitBreaker
+                fallbackUri: forward:/fallback/order-service
 
         - id: order-service-api-docs
           uri: lb://ORDER-SERVICE
@@ -56,6 +60,10 @@ spring:
             - StripPrefix=1
             - TokenRelay=
             - RemoveRequestHeader=Cookie
+            - name: CircuitBreaker
+              args:
+                name: catalogServiceCircuitBreaker
+                fallbackUri: forward:/fallback/catalog-service
 
         - id: catalog-service-api-docs
           uri: lb://CATALOG-SERVICE
@@ -77,20 +85,33 @@ eureka:
 
 resilience4j:
   circuitbreaker:
-    configs:
-      default:
+    instances:
+      orderServiceCircuitBreaker:
         registerHealthIndicator: true
         slidingWindowType: COUNT_BASED
         slidingWindowSize: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 5s
         permittedNumberOfCallsInHalfOpenState: 3
-        automaticTransitionFromOpenToHalfOpenEnabled: true
+        automaticTransitionFromOpenToHalfOpenEnabled: false
+        minimumNumberOfCalls: 5
+        timeout-duration: 3s
+      catalogServiceCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: false
         minimumNumberOfCalls: 5
         timeout-duration: 3s
   retry:
-    configs:
-      default:
+    instances:
+      orderServiceCircuitBreaker:
+        max-attempts: 3
+        wait-duration: 2s
+      catalogServiceCircuitBreaker:
         max-attempts: 3
         wait-duration: 2s
 
