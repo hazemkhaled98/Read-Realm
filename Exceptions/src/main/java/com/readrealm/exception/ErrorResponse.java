@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 
-record ErrorResponse(String message, HttpStatusCode statusCode) {
+record ErrorResponse(HttpStatusCode statusCode, String message) {
 
     static ErrorResponse of(ResponseStatusException e) {
-        return new ErrorResponse(e.getReason(), e.getStatusCode());
+        return new ErrorResponse(e.getStatusCode(), e.getReason());
     }
 }

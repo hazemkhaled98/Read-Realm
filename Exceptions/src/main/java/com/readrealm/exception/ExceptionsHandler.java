@@ -79,23 +79,23 @@ public class ExceptionsHandler {
     })
     public ResponseEntity<?> handleAuthenticationException(Exception e) {
         LOGGER.warn("Authentication failed: {}", e.getMessage());
-        return new ResponseEntity<>(ErrorResponse.of(new ResponseStatusException(
-                HttpStatus.UNAUTHORIZED, "Authentication required. No valid credentials were provided.")), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ErrorResponse(
+                HttpStatus.UNAUTHORIZED, "Authentication required. No valid credentials were provided."), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
         LOGGER.warn("Access denied: {}", e.getMessage());
-        return new ResponseEntity<>(ErrorResponse.of(new ResponseStatusException(
-                HttpStatus.FORBIDDEN, "Access denied. You don't have permission to access this resource.")), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new ErrorResponse(
+                HttpStatus.FORBIDDEN, "Access denied. You don't have permission to access this resource."), HttpStatus.FORBIDDEN);
     }
 
 
     @ExceptionHandler({HttpClientErrorException.class, HttpServerErrorException.class})
     public ResponseEntity<?> handleHttpClientErrorException(HttpStatusCodeException e) {
         LOGGER.warn("HTTP Client error: {}", e.getMessage());
-        return new ResponseEntity<>(ErrorResponse.of(new ResponseStatusException(
-                e.getStatusCode(), formatHttpClientErrorMessages(e.getMessage()))), e.getStatusCode());
+        return new ResponseEntity<>(new ErrorResponse(
+                e.getStatusCode(), formatHttpClientErrorMessages(e.getMessage())), e.getStatusCode());
     }
 
     @ExceptionHandler(Exception.class)
