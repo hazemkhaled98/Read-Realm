@@ -17,6 +17,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
@@ -89,8 +91,8 @@ public class ExceptionsHandler {
     }
 
 
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<?> handleHttpClientErrorException(HttpClientErrorException e) {
+    @ExceptionHandler({HttpClientErrorException.class, HttpServerErrorException.class})
+    public ResponseEntity<?> handleHttpClientErrorException(HttpStatusCodeException e) {
         LOGGER.warn("HTTP Client error: {}", e.getMessage());
         return new ResponseEntity<>(ErrorResponse.of(new ResponseStatusException(
                 e.getStatusCode(), formatHttpClientErrorMessages(e.getMessage()))), e.getStatusCode());
