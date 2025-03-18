@@ -26,15 +26,30 @@ spring:
             authorization-grant-type: authorization_code
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lowerCaseServiceId: true
       routes:
+        - id: order-service-create
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/v1/orders/create
+            - Method=POST
+          filters:
+            - StripPrefix=1
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+            - name: CircuitBreaker
+              args:
+                name: orderCreateCircuitBreaker
+                fallbackUri: forward:/fallback/create-order
+            - name: Retry
+              args:
+                name: orderServiceRetry
+                fallbackUri: forward:/fallback/create-order
+
         - id: order-service
           uri: http://localhost:8080
           predicates:
             - Path=/api/v1/orders/**
+            - Method=GET,POST
           filters:
             - StripPrefix=1
             - TokenRelay=
@@ -42,6 +57,10 @@ spring:
             - name: CircuitBreaker
               args:
                 name: orderServiceCircuitBreaker
+                fallbackUri: forward:/fallback/order-service
+            - name: Retry
+              args:
+                name: orderServiceRetry
                 fallbackUri: forward:/fallback/order-service
 
         - id: order-service-api-docs
@@ -64,6 +83,10 @@ spring:
               args:
                 name: catalogServiceCircuitBreaker
                 fallbackUri: forward:/fallback/catalog-service
+            - name: Retry
+              args:
+                name: catalogServiceRetry
+                fallbackUri: forward:/fallback/catalog-service
 
         - id: catalog-service-api-docs
           uri: http://localhost:8080
@@ -76,35 +99,34 @@ spring:
 
 resilience4j:
   circuitbreaker:
+    configs:
+      default:
+              registerHealthIndicator: true
+              slidingWindowType: COUNT_BASED
+              slidingWindowSize: 10
+              failureRateThreshold: 50
+              waitDurationInOpenState: 5s
+              permittedNumberOfCallsInHalfOpenState: 3
+              automaticTransitionFromOpenToHalfOpenEnabled: false
+              minimumNumberOfCalls: 5
     instances:
-      orderServiceCircuitBreaker:
-        registerHealthIndicator: true
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 3
-        automaticTransitionFromOpenToHalfOpenEnabled: false
-        minimumNumberOfCalls: 5
-        timeout-duration: 3s
-      catalogServiceCircuitBreaker:
-        registerHealthIndicator: true
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 3
-        automaticTransitionFromOpenToHalfOpenEnabled: false
-        minimumNumberOfCalls: 5
-        timeout-duration: 3s
+        orderServiceCircuitBreaker:
+            baseConfig: default
+        catalogServiceCircuitBreaker:
+            baseConfig: default
+        orderCreateCircuitBreaker:
+            baseConfig: default
+
   retry:
+    configs:
+      default:
+              max-attempts: 3
+              wait-duration: 2s
     instances:
-      orderServiceCircuitBreaker:
-        max-attempts: 3
-        wait-duration: 2s
-      catalogServiceCircuitBreaker:
-        max-attempts: 3
-        wait-duration: 2s
+        orderServiceRetry:
+            baseConfig: default
+        catalogServiceRetry:
+            baseConfig: default
 
 
 springdoc:

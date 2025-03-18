@@ -24,7 +24,7 @@ import java.util.List;
 public class OrderController {
         private final OrderService orderService;
 
-        @PostMapping
+        @PostMapping("/create")
         public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
                 OrderResponse response = orderService.createOrder(orderRequest);
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
