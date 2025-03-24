@@ -2,10 +2,10 @@ package com.readrealm.payment.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.readrealm.payment.client.OrderClient;
 import com.readrealm.payment.dto.PaymentRequest;
 import com.readrealm.payment.dto.PaymentResponse;
 import com.readrealm.payment.dto.StripeWebhookRequest;
+import com.readrealm.payment.event.ConfirmPaymentEvent;
 import com.readrealm.payment.mapper.PaymentMapper;
 import com.readrealm.payment.model.Payment;
 import com.readrealm.payment.model.PaymentStatus;
@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,8 +34,8 @@ import java.util.Map;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
-    private final OrderClient orderClient;
     private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, ConfirmPaymentEvent> kafkaTemplate;
 
     @Value("${stripe.webhook.secret}")
     private String stripeWebhookSecret;
@@ -76,7 +77,7 @@ public class PaymentService {
     }
 
 
-    public void handleStripeWebhook(String requestSignature, String webhookPayload) throws JsonProcessingException, SignatureVerificationException {
+    public void handleStripeWebhook(String requestSignature, String webhookPayload){
 
         try {
             Event event = Webhook.constructEvent(webhookPayload, requestSignature, stripeWebhookSecret);
@@ -89,7 +90,9 @@ public class PaymentService {
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                 "Payment not found for order: " + orderId));
 
-                orderClient.confirmOrder(orderId);
+                ConfirmPaymentEvent confirmPaymentEvent = new ConfirmPaymentEvent(orderId);
+                kafkaTemplate.send("order-confirmation", confirmPaymentEvent);
+
                 payment.setStatus(PaymentStatus.COMPLETED);
                 paymentRepository.save(payment);
             }

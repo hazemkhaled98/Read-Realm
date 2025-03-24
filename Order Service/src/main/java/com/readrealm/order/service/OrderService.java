@@ -7,6 +7,7 @@ import com.readrealm.order.client.PaymentClient;
 import com.readrealm.order.dto.Details;
 import com.readrealm.order.dto.OrderRequest;
 import com.readrealm.order.dto.OrderResponse;
+import com.readrealm.order.event.OrderEvent;
 import com.readrealm.order.mapper.OrderMapper;
 import com.readrealm.order.model.Order;
 import com.readrealm.order.model.OrderDetails;
@@ -16,8 +17,12 @@ import com.readrealm.order.model.backend.payment.PaymentRequest;
 import com.readrealm.order.model.backend.payment.PaymentResponse;
 import com.readrealm.order.model.backend.payment.PaymentStatus;
 import com.readrealm.order.repository.OrderRepository;
+import com.readrealm.payment.event.ConfirmPaymentEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,12 +38,14 @@ import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final InventoryClient inventoryClient;
     private final CatalogClient catalogClient;
     private final PaymentClient paymentClient;
+    private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
     @PreAuthorize("@authorizer.isCustomer()")
     public OrderResponse createOrder(OrderRequest orderRequest) {
@@ -55,6 +62,7 @@ public class OrderService {
 
         PaymentResponse paymentResponse = processPayment(order.getOrderId(), order.getTotalAmount());
 
+        sendOrderEventToKafka(order);
 
         return orderMapper.toOrderResponse(order, paymentResponse);
     }
@@ -79,8 +87,10 @@ public class OrderService {
         return orders;
     }
 
-    public OrderResponse confirmOrder(String orderId) {
+    @KafkaListener(topics = "order-confirmation")
+    public void confirmOrder(ConfirmPaymentEvent confirmPaymentEvent) {
 
+        String orderId = confirmPaymentEvent.getOrderId().toString();
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Order not found with ID: " + orderId));
@@ -92,8 +102,7 @@ public class OrderService {
 
         order.setPaymentStatus(PaymentStatus.COMPLETED);
         orderRepository.save(order);
-
-        return orderMapper.toOrderResponse(order);
+        log.info("Order with ID: {} is confirmed", orderId);
     }
 
     @PreAuthorize("@authorizer.isCustomer()")
@@ -114,7 +123,9 @@ public class OrderService {
         PaymentResponse paymentResponse = paymentClient.cancelPayment(orderId);
 
         order.setPaymentStatus(PaymentStatus.CANCELED);
-        orderRepository.save(order);
+        order = orderRepository.save(order);
+
+        sendOrderEventToKafka(order);
 
         return orderMapper.toOrderResponse(order, paymentResponse);
     }
@@ -137,7 +148,9 @@ public class OrderService {
         PaymentResponse paymentResponse = paymentClient.refundPayment(orderId);
 
         order.setPaymentStatus(PaymentStatus.REFUNDED);
-        orderRepository.save(order);
+        order = orderRepository.save(order);
+
+        sendOrderEventToKafka(order);
 
         return orderMapper.toOrderResponse(order, paymentResponse);
     }
@@ -178,6 +191,14 @@ public class OrderService {
         PaymentRequest paymentRequest = new PaymentRequest(orderId, totalAmount, "USD");
 
         return paymentClient.processPayment(paymentRequest);
+    }
+
+    private void sendOrderEventToKafka(Order order) {
+        OrderEvent orderEvent = orderMapper.toOrderEvent(order, SecurityUtil.getSecurityPrincipal());
+
+        log.info("Order {}: {}", orderEvent.getPaymentStatus(), orderEvent);
+
+        kafkaTemplate.send("orders", orderEvent);
     }
 
 }

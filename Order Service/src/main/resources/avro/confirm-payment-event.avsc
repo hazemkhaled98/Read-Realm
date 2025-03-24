@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "ConfirmPaymentEvent",
+  "namespace": "com.readrealm.payment.event",
+  "fields": [
+    { "name": "orderId", "type": "string" }
+  ]
+}

@@ -42,12 +42,6 @@ public class OrderController {
                 return ResponseEntity.ok(orders);
         }
 
-        @PostMapping("/confirm")
-        public ResponseEntity<OrderResponse> confirmOrder(@RequestParam String orderId) {
-                OrderResponse order = orderService.confirmOrder(orderId);
-                return ResponseEntity.ok(order);
-        }
-
         @PostMapping("/cancel")
         public ResponseEntity<OrderResponse> cancelOrder(@RequestParam String orderId) {
                 OrderResponse order = orderService.cancelOrder(orderId);

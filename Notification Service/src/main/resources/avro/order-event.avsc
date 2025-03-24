@@ -1,0 +1,84 @@
+{
+  "type": "record",
+  "name": "OrderEvent",
+  "namespace": "com.readrealm.order.event",
+  "fields": [
+    {
+      "name": "orderId",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "userFirstName",
+      "type": "string"
+    },
+    {
+      "name": "userLastName",
+      "type": "string"
+    },
+    {
+      "name": "userEmail",
+      "type": "string"
+    },
+    {
+      "name": "totalAmount",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 20,
+        "scale": 2
+      }
+    },
+    {
+      "name": "details",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "OrderDetails",
+          "fields": [
+            {
+              "name": "isbn",
+              "type": "string"
+            },
+            {
+              "name": "quantity",
+              "type": "int"
+            },
+            {
+              "name": "unitPrice",
+              "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 20,
+                "scale": 2
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "paymentStatus",
+      "type": {
+        "type": "enum",
+        "name": "PaymentStatus",
+        "symbols": ["PENDING", "COMPLETED", "FAILED", "REFUNDED", "CANCELED", "PROCESSING", "REQUIRES_PAYMENT_METHOD"]
+      }
+    },
+    {
+      "name": "createdDate",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "updatedDate",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}
