@@ -1,12 +1,9 @@
 server:
-  port: 9090
+  port: 9999
 
 spring:
   application:
     name: gateway-service
-  docker:
-    compose:
-      file: Gateway Service\\docker-compose.yaml
   security:
     oauth2:
       client:
@@ -139,3 +136,31 @@ springdoc:
         url: /docs/catalog-service/v1/api-docs
   api-docs:
     path: /v1/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, circuitbreakers, prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+  tracing:
+    sampling:
+      probability: 1.0
+  observations:
+    key-values:
+      application: ${spring.application.name}
+  endpoint:
+    health:
+      show-details: always
+    circuitbreakers:
+      enabled: true
+  health:
+    circuitbreakers:
+      enabled: true
+    defaults:
+      enabled: true

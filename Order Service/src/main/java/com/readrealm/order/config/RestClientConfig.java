@@ -3,6 +3,8 @@ package com.readrealm.order.config;
 import com.readrealm.order.client.CatalogClient;
 import com.readrealm.order.client.InventoryClient;
 import com.readrealm.order.client.PaymentClient;
+import io.micrometer.observation.ObservationRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +17,10 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import java.time.Duration;
 
 @Configuration
+@RequiredArgsConstructor
 public class RestClientConfig {
+
+    private final ObservationRegistry observationRegistry;
 
     @Bean
     public RestClient.Builder restClientBuilder() {
@@ -41,6 +46,7 @@ public class RestClientConfig {
         RestClient restClient = restClientBuilder
                 .baseUrl(baseUrl)
                 .requestFactory(createClientRequestFactory())
+                .observationRegistry(observationRegistry)
                 .build();
         RestClientAdapter adapter = RestClientAdapter.create(restClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();

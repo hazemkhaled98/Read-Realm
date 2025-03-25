@@ -4,7 +4,6 @@
     <toRun name="Gateway Service" type="SpringBootApplicationConfigurationType" />
     <toRun name="Inventory Service" type="SpringBootApplicationConfigurationType" />
     <toRun name="Notification Service" type="SpringBootApplicationConfigurationType" />
-    <toRun name="Notification Service" type="SpringBootApplicationConfigurationType" />
     <toRun name="Order Service" type="SpringBootApplicationConfigurationType" />
     <toRun name="Payment Service" type="SpringBootApplicationConfigurationType" />
     <method v="2" />
