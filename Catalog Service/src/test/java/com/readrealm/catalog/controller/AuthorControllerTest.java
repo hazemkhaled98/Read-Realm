@@ -46,7 +46,7 @@ class AuthorControllerTest {
     private AuthorService authorService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
