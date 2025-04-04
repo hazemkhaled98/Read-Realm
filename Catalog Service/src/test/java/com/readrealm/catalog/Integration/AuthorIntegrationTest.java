@@ -1,10 +1,10 @@
 package com.readrealm.catalog.Integration;
 
+import com.readrealm.auth.authorizer.Authorizer;
 import com.readrealm.catalog.dto.author.AuthorRequest;
 import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
 import com.readrealm.catalog.service.AuthorService;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -13,15 +13,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.web.server.ResponseStatusException;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
+
+import static com.readrealm.catalog.util.MockAuthorizationUtil.mockAdminAuthorization;
+import static com.readrealm.catalog.util.MockAuthorizationUtil.mockCustomerAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = "spring.flyway.enabled=false")
@@ -41,6 +48,8 @@ class AuthorIntegrationTest {
 
     @Autowired
     private AuthorService authorService;
+    @Autowired
+    private Authorizer authorizer;
 
     @AfterAll
     static void closeContainer() {
@@ -72,11 +81,15 @@ class AuthorIntegrationTest {
     void when_requesting_non_existing_author_then_should_throw_not_found_exception() {
 
         assertThatThrownBy(() -> authorService.findAuthorById(1000L))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
     }
 
     @Test
-    void when_receiving_valid_create_author_request_then_should_create_author_record() {
+    void Given_admin_authorization_when_receiving_valid_create_author_request_then_should_create_author_record() {
+
+        mockAdminAuthorization();
+
         AuthorRequest request = AuthorRequest.builder()
                 .firstName("Naguib")
                 .lastName("Mahfouz")
@@ -89,7 +102,8 @@ class AuthorIntegrationTest {
     }
 
     @Test
-    void when_receiving_valid_update_author_request_then_should_update_author_record() {
+    void Given_admin_authorization_when_receiving_valid_update_author_request_then_should_update_author_record() {
+        mockAdminAuthorization();
 
         AuthorRequest details = AuthorRequest.builder()
                 .firstName("Naguib")
@@ -106,11 +120,11 @@ class AuthorIntegrationTest {
 
         assertThat(updatedAuthor.firstName()).isEqualTo("Naguib");
         assertThat(updatedAuthor.lastName()).isEqualTo("Mahfouz");
-
     }
 
     @Test
-    void when_receiving_non_existing_author_update_request_then_should_throw_not_found_exception() {
+    void Given_admin_authorization_when_receiving_non_existing_author_update_request_then_should_throw_not_found_exception() {
+        mockAdminAuthorization();
 
         AuthorRequest details = AuthorRequest.builder()
                 .firstName("Naguib")
@@ -124,17 +138,91 @@ class AuthorIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> authorService.updateAuthor(request))
-                .isInstanceOf(EntityNotFoundException.class);
-
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
     }
 
     @Test
-    void when_author_id_exists_then_author_should_be_deleted() {
+    void Given_admin_authorization_when_author_id_exists_then_author_should_be_deleted() {
+        mockAdminAuthorization();
 
         authorService.deleteAuthor(1L);
 
         assertThatThrownBy(() -> authorService.findAuthorById(1L))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    void Given_admin_authorization_when_deleting_non_existing_author_should_not_throw_exception() {
+        mockAdminAuthorization();
+
+        assertThatNoException().isThrownBy(() -> authorService.deleteAuthor(1000L));
+    }
+
+    @Test
+    void Given_admin_authorization_when_creating_author_with_same_name_should_create_new_record() {
+        mockAdminAuthorization();
+
+        // First author
+        AuthorRequest request1 = AuthorRequest.builder()
+                .firstName("Naguib")
+                .lastName("Mahfouz")
+                .build();
+
+        AuthorResponse createdAuthor1 = authorService.addAuthor(request1);
+
+        AuthorRequest request2 = AuthorRequest.builder()
+                .firstName("Naguib")
+                .lastName("Mahfouz")
+                .build();
+
+        AuthorResponse createdAuthor2 = authorService.addAuthor(request2);
+
+        assertThat(createdAuthor2.id()).isNotEqualTo(createdAuthor1.id());
+        assertThat(createdAuthor2.firstName()).isEqualTo("Naguib");
+        assertThat(createdAuthor2.lastName()).isEqualTo("Mahfouz");
+    }
+
+    @Test
+    void Given_customer_authorization_when_creating_author_should_throw_access_denied_exception() {
+        mockCustomerAuthorization();
+
+        AuthorRequest request = AuthorRequest.builder()
+                .firstName("Naguib")
+                .lastName("Mahfouz")
+                .build();
+
+        assertThatThrownBy(() -> authorService.addAuthor(request))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void Given_customer_authorization_when_updating_author_should_throw_access_denied_exception() {
+        mockCustomerAuthorization();
+
+        AuthorRequest details = AuthorRequest.builder()
+                .firstName("Naguib")
+                .lastName("Mahfouz")
+                .build();
+
+        UpdateAuthorRequest request = UpdateAuthorRequest
+                .builder()
+                .id("1")
+                .details(details)
+                .build();
+
+        assertThatThrownBy(() -> authorService.updateAuthor(request))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void Given_customer_authorization_when_deleting_author_should_throw_access_denied_exception() {
+        mockCustomerAuthorization();
+
+        assertThatThrownBy(() -> authorService.deleteAuthor(1L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
 
 }

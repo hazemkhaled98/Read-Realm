@@ -21,14 +21,18 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 
+import static com.readrealm.auth.util.SecurityTestUtil.mockAdminJWT;
+import static com.readrealm.auth.util.SecurityTestUtil.mockCustomerJWT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @WebMvcTest(value = AuthorController.class)
 @ActiveProfiles("test")
@@ -46,7 +50,7 @@ class AuthorControllerTest {
     private AuthorService authorService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
@@ -57,8 +61,12 @@ class AuthorControllerTest {
 
         when(authorService.findAllAuthors()).thenReturn(Collections.singletonList(authorResponse));
 
-        mockMvc.perform(get("/v1/authors")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(get("/v1/authors")
+                        .with(jwt().jwt(mockCustomerJWT()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
     }
 
     @Test
@@ -67,7 +75,10 @@ class AuthorControllerTest {
 
         when(authorService.findAuthorById(1L)).thenReturn(authorResponse);
 
-        mockMvc.perform(get("/v1/authors/1")).andExpect(status().isOk())
+        mockMvc.perform(get("/v1/authors/1")
+                .with(jwt().jwt(mockCustomerJWT()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -85,7 +96,8 @@ class AuthorControllerTest {
 
         mockMvc.perform(post("/v1/authors")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(authorCreateRequest))
+                .content(authorCreateRequest)
+                .with(jwt().jwt(mockAdminJWT())))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -107,13 +119,17 @@ class AuthorControllerTest {
 
         mockMvc.perform(put("/v1/authors")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(authorUpdateRequest))
+                .content(authorUpdateRequest)
+                .with(jwt().jwt(mockAdminJWT())))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     void Given_an_author_id_to_delete_should_return_204() throws Exception {
-        mockMvc.perform(delete("/v1/authors/1234567890")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/v1/authors/1234567890")
+                .with(jwt().jwt(mockAdminJWT()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }
