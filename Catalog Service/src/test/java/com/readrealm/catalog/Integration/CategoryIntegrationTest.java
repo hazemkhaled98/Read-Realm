@@ -4,24 +4,25 @@ import com.readrealm.catalog.dto.category.CategoryRequest;
 import com.readrealm.catalog.dto.category.CategoryResponse;
 import com.readrealm.catalog.dto.category.UpdateCategoryRequest;
 import com.readrealm.catalog.service.CategoryService;
-import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
+import org.springframework.web.server.ResponseStatusException;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
+import static com.readrealm.catalog.util.MockAuthorizationUtil.mockAdminAuthorization;
+import static com.readrealm.catalog.util.MockAuthorizationUtil.mockCustomerAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = "spring.flyway.enabled=false")
@@ -30,22 +31,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Testcontainers
 @ActiveProfiles("test")
 @Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class CategoryIntegrationTest {
-
-    @Container
-    @ServiceConnection
-    private static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.3.0")
-            .withDatabaseName("catalog-db-test")
-            .withUsername("root")
-            .withPassword("root");
+class CategoryIntegrationTest extends AbstractContainerBaseTest {
 
     @Autowired
     private CategoryService categoryService;
-
-    @AfterAll
-    static void closeContainer() {
-        mySQLContainer.close();
-    }
 
     @Test
     void when_requesting_all_categories_should_return_all_category_records() {
@@ -71,11 +60,13 @@ class CategoryIntegrationTest {
     void when_requesting_non_existing_category_then_should_throw_not_found_exception() {
 
         assertThatThrownBy(() -> categoryService.findCategoryById(1000L))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
     }
 
     @Test
-    void when_receiving_valid_create_category_request_then_should_create_category_record() {
+    void Given_admin_authorization_when_receiving_valid_create_category_request_then_should_create_category_record() {
+        mockAdminAuthorization();
         CategoryRequest request = CategoryRequest.builder()
                 .name("Thriller")
                 .build();
@@ -86,7 +77,8 @@ class CategoryIntegrationTest {
     }
 
     @Test
-    void when_receiving_valid_update_category_request_then_should_update_category_record() {
+    void Given_admin_authorization_when_receiving_valid_update_category_request_then_should_update_category_record() {
+        mockAdminAuthorization();
 
         CategoryRequest details = CategoryRequest.builder()
                 .name("Thriller")
@@ -105,7 +97,8 @@ class CategoryIntegrationTest {
     }
 
     @Test
-    void when_receiving_non_existing_category_update_request_then_should_throw_not_found_exception() {
+    void Given_admin_authorization_when_receiving_non_existing_category_update_request_then_should_throw_not_found_exception() {
+        mockAdminAuthorization();
 
         CategoryRequest details = CategoryRequest.builder()
                 .name("Thriller")
@@ -118,17 +111,84 @@ class CategoryIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> categoryService.updateCategory(request))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
 
     }
 
     @Test
-    void when_category_id_exists_then_category_should_be_deleted() {
+    void Given_admin_authorization_when_category_id_exists_then_category_should_be_deleted() {
+        mockAdminAuthorization();
 
         categoryService.deleteCategory(1L);
 
         assertThatThrownBy(() -> categoryService.findCategoryById(1L))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
     }
 
+    @Test
+    void Given_admin_authorization_when_deleting_non_existing_category_should_not_throw_exception() {
+        mockAdminAuthorization();
+
+        assertThatNoException().isThrownBy(() -> categoryService.deleteCategory(1000L));
+    }
+
+    @Test
+    void Given_admin_authorization_when_creating_category_with_same_name_should_throw_exception() {
+        mockAdminAuthorization();
+
+        CategoryRequest request1 = CategoryRequest.builder()
+                .name("Thriller")
+                .build();
+
+        categoryService.addCategory(request1);
+
+        CategoryRequest request2 = CategoryRequest.builder()
+                .name("Thriller")
+                .build();
+
+        assertThatThrownBy(() -> categoryService.addCategory(request2))
+        .isInstanceOf(ResponseStatusException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
+                .hasMessageContaining("Category with name Thriller already exists");
+    }
+
+    @Test
+    void Given_customer_authorization_when_creating_category_should_throw_access_denied_exception() {
+        mockCustomerAuthorization();
+
+        CategoryRequest request = CategoryRequest.builder()
+                .name("Thriller")
+                .build();
+
+        assertThatThrownBy(() -> categoryService.addCategory(request))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void Given_customer_authorization_when_updating_category_should_throw_access_denied_exception() {
+        mockCustomerAuthorization();
+
+        CategoryRequest details = CategoryRequest.builder()
+                .name("Thriller")
+                .build();
+
+        UpdateCategoryRequest request = UpdateCategoryRequest
+                .builder()
+                .id("1")
+                .details(details)
+                .build();
+
+        assertThatThrownBy(() -> categoryService.updateCategory(request))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void Given_customer_authorization_when_deleting_category_should_throw_access_denied_exception() {
+        mockCustomerAuthorization();
+
+        assertThatThrownBy(() -> categoryService.deleteCategory(1L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
 }

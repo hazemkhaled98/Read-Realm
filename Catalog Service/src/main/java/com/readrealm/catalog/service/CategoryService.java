@@ -35,6 +35,14 @@ public class CategoryService {
     @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
     @PreAuthorize("@authorizer.isAdmin()")
     public CategoryResponse addCategory(CategoryRequest request) {
+
+        Optional<Category> optionalCategory = categoryRepository.findByName(request.name());
+
+        if (optionalCategory.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    String.format("Category with name %s already exists", request.name()));
+        }
+
         log.info("Adding Category {}", request);
         Category createCategory = Category
                 .builder()
