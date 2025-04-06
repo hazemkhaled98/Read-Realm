@@ -15,15 +15,18 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 
 import static com.readrealm.auth.util.SecurityTestUtil.mockAdminJWT;
 import static com.readrealm.auth.util.SecurityTestUtil.mockCustomerJWT;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -32,7 +35,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @WebMvcTest(value = AuthorController.class)
 @ActiveProfiles("test")
@@ -61,10 +63,9 @@ class AuthorControllerTest {
 
         when(authorService.findAllAuthors()).thenReturn(Collections.singletonList(authorResponse));
 
-
         mockMvc.perform(get("/v1/authors")
-                        .with(jwt().jwt(mockCustomerJWT()))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .with(jwt().jwt(mockCustomerJWT()))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
     }
@@ -123,6 +124,114 @@ class AuthorControllerTest {
                 .with(jwt().jwt(mockAdminJWT())))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void Given_invalid_author_data_should_return_400() throws Exception {
+        String invalidAuthorRequest = """
+                {
+                    "firstName": "h",
+                    "lastName": "K"
+                }
+                """;
+
+        mockMvc.perform(post("/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidAuthorRequest)
+                .with(jwt().jwt(mockAdminJWT())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void When_customer_tries_to_create_author_should_return_403() throws Exception {
+        String authorCreateRequest = """
+                {
+                    "firstName": "John",
+                    "lastName": "Doe"
+                }
+                """;
+
+        when(authorService.addAuthor(any(AuthorRequest.class)))
+                .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Customer cannot add author"));
+
+        mockMvc.perform(post("/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(authorCreateRequest)
+                .with(jwt().jwt(mockCustomerJWT())))
+                .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    void When_customer_tries_to_update_author_should_return_403() throws Exception {
+        String authorUpdateRequest = """
+                {
+                    "id": 1,
+                    "details":{
+                        "firstName": "John",
+                        "lastName": "Doe"
+                    }
+                }
+                """;
+
+
+        when(authorService.updateAuthor(any(UpdateAuthorRequest.class)))
+                .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Customer cannot update author"));
+
+        mockMvc.perform(put("/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(authorUpdateRequest)
+                .with(jwt().jwt(mockCustomerJWT())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void When_customer_tries_to_delete_author_should_return_403() throws Exception {
+
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Customer cannot delete author"))
+                .when(authorService).deleteAuthor(1);
+
+
+        mockMvc.perform(delete("/v1/authors/1")
+                .with(jwt().jwt(mockCustomerJWT()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void Given_nonexistent_author_id_should_return_404() throws Exception {
+        when(authorService.findAuthorById(999L))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Author with id 999 not found"));
+
+        mockMvc.perform(get("/v1/authors/999")
+                .with(jwt().jwt(mockCustomerJWT()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void Given_invalid_update_request_should_return_400() throws Exception {
+        String invalidUpdateRequest = """
+                {
+                    "id": "",
+                    "details":{
+                        "firstName": "John",
+                        "lastName": "Doe"
+                    }
+                }
+                """;
+
+        mockMvc.perform(put("/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidUpdateRequest)
+                .with(jwt().jwt(mockAdminJWT())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void When_no_jwt_provided_should_return_401() throws Exception {
+        mockMvc.perform(get("/v1/authors"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

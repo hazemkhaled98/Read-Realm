@@ -11,6 +11,9 @@ import static com.readrealm.auth.model.Role.CUSTOMER;
 
 public class SecurityTestUtil {
 
+    private SecurityTestUtil() {
+    }
+
     public static SecurityPrincipal mockAdmin() {
         return createMockUser(ADMIN);
     }

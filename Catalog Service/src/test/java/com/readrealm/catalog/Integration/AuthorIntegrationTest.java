@@ -1,29 +1,23 @@
 package com.readrealm.catalog.Integration;
 
-import com.readrealm.auth.authorizer.Authorizer;
 import com.readrealm.catalog.dto.author.AuthorRequest;
 import com.readrealm.catalog.dto.author.AuthorResponse;
 import com.readrealm.catalog.dto.author.UpdateAuthorRequest;
 import com.readrealm.catalog.service.AuthorService;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.server.ResponseStatusException;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
-
 
 import static com.readrealm.catalog.util.MockAuthorizationUtil.mockAdminAuthorization;
 import static com.readrealm.catalog.util.MockAuthorizationUtil.mockCustomerAuthorization;
@@ -37,24 +31,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Testcontainers
 @ActiveProfiles("test")
 @Sql(scripts = "/setup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class AuthorIntegrationTest {
-
-    @Container
-    @ServiceConnection
-    private static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.3.0")
-            .withDatabaseName("catalog-db-test")
-            .withUsername("root")
-            .withPassword("root");
+class AuthorIntegrationTest extends AbstractContainerBaseTest {
 
     @Autowired
     private AuthorService authorService;
-    @Autowired
-    private Authorizer authorizer;
-
-    @AfterAll
-    static void closeContainer() {
-        mySQLContainer.close();
-    }
 
     @Test
     void when_requesting_all_authors_should_return_all_authors_records() {
