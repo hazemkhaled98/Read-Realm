@@ -32,7 +32,7 @@ public class AuthorService {
     private final AuthorMapper authorMapper;
 
     @Transactional
-    @CachePut(cacheNames = "authorById", key = "#createdAuthor.id()", cacheManager = "cacheManager")
+    @CachePut(cacheNames = "authorById", key = "#result.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "authors", allEntries = true, cacheManager = "cacheManager")
     @PreAuthorize("@authorizer.isAdmin()")
     public AuthorResponse addAuthor(AuthorRequest request) {
@@ -49,7 +49,7 @@ public class AuthorService {
     }
 
     @Transactional
-    @CachePut(cacheNames = "authorById", key = "#updatedAuthor.id()", cacheManager = "cacheManager")
+    @CachePut(cacheNames = "authorById", key = "#result.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "authors", allEntries = true, cacheManager = "cacheManager")
     @PreAuthorize("@authorizer.isAdmin()")
     public AuthorResponse updateAuthor(UpdateAuthorRequest request) {
@@ -93,7 +93,7 @@ public class AuthorService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = "authorById", key = "#isbn", cacheManager = "cacheManager"),
+            @CacheEvict(cacheNames = "authorById", key = "#id", cacheManager = "cacheManager"),
             @CacheEvict(cacheNames = "authors", allEntries = true, cacheManager = "cacheManager")
     })
     @PreAuthorize("@authorizer.isAdmin()")

@@ -31,7 +31,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    @CachePut(cacheNames = "categoryById", key = "#createCategory.id()", cacheManager = "cacheManager")
+    @CachePut(cacheNames = "categoryById", key = "#result.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
     @PreAuthorize("@authorizer.isAdmin()")
     public CategoryResponse addCategory(CategoryRequest request) {
@@ -53,7 +53,7 @@ public class CategoryService {
     }
 
     @Transactional
-    @CachePut(cacheNames = "categoryById", key = "#updatedCategory.id()", cacheManager = "cacheManager")
+    @CachePut(cacheNames = "categoryById", key = "#result.id()", cacheManager = "cacheManager")
     @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
     @PreAuthorize("@authorizer.isAdmin()")
     public CategoryResponse updateCategory(UpdateCategoryRequest request) {
@@ -91,7 +91,7 @@ public class CategoryService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = "categoryById", key = "#isbn", cacheManager = "cacheManager"),
+            @CacheEvict(cacheNames = "categoryById", key = "#id", cacheManager = "cacheManager"),
             @CacheEvict(cacheNames = "categories", allEntries = true, cacheManager = "cacheManager")
     })
     @PreAuthorize("@authorizer.isAdmin()")
