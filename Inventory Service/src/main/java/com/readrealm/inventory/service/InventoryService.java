@@ -4,6 +4,7 @@ import com.readrealm.inventory.dto.InventoryDTO;
 import com.readrealm.inventory.mapper.InventoryMapper;
 import com.readrealm.inventory.model.Inventory;
 import com.readrealm.inventory.repository.InventoryRepository;
+import com.readrealm.order.event.OrderDetails;
 import com.readrealm.order.event.OrderEvent;
 import com.readrealm.order.event.PaymentStatus;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.readrealm.order.event.PaymentStatus.CANCELED;
 import static com.readrealm.order.event.PaymentStatus.REFUNDED;
@@ -78,19 +78,9 @@ public class InventoryService {
 
         if(CANCELED.equals(paymentStatus) || REFUNDED.equals(paymentStatus)) {
 
-            orderEvent.getDetails().forEach(order -> {
-                Optional<Inventory> optionalInventory = inventoryRepository.findByIsbn(order.getIsbn());
-
-                if(optionalInventory.isPresent()) {
-                    Inventory inventory = optionalInventory.get();
-                    inventory.setQuantity(inventory.getQuantity() + order.getQuantity());
-                    inventoryRepository.save(inventory);
-                }
-                else {
-                    log.warn("Inventory not found for ISBN: {}", order.getIsbn());
-                }
-
-            });
+            orderEvent.getDetails().forEach(order -> inventoryRepository.findByIsbn(order.getIsbn())
+                    .ifPresentOrElse(inventory -> restockInventory(order, inventory),
+                            () -> log.warn("Inventory not found for ISBN: {}", order.getIsbn())));
         }
     }
 
@@ -106,5 +96,10 @@ public class InventoryService {
         inventory.setQuantity(inventory.getQuantity() - request.quantity());
 
         return inventoryMapper.toInventoryDTO(inventoryRepository.save(inventory));
+    }
+
+    private void restockInventory(OrderDetails order, Inventory inventory) {
+        inventory.setQuantity(inventory.getQuantity() + order.getQuantity());
+        inventoryRepository.save(inventory);
     }
 }
