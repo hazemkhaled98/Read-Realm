@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
-    @Query(value = "SELECT * FROM Inventory WHERE isbn = :isbn for update", nativeQuery = true)
+    @Query(value = "SELECT * FROM inventory WHERE isbn = :isbn for update", nativeQuery = true)
     Optional<Inventory> findByIsbn(String isbn);
 
     void deleteByIsbn(String isbn);

@@ -21,8 +21,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.readrealm.catalog.util.MockAuthorizationUtil.mockAdminAuthorization;
-import static com.readrealm.catalog.util.MockAuthorizationUtil.mockCustomerAuthorization;
+import static com.readrealm.auth.util.MockAuthorizationUtil.mockAdminAuthorization;
+import static com.readrealm.auth.util.MockAuthorizationUtil.mockCustomerAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

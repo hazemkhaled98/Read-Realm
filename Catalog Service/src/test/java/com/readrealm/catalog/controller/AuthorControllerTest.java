@@ -23,8 +23,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 
-import static com.readrealm.auth.util.SecurityTestUtil.mockAdminJWT;
-import static com.readrealm.auth.util.SecurityTestUtil.mockCustomerJWT;
+
+import static com.readrealm.auth.util.MockAuthorizationUtil.mockAdminJWT;
+import static com.readrealm.auth.util.MockAuthorizationUtil.mockCustomerJWT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
