@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Slf4j
@@ -49,7 +49,7 @@ public class NotificationService {
             log.info("Notification email is sent for order id: {}", orderId);
         } catch (MailException e) {
             log.error("Exception occurred when sending mail", e);
-            throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }
