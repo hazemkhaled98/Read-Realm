@@ -1,10 +1,8 @@
 package com.readrealm.payment.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.readrealm.payment.dto.PaymentRequest;
 import com.readrealm.payment.dto.PaymentResponse;
 import com.readrealm.payment.service.PaymentService;
-import com.stripe.exception.SignatureVerificationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,8 +34,9 @@ public class PaymentController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<Void> handleStripeWebhook(@RequestHeader("Stripe-Signature") String stripeSignature,
-            @Valid @RequestBody String webhookPayload) throws SignatureVerificationException, JsonProcessingException {
+    public ResponseEntity<Void> handleStripeWebhook(@Valid @RequestBody String webhookPayload,
+                                                    @RequestHeader("Stripe-Signature") String stripeSignature
+    ) {
         paymentService.handleStripeWebhook(stripeSignature, webhookPayload);
         return new ResponseEntity<>(HttpStatus.OK);
     }

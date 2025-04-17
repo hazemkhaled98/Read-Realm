@@ -269,7 +269,7 @@ class PaymentServiceIntegrationTest {
             when(metadata.get("orderId")).thenReturn(orderId);
 
             // When
-            paymentService.handleStripeWebhook("test", payload);
+            paymentService.handleStripeWebhook(payload, "test_signature");
         }
 
         // Then
@@ -298,7 +298,7 @@ class PaymentServiceIntegrationTest {
         String invalidSignature = "invalid_signature";
 
         // When & Then
-        assertThatThrownBy(() -> paymentService.handleStripeWebhook(invalidSignature, webhookPayload))
+        assertThatThrownBy(() -> paymentService.handleStripeWebhook(webhookPayload, invalidSignature))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
                 .hasMessageContaining("Invalid Stripe signature");
