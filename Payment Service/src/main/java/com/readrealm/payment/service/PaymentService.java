@@ -25,7 +25,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -128,9 +127,7 @@ public class PaymentService {
 
         try {
             PaymentIntent paymentIntent = PaymentIntent.retrieve(payment.getStripePaymentIntentId());
-            Map<String, Object> params = new HashMap<>();
-            params.put("payment_intent", paymentIntent.getId());
-            Refund.create(params);
+            Refund.create(Map.of("payment_intent", paymentIntent.getId()));
         } catch (StripeException e) {
             throw new ResponseStatusException(HttpStatus.valueOf(e.getStatusCode()), formatStripeError(e.getMessage()));
         }
