@@ -12,11 +12,11 @@ import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
-public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -840216614077529250L;
+public class OrderItem extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+  private static final long serialVersionUID = 4298806821326842739L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderDetails\",\"namespace\":\"com.readrealm.order.event\",\"fields\":[{\"name\":\"isbn\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"quantity\",\"type\":\"int\"},{\"name\":\"unitPrice\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":20,\"scale\":2}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderItem\",\"namespace\":\"com.readrealm.order.event\",\"fields\":[{\"name\":\"isbn\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"quantity\",\"type\":\"int\"},{\"name\":\"unitPrice\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":20,\"scale\":2}},{\"name\":\"inventoryStatus\",\"type\":{\"type\":\"enum\",\"name\":\"InventoryStatus\",\"symbols\":[\"IN_STOCK\",\"OUT_OF_STOCK\",\"PROCESSING\",\"NOT_FOUND\"]},\"default\":\"PROCESSING\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -24,17 +24,17 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
     MODEL$.addLogicalTypeConversion(new org.apache.avro.Conversions.DecimalConversion());
   }
 
-  private static final BinaryMessageEncoder<OrderDetails> ENCODER =
+  private static final BinaryMessageEncoder<OrderItem> ENCODER =
       new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
-  private static final BinaryMessageDecoder<OrderDetails> DECODER =
+  private static final BinaryMessageDecoder<OrderItem> DECODER =
       new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
    * @return the message encoder used by this class
    */
-  public static BinaryMessageEncoder<OrderDetails> getEncoder() {
+  public static BinaryMessageEncoder<OrderItem> getEncoder() {
     return ENCODER;
   }
 
@@ -42,7 +42,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
    * Return the BinaryMessageDecoder instance used by this class.
    * @return the message decoder used by this class
    */
-  public static BinaryMessageDecoder<OrderDetails> getDecoder() {
+  public static BinaryMessageDecoder<OrderItem> getDecoder() {
     return DECODER;
   }
 
@@ -51,12 +51,12 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
-  public static BinaryMessageDecoder<OrderDetails> createDecoder(SchemaStore resolver) {
+  public static BinaryMessageDecoder<OrderItem> createDecoder(SchemaStore resolver) {
     return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
-   * Serializes this OrderDetails to a ByteBuffer.
+   * Serializes this OrderItem to a ByteBuffer.
    * @return a buffer holding the serialized data for this instance
    * @throws java.io.IOException if this instance could not be serialized
    */
@@ -65,12 +65,12 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   /**
-   * Deserializes a OrderDetails from a ByteBuffer.
+   * Deserializes a OrderItem from a ByteBuffer.
    * @param b a byte buffer holding serialized data for an instance of this class
-   * @return a OrderDetails instance decoded from the given buffer
+   * @return a OrderItem instance decoded from the given buffer
    * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
    */
-  public static OrderDetails fromByteBuffer(
+  public static OrderItem fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
@@ -78,24 +78,27 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
   private java.lang.String isbn;
   private int quantity;
   private java.math.BigDecimal unitPrice;
+  private com.readrealm.order.event.InventoryStatus inventoryStatus;
 
   /**
    * Default constructor.  Note that this does not initialize fields
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>.
    */
-  public OrderDetails() {}
+  public OrderItem() {}
 
   /**
    * All-args constructor.
    * @param isbn The new value for isbn
    * @param quantity The new value for quantity
    * @param unitPrice The new value for unitPrice
+   * @param inventoryStatus The new value for inventoryStatus
    */
-  public OrderDetails(java.lang.String isbn, java.lang.Integer quantity, java.math.BigDecimal unitPrice) {
+  public OrderItem(java.lang.String isbn, java.lang.Integer quantity, java.math.BigDecimal unitPrice, com.readrealm.order.event.InventoryStatus inventoryStatus) {
     this.isbn = isbn;
     this.quantity = quantity;
     this.unitPrice = unitPrice;
+    this.inventoryStatus = inventoryStatus;
   }
 
   @Override
@@ -111,6 +114,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
     case 0: return isbn;
     case 1: return quantity;
     case 2: return unitPrice;
+    case 3: return inventoryStatus;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -120,6 +124,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       null,
       null,
       new org.apache.avro.Conversions.DecimalConversion(),
+      null,
       null
   };
 
@@ -136,6 +141,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
     case 0: isbn = value$ != null ? value$.toString() : null; break;
     case 1: quantity = (java.lang.Integer)value$; break;
     case 2: unitPrice = (java.math.BigDecimal)value$; break;
+    case 3: inventoryStatus = (com.readrealm.order.event.InventoryStatus)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -192,49 +198,67 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   /**
-   * Creates a new OrderDetails RecordBuilder.
-   * @return A new OrderDetails RecordBuilder
+   * Gets the value of the 'inventoryStatus' field.
+   * @return The value of the 'inventoryStatus' field.
    */
-  public static com.readrealm.order.event.OrderDetails.Builder newBuilder() {
-    return new com.readrealm.order.event.OrderDetails.Builder();
+  public com.readrealm.order.event.InventoryStatus getInventoryStatus() {
+    return inventoryStatus;
+  }
+
+
+  /**
+   * Sets the value of the 'inventoryStatus' field.
+   * @param value the value to set.
+   */
+  public void setInventoryStatus(com.readrealm.order.event.InventoryStatus value) {
+    this.inventoryStatus = value;
   }
 
   /**
-   * Creates a new OrderDetails RecordBuilder by copying an existing Builder.
+   * Creates a new OrderItem RecordBuilder.
+   * @return A new OrderItem RecordBuilder
+   */
+  public static com.readrealm.order.event.OrderItem.Builder newBuilder() {
+    return new com.readrealm.order.event.OrderItem.Builder();
+  }
+
+  /**
+   * Creates a new OrderItem RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new OrderDetails RecordBuilder
+   * @return A new OrderItem RecordBuilder
    */
-  public static com.readrealm.order.event.OrderDetails.Builder newBuilder(com.readrealm.order.event.OrderDetails.Builder other) {
+  public static com.readrealm.order.event.OrderItem.Builder newBuilder(com.readrealm.order.event.OrderItem.Builder other) {
     if (other == null) {
-      return new com.readrealm.order.event.OrderDetails.Builder();
+      return new com.readrealm.order.event.OrderItem.Builder();
     } else {
-      return new com.readrealm.order.event.OrderDetails.Builder(other);
+      return new com.readrealm.order.event.OrderItem.Builder(other);
     }
   }
 
   /**
-   * Creates a new OrderDetails RecordBuilder by copying an existing OrderDetails instance.
+   * Creates a new OrderItem RecordBuilder by copying an existing OrderItem instance.
    * @param other The existing instance to copy.
-   * @return A new OrderDetails RecordBuilder
+   * @return A new OrderItem RecordBuilder
    */
-  public static com.readrealm.order.event.OrderDetails.Builder newBuilder(com.readrealm.order.event.OrderDetails other) {
+  public static com.readrealm.order.event.OrderItem.Builder newBuilder(com.readrealm.order.event.OrderItem other) {
     if (other == null) {
-      return new com.readrealm.order.event.OrderDetails.Builder();
+      return new com.readrealm.order.event.OrderItem.Builder();
     } else {
-      return new com.readrealm.order.event.OrderDetails.Builder(other);
+      return new com.readrealm.order.event.OrderItem.Builder(other);
     }
   }
 
   /**
-   * RecordBuilder for OrderDetails instances.
+   * RecordBuilder for OrderItem instances.
    */
   @org.apache.avro.specific.AvroGenerated
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<OrderDetails>
-    implements org.apache.avro.data.RecordBuilder<OrderDetails> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<OrderItem>
+    implements org.apache.avro.data.RecordBuilder<OrderItem> {
 
     private java.lang.String isbn;
     private int quantity;
     private java.math.BigDecimal unitPrice;
+    private com.readrealm.order.event.InventoryStatus inventoryStatus;
 
     /** Creates a new Builder */
     private Builder() {
@@ -245,7 +269,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.readrealm.order.event.OrderDetails.Builder other) {
+    private Builder(com.readrealm.order.event.OrderItem.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.isbn)) {
         this.isbn = data().deepCopy(fields()[0].schema(), other.isbn);
@@ -259,13 +283,17 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
         this.unitPrice = data().deepCopy(fields()[2].schema(), other.unitPrice);
         fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
+      if (isValidValue(fields()[3], other.inventoryStatus)) {
+        this.inventoryStatus = data().deepCopy(fields()[3].schema(), other.inventoryStatus);
+        fieldSetFlags()[3] = other.fieldSetFlags()[3];
+      }
     }
 
     /**
-     * Creates a Builder by copying an existing OrderDetails instance
+     * Creates a Builder by copying an existing OrderItem instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.readrealm.order.event.OrderDetails other) {
+    private Builder(com.readrealm.order.event.OrderItem other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.isbn)) {
         this.isbn = data().deepCopy(fields()[0].schema(), other.isbn);
@@ -278,6 +306,10 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       if (isValidValue(fields()[2], other.unitPrice)) {
         this.unitPrice = data().deepCopy(fields()[2].schema(), other.unitPrice);
         fieldSetFlags()[2] = true;
+      }
+      if (isValidValue(fields()[3], other.inventoryStatus)) {
+        this.inventoryStatus = data().deepCopy(fields()[3].schema(), other.inventoryStatus);
+        fieldSetFlags()[3] = true;
       }
     }
 
@@ -295,7 +327,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       * @param value The value of 'isbn'.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderDetails.Builder setIsbn(java.lang.String value) {
+    public com.readrealm.order.event.OrderItem.Builder setIsbn(java.lang.String value) {
       validate(fields()[0], value);
       this.isbn = value;
       fieldSetFlags()[0] = true;
@@ -315,7 +347,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       * Clears the value of the 'isbn' field.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderDetails.Builder clearIsbn() {
+    public com.readrealm.order.event.OrderItem.Builder clearIsbn() {
       isbn = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -335,7 +367,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       * @param value The value of 'quantity'.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderDetails.Builder setQuantity(int value) {
+    public com.readrealm.order.event.OrderItem.Builder setQuantity(int value) {
       validate(fields()[1], value);
       this.quantity = value;
       fieldSetFlags()[1] = true;
@@ -355,7 +387,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       * Clears the value of the 'quantity' field.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderDetails.Builder clearQuantity() {
+    public com.readrealm.order.event.OrderItem.Builder clearQuantity() {
       fieldSetFlags()[1] = false;
       return this;
     }
@@ -374,7 +406,7 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       * @param value The value of 'unitPrice'.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderDetails.Builder setUnitPrice(java.math.BigDecimal value) {
+    public com.readrealm.order.event.OrderItem.Builder setUnitPrice(java.math.BigDecimal value) {
       validate(fields()[2], value);
       this.unitPrice = value;
       fieldSetFlags()[2] = true;
@@ -394,20 +426,61 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
       * Clears the value of the 'unitPrice' field.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderDetails.Builder clearUnitPrice() {
+    public com.readrealm.order.event.OrderItem.Builder clearUnitPrice() {
       unitPrice = null;
       fieldSetFlags()[2] = false;
       return this;
     }
 
+    /**
+      * Gets the value of the 'inventoryStatus' field.
+      * @return The value.
+      */
+    public com.readrealm.order.event.InventoryStatus getInventoryStatus() {
+      return inventoryStatus;
+    }
+
+
+    /**
+      * Sets the value of the 'inventoryStatus' field.
+      * @param value The value of 'inventoryStatus'.
+      * @return This builder.
+      */
+    public com.readrealm.order.event.OrderItem.Builder setInventoryStatus(com.readrealm.order.event.InventoryStatus value) {
+      validate(fields()[3], value);
+      this.inventoryStatus = value;
+      fieldSetFlags()[3] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'inventoryStatus' field has been set.
+      * @return True if the 'inventoryStatus' field has been set, false otherwise.
+      */
+    public boolean hasInventoryStatus() {
+      return fieldSetFlags()[3];
+    }
+
+
+    /**
+      * Clears the value of the 'inventoryStatus' field.
+      * @return This builder.
+      */
+    public com.readrealm.order.event.OrderItem.Builder clearInventoryStatus() {
+      inventoryStatus = null;
+      fieldSetFlags()[3] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
-    public OrderDetails build() {
+    public OrderItem build() {
       try {
-        OrderDetails record = new OrderDetails();
+        OrderItem record = new OrderItem();
         record.isbn = fieldSetFlags()[0] ? this.isbn : (java.lang.String) defaultValue(fields()[0]);
         record.quantity = fieldSetFlags()[1] ? this.quantity : (java.lang.Integer) defaultValue(fields()[1]);
         record.unitPrice = fieldSetFlags()[2] ? this.unitPrice : (java.math.BigDecimal) defaultValue(fields()[2]);
+        record.inventoryStatus = fieldSetFlags()[3] ? this.inventoryStatus : (com.readrealm.order.event.InventoryStatus) defaultValue(fields()[3]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -418,8 +491,8 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumWriter<OrderDetails>
-    WRITER$ = (org.apache.avro.io.DatumWriter<OrderDetails>)MODEL$.createDatumWriter(SCHEMA$);
+  private static final org.apache.avro.io.DatumWriter<OrderItem>
+    WRITER$ = (org.apache.avro.io.DatumWriter<OrderItem>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -427,8 +500,8 @@ public class OrderDetails extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumReader<OrderDetails>
-    READER$ = (org.apache.avro.io.DatumReader<OrderDetails>)MODEL$.createDatumReader(SCHEMA$);
+  private static final org.apache.avro.io.DatumReader<OrderItem>
+    READER$ = (org.apache.avro.io.DatumReader<OrderItem>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {

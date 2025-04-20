@@ -1,8 +1,6 @@
 package com.readrealm.order.config;
 
 import com.readrealm.order.client.CatalogClient;
-import com.readrealm.order.client.InventoryClient;
-import com.readrealm.order.client.PaymentClient;
 import io.micrometer.observation.ObservationRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
@@ -28,35 +26,22 @@ public class RestClientConfig {
     }
 
     @Bean
-    public InventoryClient inventoryClient(RestClient.Builder restClientBuilder) {
-        return createClient(restClientBuilder, "http://localhost:8082", InventoryClient.class);
-    }
-
-    @Bean
-    public PaymentClient paymentClient( RestClient.Builder restClientBuilder) {
-        return createClient(restClientBuilder, "http://localhost:8083", PaymentClient.class);
-    }
-
-    @Bean
-    public CatalogClient catalogClient( RestClient.Builder restClientBuilder) {
-        return createClient(restClientBuilder, "http://localhost:8080", CatalogClient.class);
-    }
-
-    private <T> T createClient(RestClient.Builder restClientBuilder, String baseUrl, Class<T> clientClass) {
-        RestClient restClient = restClientBuilder
-                .baseUrl(baseUrl)
-                .requestFactory(createClientRequestFactory())
-                .observationRegistry(observationRegistry)
-                .build();
-        RestClientAdapter adapter = RestClientAdapter.create(restClient);
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-        return factory.createClient(clientClass);
-    }
-
-    private ClientHttpRequestFactory createClientRequestFactory() {
+    public ClientHttpRequestFactory clientHttpRequestFactory() {
         ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings.DEFAULTS
                 .withConnectTimeout(Duration.ofSeconds(3))
                 .withReadTimeout(Duration.ofSeconds(3));
         return ClientHttpRequestFactories.get(clientHttpRequestFactorySettings);
+    }
+
+    @Bean
+    public CatalogClient catalogClient(RestClient.Builder restClientBuilder, ClientHttpRequestFactory clientHttpRequestFactory) {
+        RestClient restClient = restClientBuilder
+                .baseUrl("http://localhost:8080")
+                .requestFactory(clientHttpRequestFactory)
+                .observationRegistry(observationRegistry)
+                .build();
+        RestClientAdapter adapter = RestClientAdapter.create(restClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(CatalogClient.class);
     }
 }

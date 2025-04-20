@@ -5,8 +5,7 @@
   "fields": [
     {
       "name": "orderId",
-      "type": ["null", "string"],
-      "default": null
+      "type": "string"
     },
     {
       "name": "userFirstName",
@@ -30,12 +29,12 @@
       }
     },
     {
-      "name": "details",
+      "name": "orderItems",
       "type": {
         "type": "array",
         "items": {
           "type": "record",
-          "name": "OrderDetails",
+          "name": "OrderItem",
           "fields": [
             {
               "name": "isbn",
@@ -53,6 +52,20 @@
                 "precision": 20,
                 "scale": 2
               }
+            },
+            {
+              "name": "inventoryStatus",
+              "type": {
+                "type": "enum",
+                "name": "InventoryStatus",
+                "symbols": [
+                  "IN_STOCK",
+                  "OUT_OF_STOCK",
+                  "PROCESSING",
+                  "NOT_FOUND"
+                ]
+              },
+              "default": "PROCESSING"
             }
           ]
         }
@@ -63,8 +76,16 @@
       "type": {
         "type": "enum",
         "name": "PaymentStatus",
-        "symbols": ["PENDING", "COMPLETED", "FAILED", "REFUNDED", "CANCELED", "PROCESSING", "REQUIRES_PAYMENT_METHOD"]
-      }
+        "symbols": [
+          "PENDING",
+          "COMPLETED",
+          "REFUNDED",
+          "CANCELED",
+          "PROCESSING",
+          "REQUIRES_PAYMENT_METHOD"
+        ]
+      },
+      "default": "PROCESSING"
     },
     {
       "name": "createdDate",

@@ -10,9 +10,9 @@ public record PaymentResponse(
         String orderId,
         String stripePaymentIntentId,
         BigDecimal amount,
-        String currency,
         PaymentStatus status,
+        String clientSecret,
         Instant createdDate,
-        Instant updatedDate,
-        String clientSecret
-) {}
+        Instant updatedDate
+) {
+}

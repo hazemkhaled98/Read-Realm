@@ -25,8 +25,8 @@ public class OrderController {
         private final OrderService orderService;
 
         @PostMapping("/create")
-        public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
-                OrderResponse response = orderService.createOrder(orderRequest);
+        public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest) {
+                String response = orderService.createOrder(orderRequest);
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
 
@@ -43,15 +43,15 @@ public class OrderController {
         }
 
         @PostMapping("/cancel")
-        public ResponseEntity<OrderResponse> cancelOrder(@RequestParam String orderId) {
-                OrderResponse order = orderService.cancelOrder(orderId);
-                return ResponseEntity.ok(order);
+        public ResponseEntity<String> cancelOrder(@RequestParam String orderId) {
+                String response = orderService.cancelOrder(orderId);
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
 
         @PostMapping("/refund")
-        public ResponseEntity<OrderResponse> refundOrder(@RequestParam String orderId) {
-                OrderResponse order = orderService.refundOrder(orderId);
-                return ResponseEntity.ok(order);
+        public ResponseEntity<String> refundOrder(@RequestParam String orderId) {
+                String response = orderService.refundOrder(orderId);
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
 
 }

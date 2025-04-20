@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.ISBN;
 import java.math.BigDecimal;
 
 
-public record Details(
+public record OrderItems(
         @NotBlank(message = "ISBN cannot be blank")
         @ISBN(message = "Invalid ISBN format")
         String isbn,

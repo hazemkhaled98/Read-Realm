@@ -1,6 +1,6 @@
 package com.readrealm.order.client;
 
-import com.readrealm.order.model.backend.catalog.BookResponse;
+import com.readrealm.order.model.catalog.BookResponse;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 

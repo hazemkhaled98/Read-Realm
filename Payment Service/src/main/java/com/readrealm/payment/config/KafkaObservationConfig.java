@@ -1,4 +1,4 @@
-package com.readrealm.inventory.config;
+package com.readrealm.payment.config;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
@@ -7,7 +7,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -17,8 +16,7 @@ import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
 @RequiredArgsConstructor
-@Profile("!test")
-public class ObservationConfig {
+public class KafkaObservationConfig {
 
     private final ConcurrentKafkaListenerContainerFactory containerFactory;
     private final ProducerFactory producerFactory;

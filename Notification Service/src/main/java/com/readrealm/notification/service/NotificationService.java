@@ -30,7 +30,7 @@ public class NotificationService {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setFrom("customer-support@readrealm.com");
             messageHelper.setTo(orderEvent.getUserEmail());
-            messageHelper.setSubject(String.format("Your Order with OrderNumber %s is placed successfully", orderId));
+            messageHelper.setSubject(String.format("Your Order with OrderNumber %s is %s successfully", orderId, orderEvent.getPaymentStatus()));
             messageHelper.setText(String.format("""
                             Hi %s %s
 

@@ -1,4 +1,4 @@
-package com.readrealm.payment.model;
+package com.readrealm.order.model;
 
 public enum PaymentStatus {
     PENDING,

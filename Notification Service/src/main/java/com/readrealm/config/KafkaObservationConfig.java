@@ -16,7 +16,7 @@ import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
 @RequiredArgsConstructor
-public class ObservationConfig {
+public class KafkaObservationConfig {
 
     private final ConcurrentKafkaListenerContainerFactory containerFactory;
     private final ProducerFactory producerFactory;

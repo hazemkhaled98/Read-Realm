@@ -1,5 +1,6 @@
 package com.readrealm.payment.model;
 
+import com.readrealm.order.event.OrderEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,9 +24,9 @@ public class Payment {
         private String orderId;
         private String stripePaymentIntentId;
         private BigDecimal amount;
-        private String currency;
         private PaymentStatus status;
-        private String errorMessage;
+        private String clientSecret;
+        private OrderEvent orderEvent;
 
         @CreatedDate
         private Instant createdDate;

@@ -1,4 +1,4 @@
-package com.readrealm.order.model.backend.catalog;
+package com.readrealm.order.model.catalog;
 
 
 import lombok.Builder;

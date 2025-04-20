@@ -1,8 +1,7 @@
 package com.readrealm.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.readrealm.order.model.backend.payment.PaymentResponse;
-import com.readrealm.order.model.backend.payment.PaymentStatus;
+import com.readrealm.order.model.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,11 +16,9 @@ public record OrderResponse(
 
         BigDecimal totalAmount,
 
-        List<Details> details,
+        List<OrderItems> orderItems,
 
         PaymentStatus paymentStatus,
-
-        PaymentResponse paymentDetails,
 
         Instant createdDate,
 

@@ -1,6 +1,5 @@
 package com.readrealm.order.model;
 
-import com.readrealm.order.model.backend.payment.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +21,7 @@ public class Order {
         private String orderId;
         private String userId;
         private BigDecimal totalAmount;
-        private List<OrderDetails> details;
+        private List<OrderItem> orderItems;
         private PaymentStatus paymentStatus;
 
         @CreatedDate

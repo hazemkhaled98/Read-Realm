@@ -2,22 +2,15 @@ package com.readrealm.order.service;
 
 import com.readrealm.auth.util.SecurityUtil;
 import com.readrealm.order.client.CatalogClient;
-import com.readrealm.order.client.InventoryClient;
-import com.readrealm.order.client.PaymentClient;
-import com.readrealm.order.dto.Details;
 import com.readrealm.order.dto.OrderRequest;
 import com.readrealm.order.dto.OrderResponse;
 import com.readrealm.order.event.OrderEvent;
 import com.readrealm.order.mapper.OrderMapper;
 import com.readrealm.order.model.Order;
-import com.readrealm.order.model.OrderDetails;
-import com.readrealm.order.model.backend.catalog.BookResponse;
-import com.readrealm.order.model.backend.inventory.InventoryRequest;
-import com.readrealm.order.model.backend.payment.PaymentRequest;
-import com.readrealm.order.model.backend.payment.PaymentResponse;
-import com.readrealm.order.model.backend.payment.PaymentStatus;
+import com.readrealm.order.model.OrderItem;
+import com.readrealm.order.model.PaymentStatus;
+import com.readrealm.order.model.catalog.BookResponse;
 import com.readrealm.order.repository.OrderRepository;
-import com.readrealm.payment.event.ConfirmPaymentEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,9 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -42,29 +35,19 @@ import static java.util.stream.Collectors.toMap;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final InventoryClient inventoryClient;
     private final CatalogClient catalogClient;
-    private final PaymentClient paymentClient;
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
     @PreAuthorize("@authorizer.isCustomer()")
-    public OrderResponse createOrder(OrderRequest orderRequest) {
+    public String createOrder(OrderRequest orderRequest) {
 
-        Order order = orderRepository.save(orderMapper.toOrder(orderRequest));
+        Order order = orderMapper.toOrder(orderRequest);
 
-        Map<String, Integer> bookIsbnToQuantityMap = orderRequest.details()
-                .stream()
-                .collect(toMap(Details::isbn, Details::quantity));
+        Order processedOrder = processOrder(order);
 
-        reserveStock(bookIsbnToQuantityMap);
+        publishOrderEvent(processedOrder, "inventory");
 
-        updateOrder(order, bookIsbnToQuantityMap);
-
-        PaymentResponse paymentResponse = processPayment(order.getOrderId(), order.getTotalAmount());
-
-        sendOrderEventToKafka(order);
-
-        return orderMapper.toOrderResponse(order, paymentResponse);
+        return "Order created with ID: " + processedOrder.getOrderId();
     }
 
 
@@ -87,26 +70,25 @@ public class OrderService {
         return orders;
     }
 
-    @KafkaListener(topics = "order-confirmation")
-    public void confirmOrder(ConfirmPaymentEvent confirmPaymentEvent) {
+    @KafkaListener(topics = "orders")
+    public void processOrderEvents(OrderEvent orderEvent) {
 
-        String orderId = confirmPaymentEvent.getOrderId().toString();
+        String orderId = orderEvent.getOrderId();
+
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Order not found with ID: " + orderId));
 
-        if (order.getPaymentStatus() == PaymentStatus.COMPLETED) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Order with ID: " + orderId + " is already paid");
-        }
 
-        order.setPaymentStatus(PaymentStatus.COMPLETED);
+        order.setPaymentStatus(PaymentStatus.fromString(orderEvent.getPaymentStatus().toString()));
+
         orderRepository.save(order);
-        log.info("Order with ID: {} is confirmed", orderId);
+
+        logOrder(orderId, order.getPaymentStatus());
     }
 
     @PreAuthorize("@authorizer.isCustomer()")
-    public OrderResponse cancelOrder(String orderId) {
+    public String cancelOrder(String orderId) {
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Order not found with ID: " + orderId));
@@ -120,18 +102,13 @@ public class OrderService {
                     "Order with ID: " + orderId + " is already paid");
         }
 
-        PaymentResponse paymentResponse = paymentClient.cancelPayment(orderId);
+        publishOrderEvent(order, "order-cancellation");
 
-        order.setPaymentStatus(PaymentStatus.CANCELED);
-        order = orderRepository.save(order);
-
-        sendOrderEventToKafka(order);
-
-        return orderMapper.toOrderResponse(order, paymentResponse);
+        return "Order cancellation request is sent Successfully";
     }
 
     @PreAuthorize("@authorizer.isCustomer()")
-    public OrderResponse refundOrder(String orderId) {
+    public String refundOrder(String orderId) {
         Order order = orderRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Order not found with ID: " + orderId));
@@ -140,65 +117,52 @@ public class OrderService {
             throw new AccessDeniedException("You are not authorized to refund this order");
         }
 
-        if (order.getPaymentStatus() != PaymentStatus.PENDING) {
+        if (order.getPaymentStatus() != PaymentStatus.COMPLETED) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Order with ID: " + orderId + " is not paid yet");
         }
 
-        PaymentResponse paymentResponse = paymentClient.refundPayment(orderId);
+        publishOrderEvent(order, "order-refund");
 
-        order.setPaymentStatus(PaymentStatus.REFUNDED);
-        order = orderRepository.save(order);
-
-        sendOrderEventToKafka(order);
-
-        return orderMapper.toOrderResponse(order, paymentResponse);
+        return "Order refund Request is sent successfully";
     }
 
+    private Order processOrder(Order order) {
 
-    private void reserveStock(Map<String, Integer> bookIsbnToQuantityMap) {
-        List<InventoryRequest> inventoryRequests = bookIsbnToQuantityMap
-                .entrySet()
+        Map<String, OrderItem> orderItems = order.getOrderItems()
                 .stream()
-                .map(entry -> new InventoryRequest(entry.getKey(), entry.getValue()))
-                .toList();
+                .collect(toMap(OrderItem::getIsbn, Function.identity()));
 
-        inventoryClient.reserveInventory(inventoryRequests);
-    }
-
-    private void updateOrder(Order order, Map<String, Integer> bookIsbnToQuantityMap) {
-        List<BookResponse> books = catalogClient.getBooksByISBNs(bookIsbnToQuantityMap.keySet());
+        List<BookResponse> books = catalogClient.getBooksByISBNs(orderItems.keySet());
 
         BigDecimal totalAmount = BigDecimal.ZERO;
 
-        List<OrderDetails> orderDetails = new ArrayList<>();
-
         for(BookResponse book : books) {
-            int quantity = bookIsbnToQuantityMap.get(book.isbn());
+            OrderItem orderItem = orderItems.get(book.isbn());
             BigDecimal price = book.price();
-            orderDetails.add(new OrderDetails(book.isbn(), quantity, price));
+            orderItem.setUnitPrice(price);
+            int quantity = orderItem.getQuantity();
             totalAmount = totalAmount.add(price.multiply(BigDecimal.valueOf(quantity)));
         }
 
         order.setUserId(SecurityUtil.getCurrentUserId());
         order.setTotalAmount(totalAmount);
-        order.setDetails(orderDetails);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-        orderRepository.save(order);
+        order.setPaymentStatus(PaymentStatus.PROCESSING);
+        return orderRepository.save(order);
     }
 
-    private PaymentResponse processPayment(String orderId, BigDecimal totalAmount) {
-        PaymentRequest paymentRequest = new PaymentRequest(orderId, totalAmount, "USD");
-
-        return paymentClient.processPayment(paymentRequest);
-    }
-
-    private void sendOrderEventToKafka(Order order) {
+    private void publishOrderEvent(Order order, String... topics) {
         OrderEvent orderEvent = orderMapper.toOrderEvent(order, SecurityUtil.getSecurityPrincipal());
 
-        log.info("Order {}: {}", orderEvent.getPaymentStatus(), orderEvent);
+        logOrder(order.getOrderId(), order.getPaymentStatus());
 
-        kafkaTemplate.send("orders", orderEvent);
+        for (String topic : topics) {
+            kafkaTemplate.send(topic, orderEvent);
+        }
+    }
+
+    private static void logOrder(String orderId, PaymentStatus paymentStatus){
+        log.info("Processing Order with ID: {}. Payment Status is {}", orderId, paymentStatus);
     }
 
 }

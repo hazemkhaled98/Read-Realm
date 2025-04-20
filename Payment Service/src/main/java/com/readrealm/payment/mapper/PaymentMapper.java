@@ -1,10 +1,9 @@
 package com.readrealm.payment.mapper;
 
 
-import com.readrealm.payment.dto.PaymentRequest;
+import com.readrealm.order.event.OrderEvent;
 import com.readrealm.payment.dto.PaymentResponse;
 import com.readrealm.payment.model.Payment;
-import com.readrealm.payment.model.PaymentStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -13,12 +12,12 @@ public interface PaymentMapper {
 
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "stripePaymentIntentId", source = "paymentIntentId")
-        @Mapping(target = "errorMessage", ignore = true)
-        Payment toPayment(PaymentRequest request, String paymentIntentId, PaymentStatus status);
-
-        @Mapping(target = "clientSecret", ignore = true)
-        PaymentResponse toPaymentResponse(Payment payment);
-
+        @Mapping(target = "status", source = "orderEvent.paymentStatus")
+        @Mapping(target = "amount", source = "orderEvent.totalAmount")
+        @Mapping(target = "orderEvent" , source = "orderEvent")
         @Mapping(target = "clientSecret", source = "clientSecret")
-        PaymentResponse toPaymentResponse(Payment payment, String clientSecret);
+        Payment toPayment(OrderEvent orderEvent, String paymentIntentId, String clientSecret);
+
+
+        PaymentResponse toPaymentResponse(Payment payment);
 }

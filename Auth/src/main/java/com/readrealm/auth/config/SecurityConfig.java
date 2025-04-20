@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.http.HttpMethod.GET;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -26,11 +28,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, KeycloakJwtConverter keycloakJwtConverter) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests -> {
-                    authorizeRequests
-                            .requestMatchers("/v1/payments/webhook").permitAll()
-                            .anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/v1/payments/webhook").permitAll()
+                        .requestMatchers(GET,"/v1/books/**").permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwkSetUri(jwkSetUri)

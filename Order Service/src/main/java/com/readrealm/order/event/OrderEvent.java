@@ -13,10 +13,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -9034582155552834950L;
+  private static final long serialVersionUID = 8876858960302734136L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderEvent\",\"namespace\":\"com.readrealm.order.event\",\"fields\":[{\"name\":\"orderId\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"userFirstName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"userLastName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"userEmail\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"totalAmount\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":20,\"scale\":2}},{\"name\":\"details\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"OrderDetails\",\"fields\":[{\"name\":\"isbn\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"quantity\",\"type\":\"int\"},{\"name\":\"unitPrice\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":20,\"scale\":2}}]}}},{\"name\":\"paymentStatus\",\"type\":{\"type\":\"enum\",\"name\":\"PaymentStatus\",\"symbols\":[\"PENDING\",\"COMPLETED\",\"FAILED\",\"REFUNDED\",\"CANCELED\",\"PROCESSING\",\"REQUIRES_PAYMENT_METHOD\"]}},{\"name\":\"createdDate\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"updatedDate\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderEvent\",\"namespace\":\"com.readrealm.order.event\",\"fields\":[{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"userFirstName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"userLastName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"userEmail\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"totalAmount\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":20,\"scale\":2}},{\"name\":\"orderItems\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"OrderItem\",\"fields\":[{\"name\":\"isbn\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"quantity\",\"type\":\"int\"},{\"name\":\"unitPrice\",\"type\":{\"type\":\"bytes\",\"logicalType\":\"decimal\",\"precision\":20,\"scale\":2}},{\"name\":\"inventoryStatus\",\"type\":{\"type\":\"enum\",\"name\":\"InventoryStatus\",\"symbols\":[\"IN_STOCK\",\"OUT_OF_STOCK\",\"PROCESSING\",\"NOT_FOUND\"]},\"default\":\"PROCESSING\"}]}}},{\"name\":\"paymentStatus\",\"type\":{\"type\":\"enum\",\"name\":\"PaymentStatus\",\"symbols\":[\"PENDING\",\"COMPLETED\",\"REFUNDED\",\"CANCELED\",\"PROCESSING\",\"REQUIRES_PAYMENT_METHOD\"]},\"default\":\"PROCESSING\"},{\"name\":\"createdDate\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"updatedDate\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -81,7 +81,7 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
   private java.lang.String userLastName;
   private java.lang.String userEmail;
   private java.math.BigDecimal totalAmount;
-  private java.util.List<com.readrealm.order.event.OrderDetails> details;
+  private java.util.List<com.readrealm.order.event.OrderItem> orderItems;
   private com.readrealm.order.event.PaymentStatus paymentStatus;
   private java.time.Instant createdDate;
   private java.time.Instant updatedDate;
@@ -100,18 +100,18 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
    * @param userLastName The new value for userLastName
    * @param userEmail The new value for userEmail
    * @param totalAmount The new value for totalAmount
-   * @param details The new value for details
+   * @param orderItems The new value for orderItems
    * @param paymentStatus The new value for paymentStatus
    * @param createdDate The new value for createdDate
    * @param updatedDate The new value for updatedDate
    */
-  public OrderEvent(java.lang.String orderId, java.lang.String userFirstName, java.lang.String userLastName, java.lang.String userEmail, java.math.BigDecimal totalAmount, java.util.List<com.readrealm.order.event.OrderDetails> details, com.readrealm.order.event.PaymentStatus paymentStatus, java.time.Instant createdDate, java.time.Instant updatedDate) {
+  public OrderEvent(java.lang.String orderId, java.lang.String userFirstName, java.lang.String userLastName, java.lang.String userEmail, java.math.BigDecimal totalAmount, java.util.List<com.readrealm.order.event.OrderItem> orderItems, com.readrealm.order.event.PaymentStatus paymentStatus, java.time.Instant createdDate, java.time.Instant updatedDate) {
     this.orderId = orderId;
     this.userFirstName = userFirstName;
     this.userLastName = userLastName;
     this.userEmail = userEmail;
     this.totalAmount = totalAmount;
-    this.details = details;
+    this.orderItems = orderItems;
     this.paymentStatus = paymentStatus;
     this.createdDate = createdDate.truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
     this.updatedDate = updatedDate.truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
@@ -132,7 +132,7 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
     case 2: return userLastName;
     case 3: return userEmail;
     case 4: return totalAmount;
-    case 5: return details;
+    case 5: return orderItems;
     case 6: return paymentStatus;
     case 7: return createdDate;
     case 8: return updatedDate;
@@ -169,7 +169,7 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
     case 2: userLastName = value$ != null ? value$.toString() : null; break;
     case 3: userEmail = value$ != null ? value$.toString() : null; break;
     case 4: totalAmount = (java.math.BigDecimal)value$; break;
-    case 5: details = (java.util.List<com.readrealm.order.event.OrderDetails>)value$; break;
+    case 5: orderItems = (java.util.List<com.readrealm.order.event.OrderItem>)value$; break;
     case 6: paymentStatus = (com.readrealm.order.event.PaymentStatus)value$; break;
     case 7: createdDate = (java.time.Instant)value$; break;
     case 8: updatedDate = (java.time.Instant)value$; break;
@@ -263,20 +263,20 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
   }
 
   /**
-   * Gets the value of the 'details' field.
-   * @return The value of the 'details' field.
+   * Gets the value of the 'orderItems' field.
+   * @return The value of the 'orderItems' field.
    */
-  public java.util.List<com.readrealm.order.event.OrderDetails> getDetails() {
-    return details;
+  public java.util.List<com.readrealm.order.event.OrderItem> getOrderItems() {
+    return orderItems;
   }
 
 
   /**
-   * Sets the value of the 'details' field.
+   * Sets the value of the 'orderItems' field.
    * @param value the value to set.
    */
-  public void setDetails(java.util.List<com.readrealm.order.event.OrderDetails> value) {
-    this.details = value;
+  public void setOrderItems(java.util.List<com.readrealm.order.event.OrderItem> value) {
+    this.orderItems = value;
   }
 
   /**
@@ -376,7 +376,7 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
     private java.lang.String userLastName;
     private java.lang.String userEmail;
     private java.math.BigDecimal totalAmount;
-    private java.util.List<com.readrealm.order.event.OrderDetails> details;
+    private java.util.List<com.readrealm.order.event.OrderItem> orderItems;
     private com.readrealm.order.event.PaymentStatus paymentStatus;
     private java.time.Instant createdDate;
     private java.time.Instant updatedDate;
@@ -412,8 +412,8 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
         this.totalAmount = data().deepCopy(fields()[4].schema(), other.totalAmount);
         fieldSetFlags()[4] = other.fieldSetFlags()[4];
       }
-      if (isValidValue(fields()[5], other.details)) {
-        this.details = data().deepCopy(fields()[5].schema(), other.details);
+      if (isValidValue(fields()[5], other.orderItems)) {
+        this.orderItems = data().deepCopy(fields()[5].schema(), other.orderItems);
         fieldSetFlags()[5] = other.fieldSetFlags()[5];
       }
       if (isValidValue(fields()[6], other.paymentStatus)) {
@@ -456,8 +456,8 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
         this.totalAmount = data().deepCopy(fields()[4].schema(), other.totalAmount);
         fieldSetFlags()[4] = true;
       }
-      if (isValidValue(fields()[5], other.details)) {
-        this.details = data().deepCopy(fields()[5].schema(), other.details);
+      if (isValidValue(fields()[5], other.orderItems)) {
+        this.orderItems = data().deepCopy(fields()[5].schema(), other.orderItems);
         fieldSetFlags()[5] = true;
       }
       if (isValidValue(fields()[6], other.paymentStatus)) {
@@ -675,41 +675,41 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
     }
 
     /**
-      * Gets the value of the 'details' field.
+      * Gets the value of the 'orderItems' field.
       * @return The value.
       */
-    public java.util.List<com.readrealm.order.event.OrderDetails> getDetails() {
-      return details;
+    public java.util.List<com.readrealm.order.event.OrderItem> getOrderItems() {
+      return orderItems;
     }
 
 
     /**
-      * Sets the value of the 'details' field.
-      * @param value The value of 'details'.
+      * Sets the value of the 'orderItems' field.
+      * @param value The value of 'orderItems'.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderEvent.Builder setDetails(java.util.List<com.readrealm.order.event.OrderDetails> value) {
+    public com.readrealm.order.event.OrderEvent.Builder setOrderItems(java.util.List<com.readrealm.order.event.OrderItem> value) {
       validate(fields()[5], value);
-      this.details = value;
+      this.orderItems = value;
       fieldSetFlags()[5] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'details' field has been set.
-      * @return True if the 'details' field has been set, false otherwise.
+      * Checks whether the 'orderItems' field has been set.
+      * @return True if the 'orderItems' field has been set, false otherwise.
       */
-    public boolean hasDetails() {
+    public boolean hasOrderItems() {
       return fieldSetFlags()[5];
     }
 
 
     /**
-      * Clears the value of the 'details' field.
+      * Clears the value of the 'orderItems' field.
       * @return This builder.
       */
-    public com.readrealm.order.event.OrderEvent.Builder clearDetails() {
-      details = null;
+    public com.readrealm.order.event.OrderEvent.Builder clearOrderItems() {
+      orderItems = null;
       fieldSetFlags()[5] = false;
       return this;
     }
@@ -842,7 +842,7 @@ public class OrderEvent extends org.apache.avro.specific.SpecificRecordBase impl
         record.userLastName = fieldSetFlags()[2] ? this.userLastName : (java.lang.String) defaultValue(fields()[2]);
         record.userEmail = fieldSetFlags()[3] ? this.userEmail : (java.lang.String) defaultValue(fields()[3]);
         record.totalAmount = fieldSetFlags()[4] ? this.totalAmount : (java.math.BigDecimal) defaultValue(fields()[4]);
-        record.details = fieldSetFlags()[5] ? this.details : (java.util.List<com.readrealm.order.event.OrderDetails>) defaultValue(fields()[5]);
+        record.orderItems = fieldSetFlags()[5] ? this.orderItems : (java.util.List<com.readrealm.order.event.OrderItem>) defaultValue(fields()[5]);
         record.paymentStatus = fieldSetFlags()[6] ? this.paymentStatus : (com.readrealm.order.event.PaymentStatus) defaultValue(fields()[6]);
         record.createdDate = fieldSetFlags()[7] ? this.createdDate : (java.time.Instant) defaultValue(fields()[7]);
         record.updatedDate = fieldSetFlags()[8] ? this.updatedDate : (java.time.Instant) defaultValue(fields()[8]);

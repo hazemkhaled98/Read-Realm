@@ -7,7 +7,7 @@ import java.util.List;
 
 public record OrderRequest(
 
-        @NotEmpty(message = "Order details list cannot be empty")
-        List<@Valid Details> details
+        @NotEmpty(message = "Order items list cannot be empty")
+        List<@Valid OrderItems> orderItems
 ) {
 }
