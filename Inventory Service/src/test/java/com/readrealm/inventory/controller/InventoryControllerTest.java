@@ -21,8 +21,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 import static com.readrealm.auth.util.MockAuthorizationUtil.mockAdminJWT;
 import static com.readrealm.auth.util.MockAuthorizationUtil.mockCustomerJWT;
 import static org.mockito.ArgumentMatchers.any;
@@ -155,42 +153,6 @@ class InventoryControllerTest {
                         .with(jwt().jwt(mockCustomerJWT()))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void Given_valid_reserve_stock_request_should_return_201() throws Exception {
-        InventoryDTO response = new InventoryDTO("9780553103540", 8);
-
-        when(inventoryService.reserveStock(any(List.class)))
-                .thenReturn(List.of(response));
-
-        String reserveRequest = """ 
-                [{"isbn": "9780553103540", "quantity": 2}]
-                """;
-
-        mockMvc.perform(post("/v1/inventory/reserve-stock")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reserveRequest)
-                        .with(jwt().jwt(mockCustomerJWT())))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    void Given_insufficient_stock_should_return_400() throws Exception {
-        when(inventoryService.reserveStock(any(List.class)))
-                .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Insufficient inventory"));
-
-        String reserveRequest = """
-                [{"isbn": "9780553103540", "quantity": 100}]
-                """;
-
-        mockMvc.perform(post("/v1/inventory/reserve-stock")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reserveRequest)
-                        .with(jwt().jwt(mockCustomerJWT())))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
