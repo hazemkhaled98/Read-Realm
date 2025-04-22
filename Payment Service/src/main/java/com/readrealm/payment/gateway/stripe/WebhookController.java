@@ -1,7 +1,7 @@
-package com.readrealm.payment.paymentgateway.stripe;
+package com.readrealm.payment.gateway.stripe;
 
 
-import com.readrealm.payment.paymentgateway.PaymentGateway;
+import com.readrealm.payment.gateway.WebhookPaymentGateway;
 import com.readrealm.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class WebhookController {
 
-    private final PaymentGateway stripePaymentGateway;
+    private final WebhookPaymentGateway stripePaymentGateway;
     private final PaymentService paymentService;
 
     @PostMapping("/webhook")

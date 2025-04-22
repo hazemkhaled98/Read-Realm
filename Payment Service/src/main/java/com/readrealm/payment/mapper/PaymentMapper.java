@@ -4,7 +4,7 @@ package com.readrealm.payment.mapper;
 import com.readrealm.order.event.OrderEvent;
 import com.readrealm.payment.dto.PaymentResponse;
 import com.readrealm.payment.model.Payment;
-import com.readrealm.payment.paymentgateway.PaymentRequest;
+import com.readrealm.payment.gateway.PaymentRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

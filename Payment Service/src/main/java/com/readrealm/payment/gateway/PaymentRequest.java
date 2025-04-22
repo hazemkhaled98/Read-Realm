@@ -1,4 +1,4 @@
-package com.readrealm.payment.paymentgateway;
+package com.readrealm.payment.gateway;
 
 import java.math.BigDecimal;
 

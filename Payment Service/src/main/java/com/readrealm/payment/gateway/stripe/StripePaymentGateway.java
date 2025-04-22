@@ -1,11 +1,11 @@
-package com.readrealm.payment.paymentgateway.stripe;
+package com.readrealm.payment.gateway.stripe;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readrealm.payment.dto.StripeWebhookRequest;
+import com.readrealm.payment.gateway.PaymentRequest;
+import com.readrealm.payment.gateway.WebhookPaymentGateway;
 import com.readrealm.payment.model.PaymentStatus;
-import com.readrealm.payment.paymentgateway.PaymentGateway;
-import com.readrealm.payment.paymentgateway.PaymentRequest;
 import com.readrealm.payment.service.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
@@ -29,7 +29,7 @@ import static com.readrealm.payment.model.PaymentStatus.REQUIRES_PAYMENT_METHOD;
 
 @Slf4j
 @Component
-public class StripePaymentGateway implements PaymentGateway {
+public class StripePaymentGateway implements WebhookPaymentGateway {
 
     private final ObjectMapper objectMapper;
 
