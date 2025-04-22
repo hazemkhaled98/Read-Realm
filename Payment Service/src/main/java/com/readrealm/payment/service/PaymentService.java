@@ -1,6 +1,5 @@
 package com.readrealm.payment.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readrealm.order.event.OrderEvent;
 import com.readrealm.payment.dto.PaymentResponse;
 import com.readrealm.payment.mapper.PaymentMapper;
@@ -32,7 +31,6 @@ public class PaymentService {
     private final PaymentGateway paymentGateway;
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
-    private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
     @Value("${stripe.webhook.secret}")

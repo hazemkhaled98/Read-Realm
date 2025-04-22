@@ -1,5 +1,6 @@
 package com.readrealm.payment.paymentgateway;
 
+import com.readrealm.payment.service.PaymentService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,9 @@ public class MockPaymentGateway implements PaymentGateway {
     }
 
     @Override
-    public void handleWebhook(String payload, String signature) {
-        PaymentGateway.super.handleWebhook(payload, signature);
+    public void handleWebhook(PaymentService paymentService, String payload, String signature) {
+        // do nothing
+        // in mock implementation
+        // this is just to simulate the behavior of the real payment gateway
     }
 }

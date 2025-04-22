@@ -1,4 +1,4 @@
-package com.readrealm.payment.service;
+package com.readrealm.payment.integration;
 
 import com.readrealm.order.event.InventoryStatus;
 import com.readrealm.order.event.OrderEvent;
@@ -7,6 +7,7 @@ import com.readrealm.payment.model.Payment;
 import com.readrealm.payment.model.PaymentStatus;
 import com.readrealm.payment.paymentgateway.PaymentGateway;
 import com.readrealm.payment.repository.PaymentRepository;
+import com.readrealm.payment.service.PaymentService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;

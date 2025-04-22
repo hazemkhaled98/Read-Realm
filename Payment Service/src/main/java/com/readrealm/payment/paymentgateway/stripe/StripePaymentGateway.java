@@ -33,18 +33,15 @@ public class StripePaymentGateway implements PaymentGateway {
 
     private final ObjectMapper objectMapper;
 
-    private final PaymentService paymentService;
-
     @Value("${stripe.api.key}")
     private String apiKey;
 
     @Value("${stripe.webhook.secret}")
     private String webhookSecret;
 
-    public StripePaymentGateway(ObjectMapper objectMapper, PaymentService paymentService) {
+    public StripePaymentGateway(ObjectMapper objectMapper) {
         Stripe.apiKey = apiKey;
         this.objectMapper = objectMapper;
-        this.paymentService = paymentService;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class StripePaymentGateway implements PaymentGateway {
     }
 
     @Override
-    public void handleWebhook(String webhookPayload, String requestSignature) {
+    public void handleWebhook(PaymentService paymentService, String webhookPayload, String requestSignature) {
 
         try {
             Event event = Webhook.constructEvent(webhookPayload, requestSignature, webhookSecret);
