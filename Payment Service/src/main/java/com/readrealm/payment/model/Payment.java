@@ -22,7 +22,7 @@ public class Payment {
         @Id
         private String id;
         private String orderId;
-        private String stripePaymentIntentId;
+        private String paymentRequestId;
         private BigDecimal amount;
         private PaymentStatus status;
         private String clientSecret;
