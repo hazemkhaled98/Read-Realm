@@ -82,6 +82,7 @@
           "REFUNDED",
           "CANCELED",
           "PROCESSING",
+          "FAILED",
           "REQUIRES_PAYMENT_METHOD"
         ]
       },

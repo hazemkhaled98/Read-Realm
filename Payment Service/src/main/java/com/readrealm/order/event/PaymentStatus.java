@@ -6,8 +6,8 @@
 package com.readrealm.order.event;
 @org.apache.avro.specific.AvroGenerated
 public enum PaymentStatus implements org.apache.avro.generic.GenericEnumSymbol<PaymentStatus> {
-  PENDING, COMPLETED, REFUNDED, CANCELED, PROCESSING, REQUIRES_PAYMENT_METHOD  ;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"PaymentStatus\",\"namespace\":\"com.readrealm.order.event\",\"symbols\":[\"PENDING\",\"COMPLETED\",\"REFUNDED\",\"CANCELED\",\"PROCESSING\",\"REQUIRES_PAYMENT_METHOD\"]}");
+  PENDING, COMPLETED, REFUNDED, CANCELED, PROCESSING, FAILED, REQUIRES_PAYMENT_METHOD  ;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"PaymentStatus\",\"namespace\":\"com.readrealm.order.event\",\"symbols\":[\"PENDING\",\"COMPLETED\",\"REFUNDED\",\"CANCELED\",\"PROCESSING\",\"FAILED\",\"REQUIRES_PAYMENT_METHOD\"]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   @Override

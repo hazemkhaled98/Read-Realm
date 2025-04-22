@@ -3,9 +3,9 @@ package com.readrealm.payment.integration;
 import com.readrealm.order.event.InventoryStatus;
 import com.readrealm.order.event.OrderEvent;
 import com.readrealm.order.event.OrderItem;
+import com.readrealm.payment.gateway.PaymentGateway;
 import com.readrealm.payment.model.Payment;
 import com.readrealm.payment.model.PaymentStatus;
-import com.readrealm.payment.gateway.PaymentGateway;
 import com.readrealm.payment.repository.PaymentRepository;
 import com.readrealm.payment.service.PaymentService;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -37,7 +37,6 @@ import org.testcontainers.utility.DockerImageName;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -46,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.readrealm.order.event.PaymentStatus.CANCELED;
 import static com.readrealm.order.event.PaymentStatus.COMPLETED;
+import static com.readrealm.order.event.PaymentStatus.FAILED;
 import static com.readrealm.order.event.PaymentStatus.PENDING;
 import static com.readrealm.order.event.PaymentStatus.PROCESSING;
 import static com.readrealm.order.event.PaymentStatus.REFUNDED;
@@ -68,7 +68,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
 @DisplayName("Payment Service Integration Test")
 @Testcontainers
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-@EmbeddedKafka(partitions = 1, topics = {"orders", "order-refund", "order-cancellation", "payments"})
+@EmbeddedKafka(partitions = 1, topics = {"orders", "order-refund", "order-cancellation", "payments", "payments-failure"})
 @ActiveProfiles("test")
 class PaymentServiceIntegrationTest {
 
@@ -92,6 +92,8 @@ class PaymentServiceIntegrationTest {
     private String kafkaBrokers;
 
     private static final String PAYMENTS_TOPIC = "payments";
+    private static final String PAYMENTS_FAILURE_TOPIC = "payments-failure";
+    private static final String ORDERS_TOPIC = "orders";
 
     @BeforeEach
     void setup(){
@@ -108,7 +110,7 @@ class PaymentServiceIntegrationTest {
     @Test
     void should_create_payment_and_persist_to_database_when_order_event_received() throws Exception {
 
-        try (KafkaConsumer<String, OrderEvent> ordersConsumer = createOrdersTopicConsumer()) {
+        try (KafkaConsumer<String, OrderEvent> ordersConsumer = createTestConsumer(List.of(ORDERS_TOPIC))) {
 
             OrderEvent orderEvent = createOrderEvent();
             String orderId = orderEvent.getOrderId();
@@ -163,7 +165,7 @@ class PaymentServiceIntegrationTest {
         when(mockPaymentGateway.createPaymentRequest(eq(orderId), any(BigDecimal.class)))
                 .thenThrow(new RuntimeException("Payment gateway error"));
 
-        try (Consumer<String, OrderEvent> ordersConsumer = createOrdersTopicConsumer()) {
+        try (Consumer<String, OrderEvent> ordersConsumer = createTestConsumer(List.of(ORDERS_TOPIC, PAYMENTS_FAILURE_TOPIC))) {
             // When
             kafkaTemplate.send(PAYMENTS_TOPIC, orderEvent).get();
             // Verify no payment was created
@@ -173,11 +175,12 @@ class PaymentServiceIntegrationTest {
             });
 
             ConsumerRecords<String, OrderEvent> consumerRecords = ordersConsumer.poll(Duration.ofSeconds(5));
-            OrderEvent receivedOrderEvent = consumerRecords.iterator().next().value();
 
-
-            assertNotNull(receivedOrderEvent, "Updated order event should not be null");
-            assertEquals(REQUIRES_PAYMENT_METHOD, receivedOrderEvent.getPaymentStatus());
+            consumerRecords.iterator().forEachRemaining(record ->{
+                OrderEvent receivedOrderEvent = record.value();
+                assertNotNull(receivedOrderEvent, "Updated order event should not be null");
+                assertEquals(FAILED, receivedOrderEvent.getPaymentStatus());
+            });
         }
 
     }
@@ -191,7 +194,7 @@ class PaymentServiceIntegrationTest {
         // Create an existing payment
         createPayment(orderId);
 
-        try (Consumer<String, OrderEvent> ordersConsumer = createOrdersTopicConsumer()) {
+        try (Consumer<String, OrderEvent> ordersConsumer = createTestConsumer(List.of(ORDERS_TOPIC))) {
 
             // When
             kafkaTemplate.send("order-cancellation", orderEvent).get();
@@ -224,7 +227,7 @@ class PaymentServiceIntegrationTest {
         // Create an existing payment
         createPayment(orderId);
 
-        try (Consumer<String, OrderEvent> ordersConsumer = createOrdersTopicConsumer()) {
+        try (Consumer<String, OrderEvent> ordersConsumer = createTestConsumer(List.of(ORDERS_TOPIC))) {
 
             // When
             kafkaTemplate.send("order-refund", orderEvent).get();
@@ -258,7 +261,7 @@ class PaymentServiceIntegrationTest {
         // When
         paymentService.processWebhookEvent(orderId, PaymentStatus.COMPLETED);
 
-        try (Consumer<String, OrderEvent> ordersConsumer = createOrdersTopicConsumer()) {
+        try (Consumer<String, OrderEvent> ordersConsumer = createTestConsumer(List.of(ORDERS_TOPIC))) {
 
             // Verify payment was updated
             await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
@@ -287,7 +290,7 @@ class PaymentServiceIntegrationTest {
         // When
         paymentService.processWebhookEvent(orderId, PaymentStatus.REQUIRES_PAYMENT_METHOD);
 
-        try (Consumer<String, OrderEvent> ordersConsumer = createOrdersTopicConsumer()) {
+        try (Consumer<String, OrderEvent> ordersConsumer = createTestConsumer(List.of(ORDERS_TOPIC))) {
 
             // Verify payment was updated
             await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
@@ -325,7 +328,7 @@ class PaymentServiceIntegrationTest {
         return orderEvent;
     }
 
-    private KafkaConsumer<String, OrderEvent> createOrdersTopicConsumer() {
+    private KafkaConsumer<String, OrderEvent> createTestConsumer(List<String> topics) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-" + UUID.randomUUID());
@@ -335,7 +338,7 @@ class PaymentServiceIntegrationTest {
         props.put("schema.registry.url", "mock://test");
         props.put("specific.avro.reader", true);
         KafkaConsumer<String, OrderEvent> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList("orders"));
+        consumer.subscribe(topics);
         return consumer;
     }
 

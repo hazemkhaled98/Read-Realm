@@ -29,7 +29,7 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/v1/payments/webhook").permitAll()
+                        .requestMatchers("/stripe/webhook").permitAll()
                         .requestMatchers(GET,"/v1/books/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

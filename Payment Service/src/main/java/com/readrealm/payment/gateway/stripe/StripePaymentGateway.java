@@ -14,6 +14,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -40,8 +41,12 @@ public class StripePaymentGateway implements WebhookPaymentGateway {
     private String webhookSecret;
 
     public StripePaymentGateway(ObjectMapper objectMapper) {
-        Stripe.apiKey = apiKey;
         this.objectMapper = objectMapper;
+    }
+
+    @PostConstruct
+    public void init() {
+        Stripe.apiKey = apiKey;
     }
 
     @Override
@@ -93,8 +98,10 @@ public class StripePaymentGateway implements WebhookPaymentGateway {
                 paymentService.processWebhookEvent(orderId, paymentStatus);
             }
         } catch (SignatureVerificationException e) {
+            log.warn("Failed to validate Stripe signature");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Stripe signature");
         } catch (JsonProcessingException e) {
+            log.warn("Error processing Stripe webhook");
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing Stripe webhook");
         }
     }

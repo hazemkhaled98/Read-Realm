@@ -92,7 +92,7 @@ public class InventoryService {
 
     }
 
-    @KafkaListener(topics = {"order-cancellation", "order-refund"})
+    @KafkaListener(topics = {"order-cancellation", "order-refund", "payments-failure"})
     public void handleOrderEvent(OrderEvent orderEvent) {
 
         log.info("Restock items for order: {}", orderEvent);

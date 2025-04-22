@@ -2,15 +2,14 @@ package com.readrealm.payment.service;
 
 import com.readrealm.order.event.OrderEvent;
 import com.readrealm.payment.dto.PaymentResponse;
+import com.readrealm.payment.gateway.PaymentGateway;
+import com.readrealm.payment.gateway.PaymentRequest;
 import com.readrealm.payment.mapper.PaymentMapper;
 import com.readrealm.payment.model.Payment;
 import com.readrealm.payment.model.PaymentStatus;
-import com.readrealm.payment.gateway.PaymentGateway;
-import com.readrealm.payment.gateway.PaymentRequest;
 import com.readrealm.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static com.readrealm.order.event.PaymentStatus.CANCELED;
 import static com.readrealm.order.event.PaymentStatus.COMPLETED;
+import static com.readrealm.order.event.PaymentStatus.FAILED;
 import static com.readrealm.order.event.PaymentStatus.PENDING;
 import static com.readrealm.order.event.PaymentStatus.REFUNDED;
 import static com.readrealm.order.event.PaymentStatus.REQUIRES_PAYMENT_METHOD;
@@ -32,9 +32,6 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
-
-    @Value("${stripe.webhook.secret}")
-    private String stripeWebhookSecret;
 
     private static final String ORDERS_TOPIC = "orders";
 
@@ -65,7 +62,8 @@ public class PaymentService {
             log.info("Payment created and sent to orders topic: {}", orderEvent);
         } catch (Exception e) {
             log.error("Payment creation failed for order: {}. Error: {}", orderId, e.getMessage());
-            orderEvent.setPaymentStatus(REQUIRES_PAYMENT_METHOD);
+            orderEvent.setPaymentStatus(FAILED);
+            kafkaTemplate.send("payments-failure", orderEvent);
         }
 
         kafkaTemplate.send(ORDERS_TOPIC, orderEvent);
