@@ -8,6 +8,6 @@ import java.util.List;
 public record OrderRequest(
 
         @NotEmpty(message = "Order items list cannot be empty")
-        List<@Valid OrderItems> orderItems
+        List<@Valid OrderItem> orderItems
 ) {
 }

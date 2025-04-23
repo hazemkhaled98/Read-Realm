@@ -1,0 +1,42 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/v1/books",
+    "queryParameters": {
+      "isbn": {
+        "equalTo": "9780553103540"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": [
+      {
+        "id": 1,
+        "isbn": "9780553103540",
+        "title": "A Game of Thrones",
+        "description": "The first book in A Song of Ice and Fire series",
+        "price": 10.00,
+        "authors": [
+          {
+            "id": 1,
+            "fullName": "George R.R. Martin"
+          }
+        ],
+        "categories": [
+          {
+            "id": 1,
+            "name": "Fantasy"
+          },
+          {
+            "id": 5,
+            "name": "Adventure"
+          }
+        ]
+      }
+    ]
+  }
+}

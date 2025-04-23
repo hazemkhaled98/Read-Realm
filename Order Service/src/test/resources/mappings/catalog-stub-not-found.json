@@ -1,0 +1,24 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/v1/books",
+    "queryParameters": {
+      "isbn": {
+        "equalTo": "non-existing-isbn"
+      }
+    }
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": [
+      {
+        "error": "Book not found",
+        "status": 404,
+        "message": "The book with the given ISBN does not exist in the catalog."
+      }
+    ]
+  }
+}

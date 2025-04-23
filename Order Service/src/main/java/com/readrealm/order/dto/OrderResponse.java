@@ -16,7 +16,7 @@ public record OrderResponse(
 
         BigDecimal totalAmount,
 
-        List<OrderItems> orderItems,
+        List<OrderItem> orderItems,
 
         PaymentStatus paymentStatus,
 

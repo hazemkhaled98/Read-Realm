@@ -2,24 +2,1485 @@
 	"info": {
 		"_postman_id": "f2074904-1733-4b2c-b943-5e4eedd37220",
 		"name": "ReadRealm",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "19754707"
 	},
 	"item": [
 		{
-			"name": "Books",
+			"name": "Gateway",
 			"item": [
 				{
-					"name": "Get All Books",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Order",
+					"item": [
+						{
+							"name": "Create Order",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:9090/login/oauth2/code/readrealm",
+											"type": "string"
+										},
+										{
+											"key": "useBrowser",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "scope",
+											"value": "{{Scopes}}",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "{{Token URL}}",
+											"type": "string"
+										},
+										{
+											"key": "authUrl",
+											"value": "{{Auth URL}}",
+											"type": "string"
+										},
+										{
+											"key": "clientSecret",
+											"value": "{{Client Secret}}",
+											"type": "string"
+										},
+										{
+											"key": "clientId",
+											"value": "{{Client ID}}",
+											"type": "string"
+										},
+										{
+											"key": "tokenName",
+											"value": "access token",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"fbe17191-bfad-4add-9f01-902326b3c359\",\r\n    \"orderItems\": [\r\n        {\r\n            \"isbn\": \"9780553103540\",\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"isbn\": \"9780439064873\",\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{GATEWAY_SERVICE}}/v1/orders/create",
+									"host": [
+										"{{GATEWAY_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"orders",
+										"create"
+									]
+								},
+								"description": "This endpoint allows the creation of new orders. The HTTP POST request should be sent to {{GATEWAY_SERVICE}}/v1/orders/create with the following payload in the raw request body type:\n\n``` json\n{\n  \"userId\": \"fbe17191-bfad-4add-9f01-902326 ...\",\n  \"orderItems\": [\n    {\n      \"isbn\": \"9780553103540\",\n      \"quantity\": 1\n    }\n  ]\n}\n\n ```\n\n### Response\n\nThe response of this request can be documented as a JSON schema."
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel Order",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{GATEWAY_SERVICE}}/v1/orders/cancel?orderId=67c7085bf71ef51c46ee15e1",
+									"host": [
+										"{{GATEWAY_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"orders",
+										"cancel"
+									],
+									"query": [
+										{
+											"key": "orderId",
+											"value": "67c7085bf71ef51c46ee15e1"
+										}
+									]
+								},
+								"description": "### Cancel Order\n\nThis endpoint allows the user to cancel a specific order by providing the order ID.\n\n#### Request\n\n- Method: POST\n    \n- URL: `{{GATEWAY_SERVICE}}/v1/orders/cancel?orderId=67c7085bf71ef51c46ee15e1`\n    \n- Headers:\n    \n    - Content-Type: application/json\n        \n- { \"userId\": 10, \"totalAmount\": 20, \"details\": \\[ { \"isbn\": \"1\", \"quantity\": 20, \"price\": 200 } \\]}\n    \n\n#### Response\n\nThe response data model for this endpoint is as follows:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    // Define the properties based on the actual response data\n  }\n}\n\n ```\n\n#### Example\n\n```\n// Sample response data\n{}\n\n ```\n\nThis endpoint returns a 200 status code upon successful cancellation of the order."
+							},
+							"response": []
+						},
+						{
+							"name": "Refund Order",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{GATEWAY_SERVICE}}/v1/orders/refund?orderId=67c702d68506ff64092f8042",
+									"host": [
+										"{{GATEWAY_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"orders",
+										"refund"
+									],
+									"query": [
+										{
+											"key": "orderId",
+											"value": "67c702d68506ff64092f8042"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Orders By User Id",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:9090/login/oauth2/code/readrealm",
+											"type": "string"
+										},
+										{
+											"key": "useBrowser",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "scope",
+											"value": "{{Scopes}}",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "{{Token URL}}",
+											"type": "string"
+										},
+										{
+											"key": "authUrl",
+											"value": "{{Auth URL}}",
+											"type": "string"
+										},
+										{
+											"key": "clientSecret",
+											"value": "{{Client Secret}}",
+											"type": "string"
+										},
+										{
+											"key": "clientId",
+											"value": "{{Client ID}}",
+											"type": "string"
+										},
+										{
+											"key": "tokenName",
+											"value": "access token",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_SERVICE}}/v1/orders?userId=fbe17191-bfad-4add-9f01-902326b3c359",
+									"host": [
+										"{{GATEWAY_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"orders"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "fbe17191-bfad-4add-9f01-902326b3c359"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Order By order Id",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:9090/login/oauth2/code/readrealm",
+											"type": "string"
+										},
+										{
+											"key": "useBrowser",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "scope",
+											"value": "{{Scopes}}",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "{{Token URL}}",
+											"type": "string"
+										},
+										{
+											"key": "authUrl",
+											"value": "{{Auth URL}}",
+											"type": "string"
+										},
+										{
+											"key": "clientSecret",
+											"value": "{{Client Secret}}",
+											"type": "string"
+										},
+										{
+											"key": "clientId",
+											"value": "{{Client ID}}",
+											"type": "string"
+										},
+										{
+											"key": "tokenName",
+											"value": "access token",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_SERVICE}}/v1/orders/67c050ecc7b54b788f30c79e",
+									"host": [
+										"{{GATEWAY_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"orders",
+										"67c050ecc7b54b788f30c79e"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Catalog",
+					"item": [
+						{
+							"name": "Books",
+							"item": [
+								{
+									"name": "Search Books",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/books/search?sortBy=PRICE&sortOrder=desc&pageNumber=1&pageSize=7",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"books",
+												"search"
+											],
+											"query": [
+												{
+													"key": "sortBy",
+													"value": "PRICE"
+												},
+												{
+													"key": "sortOrder",
+													"value": "desc"
+												},
+												{
+													"key": "pageNumber",
+													"value": "1"
+												},
+												{
+													"key": "pageSize",
+													"value": "7"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Books",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/books?isbn=9780553103540",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"books"
+											],
+											"query": [
+												{
+													"key": "title",
+													"value": "game",
+													"disabled": true
+												},
+												{
+													"key": "isbn",
+													"value": "9780553103540"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Book By ISBN",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/books/9780553103540",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"books",
+												"9780553103540"
+											],
+											"query": [
+												{
+													"key": "title",
+													"value": "game",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Book",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"description\": \"Collection Of The Best Lord Of The rings\",\r\n    \"title\": \"Lord Of The rings\",\r\n    \"isbn\": \"9780395489321\",\r\n    \"price\": 29.99,\r\n    \"categoriesIds\": [\r\n        1,\r\n        2,\r\n        3\r\n    ],\r\n    \"authorsIds\": [\r\n        1\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/books?title=game",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"books"
+											],
+											"query": [
+												{
+													"key": "title",
+													"value": "game"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Book",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"description\": \"Collection Of The Best Lord Of The rings\",\r\n    \"title\": \"Lord Of The rings\",\r\n    \"isbn\": \"9780395489321\",\r\n    \"price\": 29.99,\r\n    \"categoriesIds\": [\r\n        1,\r\n        2,\r\n        3\r\n    ],\r\n    \"authorsIds\": [\r\n        1\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/books",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"books"
+											],
+											"query": [
+												{
+													"key": "title",
+													"value": "game",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Book",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/books/9780062073488",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"books",
+												"9780062073488"
+											],
+											"query": [
+												{
+													"key": "title",
+													"value": "game",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Authors",
+							"item": [
+								{
+									"name": "Get All Authors",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/authors",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"authors"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Author",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/authors/1",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Author",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/authors",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"authors"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Author",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": 1,\r\n    \"authorRequest\": {\r\n        \"firstName\": \"Hazem\",\r\n        \"lastName\": \"Khaled\"\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/authors",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"authors"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Author",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/authors/6",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"6"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Categories",
+							"item": [
+								{
+									"name": "Get All Categories",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/categories",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"categories"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Category",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/categories/1",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"categories",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create Category",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/categories",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"categories"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Category",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": 1,\r\n    \"details\": {\r\n        \"name\": \"category\"\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/categories",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"categories"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Category",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/categories/6",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"categories",
+												"6"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Cache",
+							"item": [
+								{
+									"name": "Clear Cache",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{GATEWAY_SERVICE}}/v1/refresh",
+											"host": [
+												"{{GATEWAY_SERVICE}}"
+											],
+											"path": [
+												"v1",
+												"refresh"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "actuator",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "http://localhost:9090/actuator/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"actuator",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Catalog",
+			"item": [
+				{
+					"name": "Books",
+					"item": [
+						{
+							"name": "Search Books",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/books/search?sortBy=PRICE&sortOrder=desc&pageNumber=1&pageSize=10",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"books",
+										"search"
+									],
+									"query": [
+										{
+											"key": "sortBy",
+											"value": "PRICE"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc"
+										},
+										{
+											"key": "pageNumber",
+											"value": "1"
+										},
+										{
+											"key": "pageSize",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Books",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/books?isbn=9780553103540&isbn=9780439064873",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"books"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "game",
+											"disabled": true
+										},
+										{
+											"key": "isbn",
+											"value": "9780553103540"
+										},
+										{
+											"key": "isbn",
+											"value": "9780439064873"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Book By ISBN",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/books/9780553103540",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"books",
+										"9780553103540"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "game",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Book",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"description\": \"Collection Of The Best Lord Of The rings\",\r\n    \"title\": \"Lord Of The rings\",\r\n    \"isbn\": \"9780395489321\",\r\n    \"price\": 29.99,\r\n    \"categoriesIds\": [\r\n        1,\r\n        2,\r\n        3\r\n    ],\r\n    \"authorsIds\": [\r\n        1\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/books?title=game",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"books"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "game"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Book",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"description\": \"Collection Of The Best Lord Of The rings\",\r\n    \"title\": \"Lord Of The rings\",\r\n    \"isbn\": \"9780395489321\",\r\n    \"price\": 29.99,\r\n    \"categoriesIds\": [\r\n        1,\r\n        2,\r\n        3\r\n    ],\r\n    \"authorsIds\": [\r\n        1\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/books",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"books"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "game",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Book",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/books/9780395489321",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"books",
+										"9780395489321"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "game",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Authors",
+					"item": [
+						{
+							"name": "Get All Authors",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/authors",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"authors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Author",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/authors/1",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"authors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Author",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/authors",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"authors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Author",
+							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "http://localhost:9090/login/oauth2/code/readrealm",
+											"type": "string"
+										},
+										{
+											"key": "useBrowser",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "scope",
+											"value": "{{Scopes}}",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "{{Token URL}}",
+											"type": "string"
+										},
+										{
+											"key": "authUrl",
+											"value": "{{Auth URL}}",
+											"type": "string"
+										},
+										{
+											"key": "clientSecret",
+											"value": "{{Client Secret}}",
+											"type": "string"
+										},
+										{
+											"key": "clientId",
+											"value": "{{Client ID}}",
+											"type": "string"
+										},
+										{
+											"key": "tokenName",
+											"value": "access token",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"details\": {\r\n        \"firstName\": \"John\",\r\n        \"lastName\": \"Doe\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/authors",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"authors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Author",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/authors/6",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"authors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Categories",
+					"item": [
+						{
+							"name": "Get All Categories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/categories",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Category",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/categories/1",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"categories",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Category",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"fantasy\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/categories",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Category",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"1\",\r\n    \"details\": {\r\n        \"name\": \"fantasy\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/categories",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Category",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/categories/6",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"categories",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Cache",
+					"item": [
+						{
+							"name": "Clear Cache",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{CATALOG_SERVICE}}/v1/refresh",
+									"host": [
+										"{{CATALOG_SERVICE}}"
+									],
+									"path": [
+										"v1",
+										"refresh"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "Create Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:9090/login/oauth2/code/readrealm",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "{{Scopes}}",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "{{Token URL}}",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "{{Auth URL}}",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "{{Client Secret}}",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "{{Client ID}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "access token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\r\n    \"orderItems\": [\r\n        {\r\n            \"isbn\": \"9780553103540\",\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -27,81 +1488,72 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/v1/books?sortBy=PRICE&sortOrder=desc&pageNumber=1&pageSize=7",
-							"protocol": "http",
+							"raw": "{{ORDER_SERVICE}}/v1/orders/create",
 							"host": [
-								"localhost"
+								"{{ORDER_SERVICE}}"
 							],
-							"port": "8080",
 							"path": [
 								"v1",
-								"books"
-							],
-							"query": [
-								{
-									"key": "sortBy",
-									"value": "PRICE"
-								},
-								{
-									"key": "sortOrder",
-									"value": "desc"
-								},
-								{
-									"key": "pageNumber",
-									"value": "1"
-								},
-								{
-									"key": "pageSize",
-									"value": "7"
-								}
+								"orders",
+								"create"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get Book By ISBN",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Cancel Order",
 					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:9090/login/oauth2/code/readrealm",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "{{Scopes}}",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "{{Token URL}}",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "{{Auth URL}}",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "{{Client Secret}}",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "{{Client ID}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "access token",
+									"type": "string"
 								}
-							}
+							]
 						},
-						"url": {
-							"raw": "http://localhost:8080/v1/books/123124332632",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"books",
-								"123124332632"
-							],
-							"query": [
-								{
-									"key": "title",
-									"value": "game",
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Book",
-					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -114,20 +1566,19 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/v1/books?title=game",
-							"protocol": "http",
+							"raw": "{{ORDER_SERVICE}}/v1/orders/cancel?orderId=6807e7940daf2b618a7b4fac",
 							"host": [
-								"localhost"
+								"{{ORDER_SERVICE}}"
 							],
-							"port": "8080",
 							"path": [
 								"v1",
-								"books"
+								"orders",
+								"cancel"
 							],
 							"query": [
 								{
-									"key": "title",
-									"value": "game"
+									"key": "orderId",
+									"value": "6807e7940daf2b618a7b4fac"
 								}
 							]
 						}
@@ -135,9 +1586,59 @@
 					"response": []
 				},
 				{
-					"name": "Update Book",
+					"name": "Refund Order",
 					"request": {
-						"method": "PUT",
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:9090/login/oauth2/code/readrealm",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "{{Scopes}}",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "{{Token URL}}",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "{{Auth URL}}",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "{{Client Secret}}",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "{{Client ID}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "access token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -149,21 +1650,19 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/v1/books",
-							"protocol": "http",
+							"raw": "{{ORDER_SERVICE}}/v1/orders/refund?orderId=68051acf4652f342955c9919",
 							"host": [
-								"localhost"
+								"{{ORDER_SERVICE}}"
 							],
-							"port": "8080",
 							"path": [
 								"v1",
-								"books"
+								"orders",
+								"refund"
 							],
 							"query": [
 								{
-									"key": "title",
-									"value": "game",
-									"disabled": true
+									"key": "orderId",
+									"value": "68051acf4652f342955c9919"
 								}
 							]
 						}
@@ -171,13 +1670,217 @@
 					"response": []
 				},
 				{
-					"name": "Delete Book",
+					"name": "Orders By User Id",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:9090/login/oauth2/code/readrealm",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "{{Scopes}}",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "{{Token URL}}",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "{{Auth URL}}",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "{{Client Secret}}",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "{{Client ID}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "access token",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ORDER_SERVICE}}/v1/orders?userId=fbe17191-bfad-4add-9f01-902326b3c359",
+							"host": [
+								"{{ORDER_SERVICE}}"
+							],
+							"path": [
+								"v1",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "fbe17191-bfad-4add-9f01-902326b3c359"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order By order Id",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:9090/login/oauth2/code/readrealm",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "{{Scopes}}",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "{{Token URL}}",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "{{Auth URL}}",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "{{Client Secret}}",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "{{Client ID}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "access token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ORDER_SERVICE}}/v1/orders/68051acf4652f342955c9919",
+							"host": [
+								"{{ORDER_SERVICE}}"
+							],
+							"path": [
+								"v1",
+								"orders",
+								"68051acf4652f342955c9919"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actuator",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ORDER_SERVICE}}/actuator/health",
+							"host": [
+								"{{ORDER_SERVICE}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Inventory",
+			"item": [
+				{
+					"name": "Get by ISBN",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{INVENTORY_SERVICE}}/v1/inventory/9780553103540",
+							"host": [
+								"{{INVENTORY_SERVICE}}"
+							],
+							"path": [
+								"v1",
+								"inventory",
+								"9780553103540"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Inventory",
 					"request": {
 						"method": "DELETE",
 						"header": [],
+						"url": {
+							"raw": "{{INVENTORY_SERVICE}}/v1/inventory/9780553103540",
+							"host": [
+								"{{INVENTORY_SERVICE}}"
+							],
+							"path": [
+								"v1",
+								"inventory",
+								"9780553103540"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Inventory",
+					"request": {
+						"method": "POST",
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\r\n    \"isbn\": \"9780553103540\",\r\n    \"quantity\": \"20\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -185,23 +1888,40 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/v1/books/9780062073488",
-							"protocol": "http",
+							"raw": "{{INVENTORY_SERVICE}}/v1/inventory",
 							"host": [
-								"localhost"
+								"{{INVENTORY_SERVICE}}"
 							],
-							"port": "8080",
 							"path": [
 								"v1",
-								"books",
-								"9780062073488"
-							],
-							"query": [
-								{
-									"key": "title",
-									"value": "game",
-									"disabled": true
+								"inventory"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Inventory",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"isbn\": \"9780553103540\",\r\n    \"quantity\": \"50\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
+							}
+						},
+						"url": {
+							"raw": "{{INVENTORY_SERVICE}}/v1/inventory",
+							"host": [
+								"{{INVENTORY_SERVICE}}"
+							],
+							"path": [
+								"v1",
+								"inventory"
 							]
 						}
 					},
@@ -210,154 +1930,380 @@
 			]
 		},
 		{
-			"name": "Authors",
+			"name": "Payment",
 			"item": [
 				{
-					"name": "Get All Authors",
+					"name": "Get By order Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.collectionVariables.set(\"PAYMENT_INTENT_ID\", pm.response.json().stripePaymentIntentId);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:9090/login/oauth2/code/readrealm",
+									"type": "string"
+								},
+								{
+									"key": "useBrowser",
+									"value": false,
+									"type": "boolean"
+								},
+								{
+									"key": "scope",
+									"value": "{{Scopes}}",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "{{Token URL}}",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "{{Auth URL}}",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "{{Client Secret}}",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "{{Client ID}}",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "access token",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8080/v1/authors"
+						"url": {
+							"raw": "{{PAYMENT_SERVICE}}/v1/payments?orderId=6807e83e0daf2b618a7b4fad",
+							"host": [
+								"{{PAYMENT_SERVICE}}"
+							],
+							"path": [
+								"v1",
+								"payments"
+							],
+							"query": [
+								{
+									"key": "orderId",
+									"value": "6807e83e0daf2b618a7b4fad"
+								}
+							]
+						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get Author",
+					"name": "Confirm Payment - Stripe - Success",
 					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "http://localhost:8080/v1/authors/1"
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{stripe_secret_key}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "return_url",
+								"value": "http://localhost:8083",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "payment_method",
+									"value": "pm_card_visa",
+									"type": "text"
+								},
+								{
+									"key": "return_url",
+									"value": "http://localhost:8083",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.stripe.com/v1/payment_intents/{{PAYMENT_INTENT_ID}}/confirm",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stripe",
+								"com"
+							],
+							"path": [
+								"v1",
+								"payment_intents",
+								"{{PAYMENT_INTENT_ID}}",
+								"confirm"
+							]
+						},
+						"description": "Generated from cURL: curl https://api.stripe.com/v1/payment_intents/pi_1234567890/confirm \\\r\n  -u sk_test_4eC39HqLyjWDarjtT1zdp7dc: \\\r\n  -d payment_method=pm_card_visa\r\n"
 					},
 					"response": []
 				},
 				{
-					"name": "Create Author",
+					"name": "Confirm Payment - Stripe - Fail",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{stripe_secret_key}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
-						"url": "http://localhost:8080/v1/authors"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Author",
-					"request": {
-						"method": "PUT",
-						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"authorRequest\": {\r\n        \"firstName\": \"Hazem\",\r\n        \"lastName\": \"Khaled\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "payment_method",
+									"value": "pm_card_visa_chargeDeclined",
+									"type": "text"
+								},
+								{
+									"key": "return_url",
+									"value": "http://localhost:8083",
+									"type": "text"
 								}
-							}
+							]
 						},
-						"url": "http://localhost:8080/v1/authors"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Author",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+						"url": {
+							"raw": "https://api.stripe.com/v1/payment_intents/{{PAYMENT_INTENT_ID}}/confirm",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stripe",
+								"com"
+							],
+							"path": [
+								"v1",
+								"payment_intents",
+								"{{PAYMENT_INTENT_ID}}",
+								"confirm"
+							]
 						},
-						"url": "http://localhost:8080/v1/authors/6"
+						"description": "Generated from cURL: curl https://api.stripe.com/v1/payment_intents/pi_1234567890/confirm \\\r\n  -u sk_test_4eC39HqLyjWDarjtT1zdp7dc: \\\r\n  -d payment_method=pm_card_visa\r\n"
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "Categories",
-			"item": [
-				{
-					"name": "Get All Categories",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "http://localhost:8080/v1/categories"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Category",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "http://localhost:8080/v1/categories/1"
-					},
-					"response": []
-				},
-				{
-					"name": "Create Category",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": "http://localhost:8080/v1/categories"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Category",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"firstName\": \"hazem\",\r\n    \"lastName\": \"Khaled\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+			"name": "Keycloak",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "useBrowser",
+							"value": false,
+							"type": "boolean"
 						},
-						"url": "http://localhost:8080/v1/categories"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Category",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+						{
+							"key": "scope",
+							"value": "{{Scopes}}",
+							"type": "string"
 						},
-						"url": "http://localhost:8080/v1/categories/6"
-					},
-					"response": []
+						{
+							"key": "accessTokenUrl",
+							"value": "{{Token URL}}",
+							"type": "string"
+						},
+						{
+							"key": "authUrl",
+							"value": "{{Auth URL}}",
+							"type": "string"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://localhost:9090/login/oauth2/code/read-realm",
+							"type": "string"
+						},
+						{
+							"key": "clientSecret",
+							"value": "{{Client Secret}}",
+							"type": "string"
+						},
+						{
+							"key": "clientId",
+							"value": "{{Client ID}}",
+							"type": "string"
+						},
+						{
+							"key": "tokenName",
+							"value": "access token",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{KEYCLOAK}}/admin/realms/readrealm/keys",
+					"host": [
+						"{{KEYCLOAK}}"
+					],
+					"path": [
+						"admin",
+						"realms",
+						"readrealm",
+						"keys"
+					]
 				}
-			]
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		},
 		{
-			"name": "Cache",
-			"item": [
-				{
-					"name": "Clear Cache",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": "http://localhost:8080/v1/refresh"
-					},
-					"response": []
-				}
-			]
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "stripe_secret_key",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "PAYMENT_INTENT_ID",
+			"value": "pi_3QzIGjJyYNn6LMIK0zmX8B0o",
+			"type": "default"
+		},
+		{
+			"key": "GATEWAY_SERVICE",
+			"value": "http://localhost:9090",
+			"type": "default"
+		},
+		{
+			"key": "CATALOG_SERVICE",
+			"value": "http://localhost:8080",
+			"type": "default"
+		},
+		{
+			"key": "ORDER_SERVICE",
+			"value": "http://localhost:8081",
+			"type": "default"
+		},
+		{
+			"key": "INVENTORY_SERVICE",
+			"value": "http://localhost:8082",
+			"type": "default"
+		},
+		{
+			"key": "PAYMENT_SERVICE",
+			"value": "http://localhost:8083",
+			"type": "default"
+		},
+		{
+			"key": "Client ID",
+			"value": "read-realm",
+			"type": "default"
+		},
+		{
+			"key": "Client Secret",
+			"value": "tp8iUDlplMw14N16tOd23k9WMS7tYTuW",
+			"type": "default"
+		},
+		{
+			"key": "Auth URL",
+			"value": "http://localhost:8181/realms/read-realm/protocol/openid-connect/auth",
+			"type": "default"
+		},
+		{
+			"key": "Token URL",
+			"value": "http://localhost:8181/realms/read-realm/protocol/openid-connect/token",
+			"type": "default"
+		},
+		{
+			"key": "Scopes",
+			"value": "openid profile email roles",
+			"type": "default"
+		},
+		{
+			"key": "KEYCLOAK",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

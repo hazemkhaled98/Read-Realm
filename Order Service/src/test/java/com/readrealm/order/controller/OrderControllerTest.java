@@ -57,7 +57,7 @@ class OrderControllerTest {
         void Given_valid_order_request_should_return_201() throws Exception {
                 String request = """
                                 {
-                                    "details": [
+                                    "orderItems": [
                                         {
                                             "isbn": "9780553103540",
                                             "quantity": 2,
@@ -67,21 +67,20 @@ class OrderControllerTest {
                                 }
                                 """;
 
-                when(orderService.createOrder(any())).thenReturn(mock(OrderResponse.class));
+                when(orderService.createOrder(any())).thenReturn(any(String.class));
 
                 mockMvc.perform(post("/v1/orders/create")
                                 .with(jwt().jwt(mockCustomerJWT()))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(request))
-                                .andExpect(status().isCreated())
-                                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                                .andExpect(status().isCreated());
         }
 
         @Test
         void Given_invalid_order_request_should_return_400() throws Exception {
                 String request = """
                                 {
-                                    "details": [
+                                    "orderItems": [
                                         {
                                             "isbn": "9780439064873",
                                             "quantity": -1
@@ -131,27 +130,25 @@ class OrderControllerTest {
         }
 
         @Test
-        void Given_valid_cancel_request_should_return_200() throws Exception {
+        void Given_valid_cancel_request_should_return_201() throws Exception {
 
-                when(orderService.cancelOrder("test-order")).thenReturn(mock(OrderResponse.class));
+                when(orderService.cancelOrder("test-order")).thenReturn(any(String.class));
 
                 mockMvc.perform(post("/v1/orders/cancel")
                                 .param("orderId", "test-order")
                                 .with(jwt().jwt(mockCustomerJWT())))
-                                .andExpect(status().isOk())
-                                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                                .andExpect(status().isCreated());
         }
 
         @Test
-        void Given_valid_refund_request_should_return_200() throws Exception {
+        void Given_valid_refund_request_should_return_201() throws Exception {
 
-                when(orderService.refundOrder("test-order")).thenReturn(mock(OrderResponse.class));
+                when(orderService.refundOrder("test-order")).thenReturn(any(String.class));
 
                 mockMvc.perform(post("/v1/orders/refund")
                                 .param("orderId", "test-order")
                                 .with(jwt().jwt(mockCustomerJWT())))
-                                .andExpect(status().isOk())
-                                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                                .andExpect(status().isCreated());
         }
 
         @Test
