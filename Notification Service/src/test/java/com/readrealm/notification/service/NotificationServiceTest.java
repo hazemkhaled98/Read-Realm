@@ -1,7 +1,7 @@
 package com.readrealm.notification.service;
 
-import com.readrealm.order.event.OrderDetails;
 import com.readrealm.order.event.OrderEvent;
+import com.readrealm.order.event.OrderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.readrealm.order.event.InventoryStatus.IN_STOCK;
 import static com.readrealm.order.event.PaymentStatus.COMPLETED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
@@ -65,11 +66,12 @@ class NotificationServiceTest {
         orderEvent.setCreatedDate(Instant.now());
         orderEvent.setUpdatedDate(Instant.now());
         orderEvent.setTotalAmount(BigDecimal.TEN);
-        OrderDetails orderDetails = new OrderDetails();
-        orderDetails.setIsbn("9780062073488");
-        orderDetails.setQuantity(5);
-        orderDetails.setUnitPrice(BigDecimal.TEN);
-        orderEvent.setDetails(List.of(orderDetails));
+        OrderItem orderItem = new OrderItem();
+        orderItem.setIsbn("9780062073488");
+        orderItem.setQuantity(5);
+        orderItem.setUnitPrice(BigDecimal.TEN);
+        orderItem.setInventoryStatus(IN_STOCK);
+        orderEvent.setOrderItems(List.of(orderItem));
     }
 
     @Test

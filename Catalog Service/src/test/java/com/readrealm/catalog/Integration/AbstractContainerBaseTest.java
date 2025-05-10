@@ -1,6 +1,5 @@
 package com.readrealm.catalog.Integration;
 
-import org.junit.jupiter.api.AfterAll;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -24,11 +23,5 @@ abstract class AbstractContainerBaseTest {
         registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
         registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
         registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
-    }
-
-
-    @AfterAll
-    static void closeContainer() {
-        MYSQL_CONTAINER.close();
     }
 }

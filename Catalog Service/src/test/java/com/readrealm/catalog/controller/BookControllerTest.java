@@ -203,7 +203,7 @@ class BookControllerTest {
 
         @Test
         void When_no_jwt_provided_should_return_401() throws Exception {
-                mockMvc.perform(get("/v1/books"))
+                mockMvc.perform(delete("/v1/books/1234567890"))
                                 .andExpect(status().isUnauthorized());
         }
 

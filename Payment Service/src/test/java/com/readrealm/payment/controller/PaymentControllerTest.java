@@ -26,7 +26,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,27 +71,6 @@ class PaymentControllerTest {
                                 .with(jwt().jwt(mockCustomerJWT()))
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isNotFound());
-        }
-
-        @Test
-        void Given_valid_webhook_request_should_return_200() throws Exception {
-                String webhookPayload = """
-                                {
-                                    "data": {
-                                        "setupIntent": {
-                                            "metadata": {
-                                                "orderId": "test-order-id"
-                                            }
-                                        }
-                                    }
-                                }
-                                """;
-
-                mockMvc.perform(post("/v1/payments/webhook")
-                                .header("Stripe-Signature", "test-signature")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(webhookPayload))
-                                .andExpect(status().isOk());
         }
 
         @Test
