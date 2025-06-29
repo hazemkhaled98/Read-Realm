@@ -1,0 +1,19 @@
+mysql:
+  image: mysql:8.3.0
+  rootPassword: root
+  database: catalog-db
+  port: 3306
+
+redis:
+  image: redis:7.2.0
+  port: 6379
+
+app:
+  image: your-spring-app:latest #TODO:update
+  port: 8080
+
+
+volumes:
+  mysqlData: /data/mysql
+  redisData: /data/redis
+  initScript: /scripts/init.sql

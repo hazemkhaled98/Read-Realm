@@ -1,0 +1,4 @@
+apiVersion: v2
+name: catalog-service
+description: A Helm chart for catalog-service with MySQL and Redis
+version: 0.1.0

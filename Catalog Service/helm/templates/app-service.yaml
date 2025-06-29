@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+spec:
+  ports:
+    - port: 8080
+      targetPort: {{ .Values.app.port }}
+  selector:
+    app: catalog-service
