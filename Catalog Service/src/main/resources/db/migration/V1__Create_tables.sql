@@ -1,5 +1,9 @@
 -- V1__Create_Tables.sql
 
+USE `catalog-db`;
+
+SET GLOBAL TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
 -- Create Authors table
 CREATE TABLE authors
 (

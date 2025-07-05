@@ -12,11 +12,15 @@ spec:
       labels:
         app: catalog-service
     spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.28
+          command: [ 'sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done;' ]
       containers:
         - name: catalog-service
           image: {{ .Values.app.image }}
           ports:
-            - containerPort: {{ .Values.app.port }}
+            - containerPort: {{ .Values.app.containerPort }}
           envFrom:
             - configMapRef:
                 name: catalog-config

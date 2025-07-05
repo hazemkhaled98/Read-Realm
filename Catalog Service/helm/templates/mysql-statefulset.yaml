@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment #TODO:Stateful
+kind: StatefulSet
 metadata:
   name: mysql
 spec:
+  serviceName: mysql
   replicas: 1
   selector:
     matchLabels:
@@ -21,17 +22,15 @@ spec:
             - name: MYSQL_DATABASE
               value: {{ .Values.mysql.database }}
           ports:
-            - containerPort: {{ .Values.mysql.port }}
+            - containerPort: {{ .Values.mysql.containerPort }}
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
-            - name: init-script
-              mountPath: /docker-entrypoint-initdb.d/init.sql
-              subPath: init.sql
-      volumes:
-        - name: mysql-data
-          hostPath:
-            path: {{ .Values.volumes.mysqlData }}
-        - name: init-script
-          hostPath:
-            path: {{ .Values.volumes.initScript }}
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

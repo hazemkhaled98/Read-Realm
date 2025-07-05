@@ -4,13 +4,17 @@ metadata:
   name: catalog-config
 data:
   APP_NAME: "catalog-service"
-  SERVER_PORT: "8080"
+  SERVER_PORT: {{ .Values.app.servicePort | quote }}
+  DATASOURCE_URL: "jdbc:mysql://{{ .Values.mysql.host }}:{{ .Values.mysql.servicePort }}/{{ .Values.mysql.database }}"
+  DATABASE_USERNAME: "root"
+  DATABASE_PASSWORD: {{ .Values.mysql.rootPassword | quote }}
+  DATABASE_DRIVER: "com.mysql.cj.jdbc.Driver"
   JPA_DDL_AUTO: "none"
   JPA_SHOW_SQL: "true"
   VIRTUAL_THREADS_ENABLED: "true"
   CACHE_DURATION: "1"
-  REDIS_HOST: "redis"
-  REDIS_PORT: "6379"
+  REDIS_HOST: {{ .Values.redis.host | quote }}
+  REDIS_PORT: {{ .Values.redis.servicePort | quote }}
   SWAGGER_PATH: "/swagger-ui.html"
   API_DOCS_PATH: "/v1/api-docs"
   DOCS_TITLE: "Catalog Service"

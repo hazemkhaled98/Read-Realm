@@ -4,7 +4,7 @@ metadata:
   name: catalog-service
 spec:
   ports:
-    - port: 8080
-      targetPort: {{ .Values.app.port }}
+    - port: {{ .Values.app.servicePort }}
+      targetPort: {{ .Values.app.containerPort }}
   selector:
     app: catalog-service

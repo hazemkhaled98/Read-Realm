@@ -3,8 +3,9 @@ kind: Service
 metadata:
   name: redis
 spec:
+  clusterIP: None
   ports:
-    - port: 6379
-      targetPort: {{ .Values.redis.port }}
+    - port: {{ .Values.redis.servicePort }}
+      targetPort: {{ .Values.redis.containerPort }}
   selector:
     app: redis
