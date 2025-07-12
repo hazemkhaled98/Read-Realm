@@ -10,11 +10,3 @@ schema-registry:
 
   kafka:
     enabled: false
-
-kafka-ui:
-  enabled: true
-
-  kafka:
-    enabled: false
-  schema-registry:
-    enabled: false

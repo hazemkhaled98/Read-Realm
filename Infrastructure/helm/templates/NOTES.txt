@@ -20,11 +20,6 @@ The following services have been deployed:
   URL: http://{{ .Release.Name }}-schema-registry:8081
 {{- end }}
 
-{{- if index .Values "kafka-ui" "enabled" }}
-- Kafka UI: Web interface for Kafka management
-  Access URL: http://127.0.0.1:8080 (via port-forward)
-{{- end }}
-
 To access these services, use kubectl port-forward:
 
   kubectl port-forward svc/{{ .Release.Name }}-<service-name> <local-port>:<service-port>
@@ -32,4 +27,3 @@ To access these services, use kubectl port-forward:
 For example:
 
   kubectl port-forward svc/{{ .Release.Name }}-keycloak 8080:8080
-  kubectl port-forward svc/{{ .Release.Name }}-kafka-ui 8080:8080

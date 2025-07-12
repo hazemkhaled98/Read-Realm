@@ -7,7 +7,6 @@ This directory contains Helm charts for deploying the Read Realm services to Kub
 - **keycloak**: Keycloak authentication service with MySQL database
 - **kafka**: Apache Kafka message broker
 - **schema-registry**: Confluent Schema Registry
-- **kafka-ui**: UI for managing Kafka
 
 ## Installation
 
@@ -27,7 +26,6 @@ To install individual services:
 helm install keycloak ./keycloak
 helm install kafka ./kafka
 helm install schema-registry ./schema-registry
-helm install kafka-ui ./kafka-ui
 ```
 
 ## Configuration
