@@ -1,0 +1,20 @@
+# Enable/disable individual services
+keycloak:
+  enabled: true
+
+kafka:
+  enabled: true
+
+schema-registry:
+  enabled: true
+
+  kafka:
+    enabled: false
+
+kafka-ui:
+  enabled: true
+
+  kafka:
+    enabled: false
+  schema-registry:
+    enabled: false

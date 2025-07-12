@@ -1,0 +1,21 @@
+{{- if .Values.mysql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-keycloak-mysql
+  labels:
+    app: {{ .Release.Name }}-keycloak-mysql
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ .Values.mysql.service.port }}
+      targetPort: {{ .Values.mysql.service.port }}
+      protocol: TCP
+      name: mysql
+  selector:
+    app: {{ .Release.Name }}-keycloak-mysql
+    release: {{ .Release.Name }}
+{{- end }}

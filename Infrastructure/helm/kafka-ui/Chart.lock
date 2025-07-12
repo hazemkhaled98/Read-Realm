@@ -1,0 +1,9 @@
+dependencies:
+- name: kafka
+  repository: file://../kafka
+  version: 0.1.0
+- name: schema-registry
+  repository: file://../schema-registry
+  version: 0.1.0
+digest: sha256:ec5462be6e4f9e8de74e07596356edf30780453c9f6f750ac763a2955f3baf7e
+generated: "2025-07-12T14:50:51.2610908+03:00"

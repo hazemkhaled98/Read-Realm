@@ -1,0 +1,24 @@
+apiVersion: v2
+kind: Chart
+name: read-realm
+description: Umbrella Helm chart for Read Realm services
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+dependencies:
+  - name: keycloak
+    version: 0.1.0
+    repository: file://./keycloak
+    condition: keycloak.enabled
+  - name: kafka
+    version: 0.1.0
+    repository: file://./kafka
+    condition: kafka.enabled
+  - name: schema-registry
+    version: 0.1.0
+    repository: file://./schema-registry
+    condition: schema-registry.enabled
+  - name: kafka-ui
+    version: 0.1.0
+    repository: file://./kafka-ui
+    condition: kafka-ui.enabled

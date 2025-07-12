@@ -1,0 +1,71 @@
+# Default values for kafka
+
+replicaCount: 1
+
+image:
+  repository: confluentinc/cp-kafka
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  ports:
+    - name: plaintext
+      port: 9092
+      targetPort: 9092
+      protocol: TCP
+    - name: internal
+      port: 29092
+      targetPort: 29092
+      protocol: TCP
+    - name: controller
+      port: 9093
+      targetPort: 9093
+      protocol: TCP
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# ConfigMap for Kafka configuration
+configMap:
+  name: kafka-config
+  data:
+    KAFKA_KRAFT_MODE: "true"
+    KAFKA_PROCESS_ROLES: controller,broker
+    KAFKA_NODE_ID: "1"
+    KAFKA_CONTROLLER_QUORUM_VOTERS: "1@localhost:9093"
+    KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
+    KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,INTERNAL://0.0.0.0:29092
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT
+    KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    KAFKA_LOG_DIRS: /var/lib/kafka/data
+    KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    KAFKA_LOG_RETENTION_HOURS: "168"
+    KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+    CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk"
+
+# Persistence configuration
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 8Gi
+  mountPath: /var/lib/kafka/data

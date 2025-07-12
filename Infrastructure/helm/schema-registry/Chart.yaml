@@ -1,0 +1,11 @@
+apiVersion: v2
+name: schema-registry
+description: A Helm chart for Confluent Schema Registry
+type: application
+version: 0.1.0
+appVersion: "7.5.0"
+dependencies:
+  - name: kafka
+    version: 0.1.0
+    repository: file://../kafka
+    condition: kafka.enabled
