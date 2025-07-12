@@ -41,8 +41,9 @@ spec:
             httpGet:
               path: /subjects
               port: http
-            initialDelaySeconds: 5
+            initialDelaySeconds: 30
             periodSeconds: 5
+            failureThreshold: 30  # Wait up to 2.5 minutes
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
