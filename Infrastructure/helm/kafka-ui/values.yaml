@@ -1,0 +1,48 @@
+# Default values for kafka-ui
+
+replicaCount: 1
+
+image:
+  repository: provectuslabs/kafka-ui
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Dependencies configuration
+kafka:
+  enabled: false # Set to true if you want to deploy Kafka as part of this chart
+
+schema-registry:
+  enabled: false # Set to true if you want to deploy Schema Registry as part of this chart
+
+# ConfigMap for Kafka UI configuration
+configMap:
+  name: kafka-ui-config
+  data:
+    KAFKA_CLUSTERS_NAME: local
+    KAFKA_CLUSTERS_BOOTSTRAPSERVERS: kafka:29092
+    KAFKA_CLUSTERS_SCHEMAREGISTRY: http://schema-registry:8081
+    DYNAMIC_CONFIG_ENABLED: 'true'

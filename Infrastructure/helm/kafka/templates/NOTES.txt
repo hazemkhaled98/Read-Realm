@@ -1,0 +1,18 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+Kafka has been deployed to your cluster.
+
+To connect to Kafka from within the cluster, use the following bootstrap server:
+
+  {{ .Release.Name }}-kafka:9092 (PLAINTEXT)
+  {{ .Release.Name }}-kafka:29092 (INTERNAL)
+
+To test the Kafka installation, you can run a Kafka client pod:
+
+  kubectl run kafka-client --rm -it --restart='Never' --image docker.io/bitnami/kafka:latest -- bash
+
+Inside the pod, you can use the Kafka CLI tools:
+
+  kafka-topics.sh --bootstrap-server {{ .Release.Name }}-kafka:9092 --list

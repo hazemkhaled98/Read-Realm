@@ -1,0 +1,7 @@
+apiVersion: v2
+kind: Chart
+name: kafka
+description: A Helm chart for Kafka
+type: application
+version: 0.1.0
+appVersion: "latest"

@@ -1,0 +1,79 @@
+# Default values for keycloak
+
+replicaCount: 1
+
+image:
+  repository: quay.io/keycloak/keycloak
+  tag: 24.0.1
+  pullPolicy: IfNotPresent
+
+command: ["start-dev", "--import-realm"]
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Keycloak configuration
+keycloak:
+  admin:
+    username: admin
+    password: admin
+
+# MySQL database configuration for Keycloak
+mysql:
+  enabled: true
+  image:
+    repository: mysql
+    tag: 8.3.0
+    pullPolicy: IfNotPresent
+  service:
+    port: 3306
+  auth:
+    rootPassword: root
+    database: keycloak
+    username: keycloak
+    password: password
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 8Gi
+    mountPath: /var/lib/mysql
+
+# ConfigMap for Keycloak configuration
+configMap:
+  name: keycloak-config
+  data:
+    KC_DB: mysql
+    KC_DB_URL: jdbc:mysql://{{ .Release.Name }}-keycloak-mysql:3306/keycloak
+    KC_DB_USERNAME: keycloak
+    KC_DB_PASSWORD: password
+    KEYCLOAK_ADMIN: admin
+    KEYCLOAK_ADMIN_PASSWORD: admin
+
+# Volume for importing realms
+volumes:
+  realms:
+    enabled: true
+    mountPath: /opt/keycloak/data/import/
+    configMapName: keycloak-realms

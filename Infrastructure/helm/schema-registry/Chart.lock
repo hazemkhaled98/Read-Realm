@@ -1,0 +1,6 @@
+dependencies:
+- name: kafka
+  repository: file://../kafka
+  version: 0.1.0
+digest: sha256:c47eba645d6a9fd95b47040bd699085dbc2fa5fe2011499e46fbd05287996df9
+generated: "2025-07-12T14:50:15.7357722+03:00"

@@ -5,7 +5,7 @@ services:
     ports:
       - "3306"
     volumes:
-      - ./docker/mysql_keycloak_data:/var/lib/mysql
+      - ./Infrastructure/mysql_keycloak_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: keycloak
@@ -25,7 +25,7 @@ services:
     ports:
       - "8181:8080"
     volumes:
-      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
+      - ./Infrastructure/keycloak/realms/:/opt/keycloak/data/import/
     depends_on:
       - keycloak-mysql
   loki:
@@ -39,22 +39,22 @@ services:
       - --enable-feature=exemplar-storage
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./Infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - '9090:9090'
   tempo:
     image: grafana/tempo:2.2.2
     command: [ '-config.file=/etc/tempo.yaml' ]
     volumes:
-      - ./docker/tempo/tempo.yml:/etc/tempo.yaml:ro
-      - ./docker/tempo/tempo-data:/tmp/tempo
+      - ./Infrastructure/tempo/tempo.yml:/etc/tempo.yaml:ro
+      - ./Infrastructure/tempo/tempo-data:/tmp/tempo
     ports:
       - '3110:3100'
       - '9411:9411'
   grafana:
     image: grafana/grafana:10.1.0
     volumes:
-      - ./docker/grafana:/etc/grafana/provisioning/datasources:ro
+      - ./Infrastructure/grafana:/etc/grafana/provisioning/datasources:ro
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -86,7 +86,7 @@ services:
       CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./docker/kafka-topics:/var/lib/kafka/data
+      - ./Infrastructure/kafka-topics:/var/lib/kafka/data
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.0
