@@ -9,5 +9,5 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
-  SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "{{ .Release.Name }}-kafka:29092"
-  SCHEMA_REGISTRY_LISTENERS: "http://schema-registry:8081"
+  SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:{{ .Values.service.targetPort }}"

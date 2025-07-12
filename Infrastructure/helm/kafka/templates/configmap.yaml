@@ -8,6 +8,18 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-{{- range $key, $val := .Values.configMap.data }}
-  {{ $key }}: {{ $val | quote }}
-{{- end }}
+  KAFKA_KRAFT_MODE: "true"
+  KAFKA_PROCESS_ROLES: "controller,broker"
+  KAFKA_NODE_ID: "{{ .Values.broker.id }}"
+  KAFKA_CONTROLLER_QUORUM_VOTERS: "{{ .Values.broker.id }}@{{ .Release.Name }}-kafka-{{ .Values.broker.id }}.{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9093"
+  KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://{{ .Release.Name }}-kafka-{{ .Values.broker.id }}.{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+  KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+  KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+  KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+  KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+  KAFKA_LOG_RETENTION_HOURS: "168"
+  KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+  CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk"
