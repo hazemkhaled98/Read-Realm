@@ -39,7 +39,6 @@ spec:
           volumeMounts:
             - name: realms-volume
               mountPath: {{ .Values.volumes.realms.mountPath }}
-              subPath: realm-export.json
           {{- end }}
       {{- if .Values.volumes.realms.enabled }}
       volumes:

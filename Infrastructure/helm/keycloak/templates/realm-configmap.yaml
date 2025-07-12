@@ -4,4 +4,4 @@ metadata:
   name: {{ .Values.volumes.realms.configMapName }}
 data:
   realm-export.json: |
-{{ .Files.Get "realm-export.json" | indent 4 }}
+{{ .Files.Get "files/realm-export.json" | indent 4 }}
