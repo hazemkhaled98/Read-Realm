@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notification-service
+  name: {{ .Values.app.name }}
   labels:
-    app: notification-service
+    app: {{ .Values.app.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: notification-service
+      app: {{ .Values.app.name }}
   template:
     metadata:
       labels:
-        app: notification-service
+        app: {{ .Values.app.name }}
     spec:
       containers:
-        - name: notification-service
+        - name: {{ .Values.app.name }}
           image: {{ .Values.app.image }}
           ports:
             - containerPort: {{ .Values.app.containerPort }}
           envFrom:
             - configMapRef:
-                name: notification-config
+                name: {{ .Values.configmap.name }}
 

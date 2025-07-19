@@ -1,8 +1,8 @@
 app:
+  name: notification-service
   image: hazemkh98/notification-service:1.0.0
   servicePort: 8088
   containerPort: 8088
-  name: notification-service
 
 kafka:
   service:
@@ -24,3 +24,7 @@ mail:
 monitoring:
   sampling:
     probability: 1.0
+
+
+configmap:
+  name: notification-config
