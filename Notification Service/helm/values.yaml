@@ -1,0 +1,26 @@
+app:
+  image: hazemkh98/notification-service:1.0.0
+  servicePort: 8088
+  containerPort: 8088
+  name: notification-service
+
+kafka:
+  service:
+    name: {{ .Release.Name }}-kafka
+  bootstrapServers: "{{ .Release.Name }}-kafka:9092"
+
+schemaRegistry:
+  service:
+    name: {{ .Release.Name }}-schema-registry
+  url: "http://{{ .Release.Name }}-schema-registry:8081"
+
+mail:
+  host: sandbox.smtp.mailtrap.io
+  port: 465
+  protocol: smtp
+  username: d8ed6775c8fbbe
+  password: 16370f0d8be252
+
+monitoring:
+  sampling:
+    probability: 1.0
