@@ -1,0 +1,35 @@
+app:
+  image: hazemkh98/order-service:1.0.0
+  servicePort: 8081
+  containerPort: 8081
+  name: order-service
+
+mongodb:
+  name: order-mongodb
+  image: mongo:7.0.5
+  servicePort: 27017
+  containerPort: 27017
+  database: orders
+  rootUsername: root
+  rootPassword: root
+  authDatabase: admin
+
+kafka:
+  service:
+    name: {{ .Release.Name }}-kafka
+  bootstrapServers: "{{ .Release.Name }}-kafka:9092"
+
+schemaRegistry:
+  service:
+    name: {{ .Release.Name }}-schema-registry
+  url: "http://{{ .Release.Name }}-schema-registry:8081"
+
+volumes:
+  mongoData: /data/mongodb
+
+monitoring:
+  sampling:
+    probability: 1.0
+
+configmap:
+  name: order-config
