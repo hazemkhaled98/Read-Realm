@@ -1,24 +1,19 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-schema-registry
+  name: {{ .Values.name }}
   labels:
-    app: {{ .Release.Name }}-schema-registry
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app: {{ .Values.name }}
 spec:
-  serviceName: {{ .Release.Name }}-schema-registry
+  serviceName: {{ .Values.name }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-schema-registry
-      release: {{ .Release.Name }}
+      app: {{ .Values.name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-schema-registry
-        release: {{ .Release.Name }}
+        app: {{ .Values.name }}
     spec:
       containers:
         - name: schema-registry
@@ -26,7 +21,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMap.name }}
+                name: {{ .Values.configmap.name }}
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
@@ -35,26 +30,12 @@ spec:
             httpGet:
               path: /subjects
               port: http
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /subjects
               port: http
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 30  # Wait up to 2.5 minutes
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}

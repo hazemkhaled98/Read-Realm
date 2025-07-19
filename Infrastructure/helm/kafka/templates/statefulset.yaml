@@ -1,32 +1,27 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-kafka
+  name: {{ .Values.name }}
   labels:
-    app: {{ .Release.Name }}-kafka
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app: {{ .Values.name }}
 spec:
-  serviceName: {{ .Release.Name }}-kafka
+  serviceName: {{ .Values.name }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-kafka
-      release: {{ .Release.Name }}
+      app: {{ .Values.name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-kafka
-        release: {{ .Release.Name }}
+        app: {{ .Values.name }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Values.name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMap.name }}
+                name: {{ .Values.configmap.name }}
           ports:
             {{- range .Values.service.ports }}
             - containerPort: {{ .targetPort }}
@@ -36,21 +31,7 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/kafka/data
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-kafka-data
+            claimName: {{ .Values.persistence.name }}

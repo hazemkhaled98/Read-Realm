@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.volumes.realms.configMapName }}
+  name: {{ .Values.volumes.realms.configmapName }}
 data:
   realm-export.json: |
 {{ .Files.Get "files/realm-export.json" | indent 4 }}

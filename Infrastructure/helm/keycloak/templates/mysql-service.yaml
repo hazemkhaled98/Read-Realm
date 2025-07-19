@@ -1,21 +1,17 @@
-{{- if .Values.mysql.enabled }}
+{{- if .Values.database.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-keycloak-mysql
+  name: {{ .Values.database.name }}
   labels:
-    app: {{ .Release.Name }}-keycloak-mysql
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app: {{ .Values.database.name }}
 spec:
   clusterIP: None
   ports:
-    - port: {{ .Values.mysql.service.port }}
-      targetPort: {{ .Values.mysql.service.port }}
+    - port: {{ .Values.database.service.port }}
+      targetPort: {{ .Values.database.service.port }}
       protocol: TCP
       name: mysql
   selector:
-    app: {{ .Release.Name }}-keycloak-mysql
-    release: {{ .Release.Name }}
+    app: {{ .Values.database.name }}
 {{- end }}

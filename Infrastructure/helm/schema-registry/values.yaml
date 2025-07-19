@@ -2,6 +2,8 @@
 
 replicaCount: 1
 
+name: schema-registry
+
 image:
   repository: confluentinc/cp-schema-registry
   tag: 7.5.0
@@ -11,29 +13,14 @@ service:
   port: 8081
   targetPort: 8081
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
 
-resources: {}
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-# Kafka dependency configuration
 kafka:
-  enabled: true # Set to true if you want to deploy Kafka as part of this chart
+  enabled: true
+  name: kafka
+  port: 9092
+  broker:
+    id: 0
 
 
-configMap:
+configmap:
     name: schema-registry-config
