@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: catalog-config
+  name: {{ .Values.app.name }}
 data:
-  APP_NAME: "catalog-service"
+  APP_NAME: {{ .Values.app.name | quote }}
   SERVER_PORT: {{ .Values.app.containerPort | quote }}
-  DATASOURCE_URL: "jdbc:mysql://{{ .Values.mysql.host }}:{{ .Values.mysql.servicePort }}/{{ .Values.mysql.database }}"
+  DATASOURCE_URL: "jdbc:mysql://{{ .Values.mysql.name }}:{{ .Values.mysql.servicePort }}/{{ .Values.mysql.database }}"
   DATABASE_USERNAME: "root"
   DATABASE_PASSWORD: {{ .Values.mysql.rootPassword | quote }}
   DATABASE_DRIVER: "com.mysql.cj.jdbc.Driver"
@@ -13,7 +13,7 @@ data:
   JPA_SHOW_SQL: "true"
   VIRTUAL_THREADS_ENABLED: "true"
   CACHE_DURATION: "1"
-  REDIS_HOST: {{ .Values.redis.host | quote }}
+  REDIS_HOST: {{ .Values.redis.name | quote }}
   REDIS_PORT: {{ .Values.redis.servicePort | quote }}
   SWAGGER_PATH: "/swagger-ui.html"
   API_DOCS_PATH: "/v1/api-docs"

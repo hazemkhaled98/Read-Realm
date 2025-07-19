@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog-service
+  name: {{ .Values.app.name }}
 spec:
   ports:
     - port: {{ .Values.app.servicePort }}
       targetPort: {{ .Values.app.containerPort }}
   selector:
-    app: catalog-service
+    app: {{ .Values.app.name }}

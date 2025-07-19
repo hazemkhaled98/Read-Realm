@@ -1,5 +1,5 @@
 mysql:
-  host: catalog-mysql
+  name: catalog-mysql
   image: mysql:8.3.0
   servicePort: 3306
   containerPort: 3306
@@ -7,12 +7,13 @@ mysql:
   rootPassword: root
 
 redis:
-  host: catalog-redis
+  name: catalog-redis
   image: redis:7.2.0
   servicePort: 6379
   containerPort: 6379
 
 app:
+  name: catalog-service
   image: hazemkh98/catalog-service:1.0.2
   servicePort: 8080
   containerPort: 8080
@@ -21,3 +22,6 @@ app:
 volumes:
   mysqlData: /data/mysql
   redisData: /data/redis
+
+configmap:
+  name: catalog-config

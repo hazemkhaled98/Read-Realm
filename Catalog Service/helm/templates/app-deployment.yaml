@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-service
+  name: {{ .Values.app.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: catalog-service
+      app: {{ .Values.app.name }}
   template:
     metadata:
       labels:
-        app: catalog-service
+        app: {{ .Values.app.name }}
     spec:
       initContainers:
         - name: wait-for-mysql
           image: busybox:1.28
           command: [ 'sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done;' ]
       containers:
-        - name: catalog-service
+        - name: {{ .Values.app.name }}
           image: {{ .Values.app.image }}
           ports:
             - containerPort: {{ .Values.app.containerPort }}
           envFrom:
             - configMapRef:
-                name: catalog-config
+                name: {{ .Values.configmap.name }}
