@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.mysql.host }}
+  labels:
+    app: inventory-mysql
+spec:
+  serviceName: {{ .Values.mysql.host }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.mysql.host }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mysql.host }}
+    spec:
+      containers:
+        - name: {{ .Values.mysql.host }}
+          image: {{ .Values.mysql.image }}
+          ports:
+            - containerPort: {{ .Values.mysql.containerPort }}
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.mysql.rootPassword }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mysql.database }}
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+

@@ -1,0 +1,9 @@
+apiVersion: v2
+name: inventory-service
+description: A Helm chart for inventory-service with MySQL and Kafka integration
+version: 0.1.0
+dependencies:
+  - name: infrastructure
+    version: "*"
+    repository: "file://../Infrastructure/helm"
+

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+  labels:
+    app: inventory-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+        - name: inventory-service
+          image: {{ .Values.app.image }}
+          ports:
+            - containerPort: {{ .Values.app.containerPort }}
+          envFrom:
+            - configMapRef:
+                name: inventory-config
+

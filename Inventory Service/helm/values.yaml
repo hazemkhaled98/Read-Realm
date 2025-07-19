@@ -1,0 +1,30 @@
+app:
+  image: hazemkh98/inventory-service:1.0.0
+  servicePort: 8082
+  containerPort: 8082
+  name: inventory-service
+
+mysql:
+  host: mysql-inventory
+  image: mysql:8.3.0
+  servicePort: 3306
+  containerPort: 3306
+  database: inventory
+  rootPassword: root
+
+kafka:
+  service:
+    name: {{ .Release.Name }}-kafka
+  bootstrapServers: "{{ .Release.Name }}-kafka:9092"
+
+schemaRegistry:
+  service:
+    name: {{ .Release.Name }}-schema-registry
+  url: "http://{{ .Release.Name }}-schema-registry:"
+
+volumes:
+  mysqlData: /data/mysql
+
+monitoring:
+  sampling:
+    probability: 1.0
