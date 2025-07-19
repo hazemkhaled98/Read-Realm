@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.redis.name }}
+  name: {{ .Values.cache.name }}
 spec:
   clusterIP: None
   ports:
-    - port: {{ .Values.redis.servicePort }}
-      targetPort: {{ .Values.redis.containerPort }}
+    - port: {{ .Values.cache.servicePort }}
+      targetPort: {{ .Values.cache.containerPort }}
   selector:
-    app: {{ .Values.redis.name }}
+    app: {{ .Values.cache.name }}
