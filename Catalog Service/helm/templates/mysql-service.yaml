@@ -8,4 +8,4 @@ spec:
     - port: {{ .Values.mysql.servicePort }}
       targetPort: {{ .Values.mysql.containerPort }}
   selector:
-    app: mysql
+    app: {{ .Values.mysql.host }}

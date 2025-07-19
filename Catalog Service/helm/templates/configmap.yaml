@@ -4,7 +4,7 @@ metadata:
   name: catalog-config
 data:
   APP_NAME: "catalog-service"
-  SERVER_PORT: {{ .Values.app.servicePort | quote }}
+  SERVER_PORT: {{ .Values.app.containerPort | quote }}
   DATASOURCE_URL: "jdbc:mysql://{{ .Values.mysql.host }}:{{ .Values.mysql.servicePort }}/{{ .Values.mysql.database }}"
   DATABASE_USERNAME: "root"
   DATABASE_PASSWORD: {{ .Values.mysql.rootPassword | quote }}

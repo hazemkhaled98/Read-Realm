@@ -1,5 +1,5 @@
 mysql:
-  host: mysql
+  host: catalog-mysql
   image: mysql:8.3.0
   servicePort: 3306
   containerPort: 3306
@@ -7,7 +7,7 @@ mysql:
   rootPassword: root
 
 redis:
-  host: redis
+  host: catalog-redis
   image: redis:7.2.0
   servicePort: 6379
   containerPort: 6379

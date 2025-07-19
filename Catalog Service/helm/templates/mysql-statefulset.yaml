@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
+  name: {{ .Values.mysql.host }}
 spec:
-  serviceName: mysql
+  serviceName: {{ .Values.mysql.host }}
   replicas: 1
   selector:
     matchLabels:
-      app: mysql
+      app: {{ .Values.mysql.host }}
   template:
     metadata:
       labels:
-        app: mysql
+        app: {{ .Values.mysql.host }}
     spec:
       containers:
-        - name: mysql
+        - name: {{ .Values.mysql.host }}
           image: {{ .Values.mysql.image }}
           env:
             - name: MYSQL_ROOT_PASSWORD
