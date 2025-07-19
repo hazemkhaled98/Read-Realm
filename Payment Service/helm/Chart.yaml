@@ -1,0 +1,9 @@
+apiVersion: v2
+name: payment-service
+description: A Helm chart for payment-service with MongoDB and Kafka integration
+version: 0.1.0
+dependencies:
+  - name: infrastructure
+    version: "*"
+    repository: "file://../Infrastructure/helm"
+

@@ -1,0 +1,39 @@
+app:
+  name: payment-service
+  image: hazemkh98/payment-service:1.0.0
+  servicePort: 8083
+  containerPort: 8083
+
+mongodb:
+  name: payment-mongodb
+  image: mongo:7.0.5
+  servicePort: 27017
+  containerPort: 27017
+  database: payments
+  rootUsername: root
+  rootPassword: root
+  authDatabase: admin
+
+kafka:
+  service:
+    name: {{ .Release.Name }}-kafka
+  bootstrapServers: "{{ .Release.Name }}-kafka:9092"
+
+schemaRegistry:
+  service:
+    name: {{ .Release.Name }}-schema-registry
+  url: "http://{{ .Release.Name }}-schema-registry:8085"
+
+stripe:
+  apiKey: "sk_test_51Qy7vnJyYNn6LMIKb79G0yDiQxU59tfRT0EtKGQq1nevtrziuMTR5eqxkc8rHPCDDBan6myEEwtDLBbwqoulIhI200Ivl3zoQ5"
+  webhookSecret: "whsec_313157effe096e34e567eba5f71b0e0ac1a65c5e28da0871d68cf85c14870cdc"
+
+volumes:
+  mongoData: /data/mongodb
+
+monitoring:
+  sampling:
+    probability: 1.0
+
+configmap:
+  name: payment-config
