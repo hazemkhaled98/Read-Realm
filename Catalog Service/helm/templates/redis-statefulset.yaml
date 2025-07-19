@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.redis.name | quote }}
+  name: {{ .Values.cache.name | quote }}
 spec:
-  serviceName: {{ .Values.redis.name }}
+  serviceName: {{ .Values.cache.name }}
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.redis.name }}
+      app: {{ .Values.cache.name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.redis.name }}
+        app: {{ .Values.cache.name }}
     spec:
       containers:
-        - name: {{ .Values.redis.name }}
-          image: {{ .Values.redis.image }}
+        - name: {{ .Values.cache.name }}
+          image: {{ .Values.cache.image }}
           ports:
-            - containerPort: {{ .Values.redis.containerPort }}
+            - containerPort: {{ .Values.cache.containerPort }}
           volumeMounts:
             - name: redis-data
               mountPath: /var/lib/redis

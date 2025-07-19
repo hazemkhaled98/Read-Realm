@@ -1,12 +1,12 @@
-mysql:
+database:
   name: catalog-mysql
   image: mysql:8.3.0
   servicePort: 3306
   containerPort: 3306
-  database: catalog-db
+  applicationDatabaseName: catalog-db
   rootPassword: root
 
-redis:
+cache:
   name: catalog-redis
   image: redis:7.2.0
   servicePort: 6379

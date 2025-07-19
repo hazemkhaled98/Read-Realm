@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.mysql.name }}
+  name: {{ .Values.database.name }}
 spec:
-  serviceName: {{ .Values.mysql.name }}
+  serviceName: {{ .Values.database.name }}
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.mysql.name }}
+      app: {{ .Values.database.name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.mysql.name }}
+        app: {{ .Values.database.name }}
     spec:
       containers:
-        - name: {{ .Values.mysql.name }}
-          image: {{ .Values.mysql.image }}
+        - name: {{ .Values.database.name }}
+          image: {{ .Values.database.image }}
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: {{ .Values.mysql.rootPassword }}
+              value: {{ .Values.database.rootPassword }}
             - name: MYSQL_DATABASE
-              value: {{ .Values.mysql.database }}
+              value: {{ .Values.database.applicationDatabaseName }}
           ports:
-            - containerPort: {{ .Values.mysql.containerPort }}
+            - containerPort: {{ .Values.database.containerPort }}
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
