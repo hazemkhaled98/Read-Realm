@@ -20,7 +20,7 @@ kafka:
 schemaRegistry:
   service:
     name: {{ .Release.Name }}-schema-registry
-  url: "http://{{ .Release.Name }}-schema-registry:"
+  url: "http://{{ .Release.Name }}-schema-registry:8081"
 
 volumes:
   mysqlData: /data/mysql

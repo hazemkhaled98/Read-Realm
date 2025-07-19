@@ -22,7 +22,7 @@ kafka:
 schemaRegistry:
   service:
     name: {{ .Release.Name }}-schema-registry
-  url: "http://{{ .Release.Name }}-schema-registry:8085"
+  url: "http://{{ .Release.Name }}-schema-registry:8081"
 
 stripe:
   apiKey: "sk_test_51Qy7vnJyYNn6LMIKb79G0yDiQxU59tfRT0EtKGQq1nevtrziuMTR5eqxkc8rHPCDDBan6myEEwtDLBbwqoulIhI200Ivl3zoQ5"
