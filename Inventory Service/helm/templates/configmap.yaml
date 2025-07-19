@@ -1,15 +1,15 @@
 8081apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: inventory-config
+  name: {{ .Values.configmap.name }}
 data:
   # Application Configuration
-  APP_NAME: "inventory-service"
+  APP_NAME: {{ .Values.app.name | quote }}
   SERVER_PORT: {{ .Values.app.containerPort | quote }}
   VIRTUAL_THREADS_ENABLED: "true"
 
   # Database Configuration
-  SPRING_DATASOURCE_URL: "jdbc:mysql://{{ .Values.mysql.host }}:{{ .Values.mysql.servicePort }}/{{ .Values.mysql.database }}"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://{{ .Values.mysql.name }}:{{ .Values.mysql.servicePort }}/{{ .Values.mysql.database }}"
   SPRING_DATASOURCE_USERNAME: "root"
   SPRING_DATASOURCE_PASSWORD: {{ .Values.mysql.rootPassword | quote }}
   SPRING_DATASOURCE_DRIVER_CLASS_NAME: "com.mysql.cj.jdbc.Driver"

@@ -1,11 +1,11 @@
 app:
+  name: inventory-service
   image: hazemkh98/inventory-service:1.0.0
   servicePort: 8082
   containerPort: 8082
-  name: inventory-service
 
 mysql:
-  host: mysql-inventory
+  name: mysql-inventory
   image: mysql:8.3.0
   servicePort: 3306
   containerPort: 3306
@@ -28,3 +28,6 @@ volumes:
 monitoring:
   sampling:
     probability: 1.0
+
+configmap:
+  name: inventory-config

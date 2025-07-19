@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.mysql.host }}
+  name: {{ .Values.mysql.name }}
   labels:
     app: inventory-mysql
 spec:
-  serviceName: {{ .Values.mysql.host }}
+  serviceName: {{ .Values.mysql.name }}
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.mysql.host }}
+      app: {{ .Values.mysql.name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.mysql.host }}
+        app: {{ .Values.mysql.name }}
     spec:
       containers:
-        - name: {{ .Values.mysql.host }}
+        - name: {{ .Values.mysql.name }}
           image: {{ .Values.mysql.image }}
           ports:
             - containerPort: {{ .Values.mysql.containerPort }}
