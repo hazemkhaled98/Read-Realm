@@ -15,13 +15,13 @@ data:
   SAMPLING_PROBABILITY: "1.0"
 
   # Kafka Configuration
-  SPRING_KAFKA_BOOTSTRAP_SERVERS: {{ .Values.kafka.bootstrapServers | quote }}
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "{{ .Values.kafka.name }}-{{ .Values.kafka.broker.id }}.{{ .Values.kafka.service.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.kafka.service.port }}"
   SPRING_KAFKA_CONSUMER_GROUP_ID: "notification-Service"
   SPRING_KAFKA_CONSUMER_KEY_DESERIALIZER: "org.apache.kafka.common.serialization.StringDeserializer"
   SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER: "org.springframework.kafka.support.serializer.ErrorHandlingDeserializer"
   SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_DESERIALIZER_KEY_DELEGATE_CLASS: "org.apache.kafka.common.serialization.StringDeserializer"
   SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_DESERIALIZER_VALUE_DELEGATE_CLASS: "io.confluent.kafka.serializers.KafkaAvroDeserializer"
-  SPRING_KAFKA_CONSUMER_PROPERTIES_SCHEMA_REGISTRY_URL: {{ .Values.schemaRegistry.url | quote }}
+  SPRING_KAFKA_CONSUMER_PROPERTIES_SCHEMA_REGISTRY_URL: "http://{{ .Values.schemaRegistry.service.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.schemaRegistry.service.port }}"
   SPRING_KAFKA_CONSUMER_PROPERTIES_SPECIFIC_AVRO_READER: "true"
 
   # Mail Configuration
@@ -41,6 +41,6 @@ data:
 
   # Monitoring Configuration
   MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health, info, metrics, prometheus"
-  MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HISTOGRAM_HTTP_SERVER_REQUESTS: "true"
+  MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES-HISTOGRAM_HTTP_SERVER_REQUESTS: "true"
   MANAGEMENT_OBSERVATIONS_KEY_VALUES_APPLICATION: "notification-service"
   MANAGEMENT_TRACING_SAMPLING_PROBABILITY: {{ .Values.monitoring.sampling.probability | quote }}
