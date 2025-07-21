@@ -6,7 +6,6 @@ metadata:
     app: {{ .Values.name }}
 spec:
   type: ClusterIP
-  clusterIP: None
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
