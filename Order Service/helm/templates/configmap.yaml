@@ -23,11 +23,11 @@ data:
   DOCS_VERSION: "1.0"
 
   # Kafka Configuration
-  SPRING_KAFKA_BOOTSTRAP_SERVERS: {{ .Values.kafka.bootstrapServers | quote }}
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "{{ .Values.kafka.name }}-{{ .Values.kafka.broker.id }}.{{ .Values.kafka.service.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.kafka.service.port }}"
   SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: "org.apache.kafka.common.serialization.StringSerializer"
   SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER: "io.confluent.kafka.serializers.KafkaAvroSerializer"
-  SPRING_KAFKA_PRODUCER_PROPERTIES_SCHEMA_REGISTRY_URL: {{ .Values.schemaRegistry.url | quote }}
-  SPRING_KAFKA_CONSUMER_GROUP_ID: "order-service"
+  SPRING_KAFKA_CONSUMER_PROPERTIES_SCHEMA_REGISTRY_URL: "http://{{ .Values.schemaRegistry.service.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.schemaRegistry.service.port }}"
+  SPRING_KAFKA_CONSUMER_GROUP_ID: {{ .Values.app.name | quote }}
   SPRING_KAFKA_CONSUMER_KEY_DESERIALIZER: "org.apache.kafka.common.serialization.StringDeserializer"
   SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER: "org.springframework.kafka.support.serializer.ErrorHandlingDeserializer"
   SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_DESERIALIZER_KEY_DELEGATE_CLASS: "org.apache.kafka.common.serialization.StringDeserializer"

@@ -13,14 +13,17 @@ mysql:
   rootPassword: root
 
 kafka:
+  name: kafka
+  broker:
+    id: 0
   service:
-    name: {{ .Release.Name }}-kafka
-  bootstrapServers: "{{ .Release.Name }}-kafka:9092"
+    name: kafka
+    port: 9092
 
 schemaRegistry:
   service:
-    name: {{ .Release.Name }}-schema-registry
-  url: "http://{{ .Release.Name }}-schema-registry:8081"
+    name: schema-registry
+    port: 8081
 
 volumes:
   mysqlData: /data/mysql

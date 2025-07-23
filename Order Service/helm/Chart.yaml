@@ -2,8 +2,4 @@ apiVersion: v2
 name: order-service
 description: A Helm chart for order-service with MongoDB and Kafka integration
 version: 0.1.0
-dependencies:
-  - name: infrastructure
-    version: "*"
-    repository: "file://../Infrastructure/helm"
 

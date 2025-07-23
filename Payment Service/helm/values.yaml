@@ -15,14 +15,17 @@ mongodb:
   authDatabase: admin
 
 kafka:
+  name: kafka
+  broker:
+    id: 0
   service:
-    name: {{ .Release.Name }}-kafka
-  bootstrapServers: "{{ .Release.Name }}-kafka:9092"
+    name: kafka
+    port: 9092
 
 schemaRegistry:
   service:
-    name: {{ .Release.Name }}-schema-registry
-  url: "http://{{ .Release.Name }}-schema-registry:8081"
+    name: schema-registry
+    port: 8081
 
 stripe:
   apiKey: "sk_test_51Qy7vnJyYNn6LMIKb79G0yDiQxU59tfRT0EtKGQq1nevtrziuMTR5eqxkc8rHPCDDBan6myEEwtDLBbwqoulIhI200Ivl3zoQ5"
