@@ -1,0 +1,36 @@
+app:
+  name: inventory-service
+  image: hazemkh98/inventory-service:1.0.0
+  servicePort: 8082
+  containerPort: 8082
+
+mysql:
+  name: mysql-inventory
+  image: mysql:8.3.0
+  servicePort: 3306
+  containerPort: 3306
+  database: inventory
+  rootPassword: root
+
+kafka:
+  name: kafka
+  broker:
+    id: 0
+  service:
+    name: kafka
+    port: 9092
+
+schemaRegistry:
+  service:
+    name: schema-registry
+    port: 8081
+
+volumes:
+  mysqlData: /data/mysql
+
+monitoring:
+  sampling:
+    probability: 1.0
+
+configmap:
+  name: inventory-config

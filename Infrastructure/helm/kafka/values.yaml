@@ -2,6 +2,8 @@
 
 replicaCount: 1
 
+name: kafka
+
 image:
   repository: confluentinc/cp-kafka
   tag: latest
@@ -22,31 +24,18 @@ service:
       targetPort: 9093
       protocol: TCP
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-
-resources: {}
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+ports:
+  plaintext: 9092
+  internal: 29092
+  controller: 9093
 
 # ConfigMap for Kafka configuration
-configMap:
+configmap:
   name: kafka-config
 
 # Persistence configuration
 persistence:
+  name: kafka-data
   enabled: true
   storageClass: ""
   accessMode: ReadWriteOnce

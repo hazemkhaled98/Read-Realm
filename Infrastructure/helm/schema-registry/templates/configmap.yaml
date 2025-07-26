@@ -1,13 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.configMap.name }}
+  name: {{ .Values.configmap.name }}
   labels:
-    app: {{ .Release.Name }}-schema-registry
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app: {{ .Values.name }}
 data:
   SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
-  SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://{{ .Values.kafka.name }}-{{ .Values.kafka.broker.id }}.{{ .Values.kafka.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.kafka.port }}"
   SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:{{ .Values.service.targetPort }}"

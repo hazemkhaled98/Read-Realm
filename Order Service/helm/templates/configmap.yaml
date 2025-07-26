@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.name }}
+data:
+  # Application Configuration
+  APP_NAME: {{ .Values.app.name | quote }}
+  SERVER_PORT: {{ .Values.app.containerPort | quote }}
+  VIRTUAL_THREADS_ENABLED: "true"
+
+  # MongoDB Configuration
+  SPRING_DATA_MONGODB_HOST: {{ .Values.mongodb.name | quote }}
+  SPRING_DATA_MONGODB_PORT: {{ .Values.mongodb.containerPort | quote }}
+  SPRING_DATA_MONGODB_DATABASE: {{ .Values.mongodb.database | quote }}
+  SPRING_DATA_MONGODB_USERNAME: {{ .Values.mongodb.rootUsername | quote }}
+  SPRING_DATA_MONGODB_PASSWORD: {{ .Values.mongodb.rootPassword | quote }}
+  SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: {{ .Values.mongodb.authDatabase | quote }}
+
+  # Documentation Configuration
+  SPRINGDOC_SWAGGER_UI_PATH: "/swagger-ui.html"
+  SPRINGDOC_API_DOCS_PATH: "/v1/api-docs"
+  DOCS_TITLE: "Order Service"
+  DOCS_VERSION: "1.0"
+
+  # Kafka Configuration
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "{{ .Values.kafka.name }}-{{ .Values.kafka.broker.id }}.{{ .Values.kafka.service.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.kafka.service.port }}"
+  SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: "org.apache.kafka.common.serialization.StringSerializer"
+  SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER: "io.confluent.kafka.serializers.KafkaAvroSerializer"
+  SPRING_KAFKA_CONSUMER_PROPERTIES_SCHEMA_REGISTRY_URL: "http://{{ .Values.schemaRegistry.service.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.schemaRegistry.service.port }}"
+  SPRING_KAFKA_CONSUMER_GROUP_ID: {{ .Values.app.name | quote }}
+  SPRING_KAFKA_CONSUMER_KEY_DESERIALIZER: "org.apache.kafka.common.serialization.StringDeserializer"
+  SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER: "org.springframework.kafka.support.serializer.ErrorHandlingDeserializer"
+  SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_DESERIALIZER_KEY_DELEGATE_CLASS: "org.apache.kafka.common.serialization.StringDeserializer"
+  SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_DESERIALIZER_VALUE_DELEGATE_CLASS: "io.confluent.kafka.serializers.KafkaAvroDeserializer"
+
+  # Monitoring Configuration
+  MANAGEMENT_TRACING_SAMPLING_PROBABILITY: {{ .Values.monitoring.sampling.probability | quote }}

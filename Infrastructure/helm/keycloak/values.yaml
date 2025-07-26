@@ -14,34 +14,17 @@ service:
   port: 8080
   targetPort: 8080
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
+name: keycloak
 
-resources: {}
+admin:
+  username: admin
+  password: admin
 
-nodeSelector: {}
 
-tolerations: []
-
-affinity: {}
-
-# Keycloak configuration
-keycloak:
-  admin:
-    username: admin
-    password: admin
-
-# MySQL database configuration for Keycloak
-mysql:
+database:
   enabled: true
+  name: keycloak-mysql
+  provider: mysql
   image:
     repository: mysql
     tag: 8.3.0
@@ -61,7 +44,7 @@ mysql:
     mountPath: /var/lib/mysql
 
 # ConfigMap for Keycloak configuration
-configMap:
+configmap:
   name: keycloak-config
 
 # Volume for importing realms
@@ -69,4 +52,4 @@ volumes:
   realms:
     enabled: true
     mountPath: /opt/keycloak/data/import/
-    configMapName: keycloak-realms
+    configmapName: keycloak-realms

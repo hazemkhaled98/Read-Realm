@@ -1,0 +1,5 @@
+apiVersion: v2
+name: notification-service
+description: A Helm chart for notification-service with Kafka integration
+version: 0.1.0
+

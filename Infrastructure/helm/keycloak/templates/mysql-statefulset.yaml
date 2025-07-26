@@ -1,59 +1,53 @@
-{{- if .Values.mysql.enabled }}
+{{- if .Values.database.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-keycloak-mysql
+  name: {{ .Values.database.name }}
   labels:
-    app: {{ .Release.Name }}-keycloak-mysql
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app: {{ .Values.database.name }}
 spec:
-  serviceName: {{ .Release.Name }}-keycloak-mysql
+  serviceName: {{ .Values.database.name }}
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-keycloak-mysql
-      release: {{ .Release.Name }}
+      app: {{ .Values.database.name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-keycloak-mysql
-        release: {{ .Release.Name }}
+        app: {{ .Values.database.name }}
     spec:
       containers:
-        - name: mysql
-          image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
-          imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
+        - name: {{ .Values.database.name }}
+          image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+          imagePullPolicy: {{ .Values.database.image.pullPolicy }}
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: {{ .Values.mysql.auth.rootPassword | quote }}
+              value: {{ .Values.database.auth.rootPassword | quote }}
             - name: MYSQL_DATABASE
-              value: {{ .Values.mysql.auth.database | quote }}
+              value: {{ .Values.database.auth.database | quote }}
             - name: MYSQL_USER
-              value: {{ .Values.mysql.auth.username | quote }}
+              value: {{ .Values.database.auth.username | quote }}
             - name: MYSQL_PASSWORD
-              value: {{ .Values.mysql.auth.password | quote }}
+              value: {{ .Values.database.auth.password | quote }}
           ports:
             - name: mysql
-              containerPort: {{ .Values.mysql.service.port }}
+              containerPort: {{ .Values.database.service.port }}
               protocol: TCP
           volumeMounts:
             - name: mysql-data
-              mountPath: {{ .Values.mysql.persistence.mountPath }}
+              mountPath: {{ .Values.database.persistence.mountPath }}
   volumeClaimTemplates:
     - metadata:
         name: mysql-data
         labels:
-          app: {{ .Release.Name }}-mysql
-          release: {{ .Release.Name }}
+          app: {{ .Values.database.name }}
       spec:
         accessModes:
-          - {{ .Values.mysql.persistence.accessMode }}
-        {{- if .Values.mysql.persistence.storageClass }}
-        storageClassName: {{ .Values.mysql.persistence.storageClass }}
+          - {{ .Values.database.persistence.accessMode }}
+        {{- if .Values.database.persistence.storageClass }}
+        storageClassName: {{ .Values.database.persistence.storageClass }}
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.mysql.persistence.size }}
+            storage: {{ .Values.database.persistence.size }}
 {{- end }}
