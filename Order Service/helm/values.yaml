@@ -6,7 +6,7 @@ app:
 
 mongodb:
   name: order-mongodb
-  image: mongo:7.0.5
+  image: mongo:7.0.0
   servicePort: 27017
   containerPort: 27017
   database: orders
